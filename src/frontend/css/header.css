@@ -1,0 +1,344 @@
+/* BANNER */
+
+header nav div div.logo a {
+    position: relative; /* Required to use z-index */
+    z-index: 1;
+}
+
+#banner-div {
+    height: auto;
+
+    background-color: rgb(190, 190, 225);
+    color: black;
+    position: fixed;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#banner-p {
+    height: auto;
+    color: black;
+    margin: 0;
+    padding: 10px 0 10px 30px;
+    width: 100%;
+    text-align: center;
+    font-size: 17px;
+}
+
+#banner-dismiss {
+    background-color: transparent;
+    border-width: 0;
+    cursor: pointer;
+    margin: 0;
+    touch-action: manipulation;
+    margin-right: 10px;
+    justify-self: flex-end;   
+}  
+
+/* HEADER */
+
+header {
+    background: linear-gradient(45deg, 
+    var(--gradient1),
+    var(--gradient2),
+    var(--gradient3),
+    var(--gradient4)
+    );
+    background-size: 200% 200%;
+    animation: color 60s ease-in-out infinite;
+    overflow: hidden;
+    margin-bottom: 0;
+    height: 500px;
+}
+
+/* ANIMATION */ 
+@keyframes color {
+    0%{
+        background-position: 0 50%;
+    }
+    50%{
+        background-position: 100% 50%;
+    }
+    100%{
+        background-position: 0 50%;
+    }
+}
+
+header nav {
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    transition: all 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999; 
+}
+
+header nav div.wrapper {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items:center;
+    justify-content: space-between;
+}  
+
+header nav div div.logo {
+    display: flex;
+    margin: 0 50px;
+}
+
+header nav div div.logo img {
+    height: 50px; /* set height of logo image */
+    border-radius: 10px;
+    display: block;
+}
+
+header nav div div.logo img.logo-transparant {
+    display: none;
+}
+
+header nav div div.navigation-div{
+    position: absolute;
+    width: 100%;
+}
+
+header nav div ul.navigation {
+    display: flex; /* use flexbox to align navigation items */
+    justify-content: center; /* center navigation items horizontally */
+    align-items: center; /* center navigation items vertically */
+    width: auto;
+}
+
+/* remove bullet points from navigation */
+header nav div ul li {
+    padding: 0 10px;
+}
+
+/* remove bullet points from navigation */
+header nav div ul li::before {
+    content: none;
+}
+
+/* navigation bar */
+header nav div div ul li a {
+    text-decoration: none;
+    color: black;
+}
+
+
+.connectBtn {
+    padding-right: 50px;
+}
+
+/* BANNER */
+
+/* banner with background */
+#banner {
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ensure text is in center - thus 50px lower to account for navigation bar*/
+#banner h1 {
+    margin-top: 50px;
+}
+
+/* hide text  */
+#banner.hide-text {
+    visibility: hidden; /* hide the text in the header */
+}
+
+
+/* INTRODUCTION */
+
+section.introduction {
+    background: var(--boxcolor);
+    height: auto;
+    display: flex;
+}
+
+section.introduction div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+section.introduction div h1{
+    font-size: 200%;
+    font-weight: 500;
+    max-width: 100%;
+    margin: 20px 0;
+    padding: 0 100px;
+}
+
+section.introduction div p{
+    margin: 0;
+    margin-bottom: 50px;
+    padding: 0 100px;
+}
+
+@media only screen and (max-width: 1080px) {
+
+    header nav div div.logo {
+        display: flex;
+        margin: 0 20px;
+    }
+
+    /* remove bullet points from navigation */
+    header nav div ul li {
+        padding: 0;
+    }
+
+    .connectBtn {
+        padding-right: 20px;
+    }
+
+  }
+
+
+@media only screen and (min-width: 768px) {
+
+    nav.scrolled {
+        background: var(--firsttheme);
+        height: 60px;
+    }
+
+    nav.scrolled ul li a {
+        color: white;
+        /* font-size: 60% !important; */
+    }
+
+    nav.scrolled img.logo {
+        display: none;
+    }
+
+    nav.scrolled .logo img.logo-transparant {
+        display: block;
+    } 
+
+    nav.scrolled a:hover {
+        color: black;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+
+    /* TEMP BANNER */
+
+        #banner-p {
+            padding-left: 10px;
+            font-size: 70%;
+        }
+
+    /* HEADER */
+    
+        header {
+            background-size: 200% 200%;
+            animation: none;
+            height: 200px;
+        }
+    
+        header nav {
+            position: absolute;
+            align-items: center;
+            justify-content: left;
+            height: 50px;
+            transition: all;
+        }
+    
+        header nav div.wrapper {
+            position: absolute;
+            align-items: center;
+            /* justify-content: cen; */
+        }
+    
+        header nav div div.logo {
+            display: none;
+        }
+    
+        header nav div div.logo {
+            display: flex;
+            margin: 20px 15px;
+            flex: 1;
+        }
+
+        /* center button */
+        header nav div::after {
+            flex: 1;
+            content: '';
+          }
+    
+        header nav div ul.navigation {
+            display: none;
+        }
+          
+        header nav div div.logo img {
+            height: 30px; /* set height of logo image */
+        }
+    
+        header nav.show {
+            opacity: 1;
+            position: fixed;
+            background-color: var(--firsttheme);
+            height: 50px;
+        }
+    
+        header nav.show .logo img.logo-transparant {
+            display: block;
+        }
+    
+        header nav.show .logo img.logo {
+            display: none;
+        }
+        
+        #banner {
+            height: 200px;
+        }
+    
+        /* ensure text is in center - thus 50px lower to account for navigation bar*/
+        #banner h1 {
+            margin-top: 25px;
+        }
+        
+    
+        #banner.hide-text {
+            visibility: visible;
+        }
+    
+    /* INTRODUCTION */
+    
+        section.introduction {
+            margin: 0;
+        }
+    
+        section.introduction div {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+    
+        section.introduction div h1{
+            font-size: 22px;
+            margin: 20px 0;
+            padding: 0;
+            text-align: center;
+        }
+    
+        section.introduction div p{
+            margin: 0;
+            margin-bottom: 30px;
+            padding: 0 40px;
+        }
+    }

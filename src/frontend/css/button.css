@@ -1,0 +1,37 @@
+/* BUTTON */
+
+button.learn-more {
+    background-color: var(--secondthemetransparant);
+    border-radius: 8px;
+    border-width: 0;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 10px;
+    width: auto;
+}
+
+@media only screen and (max-width: 768px) {
+
+/* BUTTON */
+    
+    button.learn-more {
+        border-radius: 5px;
+        font-size: 12px;
+    }
+
+    #button-margin-left {
+        margin-left: 20px;
+    }
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sundae Liquidity Protocol</title>
+        <link rel="icon" href="pictures/logo10.png">
+        <link rel="stylesheet" href="generics.css">
+        <link rel="stylesheet" href="styles_supply.css">
+        <link rel="stylesheet" href="header.css">
+        <link rel="stylesheet" href="footer.css">
+        <link rel="stylesheet" href="button.css">
+        <link rel="stylesheet" href="hamburger.css">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <div class="wrapper">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="pictures/logo10.png" alt="logo" class="logo">
+                        </a>
+                        
+                        <a href="index.html">
+                            <img src="pictures/logo8.png" alt="logo" class="logo-transparant">
+                        </a>
+                    </div>
+
+                    <div class="navigation-div">
+                        <ul class="navigation">
+                            <li><a class="menuItem" href="index.html">Home</a></li>
+                            <li><a class="menuItem" href="about.html">About</a></li>
+                            <li><a class="menuItem" href="flashloan.html">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard.html">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply.html">Supply</a></li>
+                            <li><a class="menuItem" href="borrow.html">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="menuToggle">
+
+                        <input type="checkbox" id="checkbox_check"/>
+                        
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        
+                        <ul id="menu">
+                            <li><a class="menuItem" href="index.html">Home</a></li>
+                            <li><a class="menuItem" href="about.html">About</a></li>
+                            <li><a class="menuItem" href="flashloan.html">Documentation</a></li>
+                            <li><a class="menuItem" href="dashboard.html">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply.html">Supply</a></li>
+                            <li><a class="menuItem" href="borrow.html">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <script type="module" src="/bundle.js"></script>
+
+                    <div class="connectBtn">
+                        <radix-connect-button />
+                    </div>
+
+                </div>
+                
+            </nav>
+
+            <div id="banner">
+                <h1>
+                    Liquidity protocol on Radix DLT
+                </h1>
+            </div>
+
+        </header>
+
+        <section class="jump">
+            <fieldset id="left">
+                <legend>Supply Liquidity</legend>
+                <input type="button" value="[1] Stake XRD" onClick="smoothScroll('#nr1')" /> 
+            </fieldset>
+
+            <fieldset id="right">
+                <legend>Withdraw Liquidity</legend>
+                <input type="button" value="[2] Unstake XRD" onClick="smoothScroll('#nr3')" />
+            </fieldset>
+        </section>
+
+        <section class="supply-title">
+            <h1 class="supply-title-h1">
+                Boost your Earnings; Provide Liquidity with Ease!
+            </h1>
+            <h2 class="supply-title-h2">
+                Here's how you do it:
+            </h2>
+        </section>
+
+
+        <section class="supply">
+            <div class="supply-div">
+                <h1 class="supply-h1">
+                    [1] Stake XRD at Sundae validator node
+                </h1>
+                <p class="supply-p">
+                    The first step into supplying liquidity is to stake your XRD at Sundae validator node.
+                    In return you will receive 'Liquid staking units' (LSU's) - which serve as proof of your stake.
+                    These LSU's can, at any point in time, be used to withdraw your stake from the validator, plus your earned rewards and interest from the liquidity pool.
+                    See step 2 for more information.
+                </p>
+                <p  class="supply-p">
+                    <span class="highlight">Note:</span> as you probably noticed, the validator node fee is set at 100%.
+                    This means that 100% of the staking rewards are distributed to the validator's wallet.
+                    This wallet represents the liquidity pool.
+                    All rewards that you are entitled too are registered by Sundae and can be collected at any time by you, from the liquidity pool.
+                    In essence <span class="highlight">the validator node fee is 0%</span>, as 100% of the staking rewards are allocated to the liquidity supplier (i.e. staker) via the liquidity pool.
+                    More on this in the next session.
+                </p>
+
+                <div class="transaction" id="nr1">
+                    <div class="transaction-title">
+                        <img src="pictures/liquid2.svg" alt="liquid" id="transaction-icon">
+                        <h2 class="transaction-h2">Stake XRD</h2>
+                    </div>
+                    <input type="text" placeholder="XRD amount" id="amountLSU" class="transaction-text"/>
+                    <button id="supplyLSU" class="learn-more transaction-button">Send</button>
+                </div>
+
+                <div id="receipt-container" style="display: none;">
+                    <p>
+                        Congratulations, you are now a liquidity provider! <br>
+                        Receipt:<br>
+                        <pre id="receipt"></pre>
+                    </p>
+                </div>
+
+            </div>
+
+            <section class="instantiate" style="display: none;">
+                <h2>Instantiate lender component - TEMP</h2>
+                <input type="text" placeholder="Package address" id="packageAddress" />
+                <input type="text" placeholder="Account address" id="accountAddress" />
+                <p><button id="instantiateComponent">Instantiate component</button></p>
+                <div class="container">
+                  <p>Component Address: <span id="componentAddress"></span></p>
+                  <p>owner badge address: <span id="ownerAddress"></span></p>
+                  <p>admin badge address: <span id="badgeAddress"></span></p>
+                  <p>transient token address: <span id="transientAddress"></span></p>
+                  <p>nft address: <span id="nftAddress"></span></p>
+                </div>
+            </section>
+
+            <div class="supply-div">
+                <h1 class="supply-h1">
+                    Collecting liquidity via staking rewards
+                </h1>
+                <p class="supply-p">
+                    The staking rewards collected by the validator node serve as liquidity to the protocol. 
+                    The staking rewards that each staker is entitled to is carefully registered by Sundae, and can be collected by the staker at any point in time, by unbstaking to the validator node - see section [3] for more information.
+                </p>    
+                    
+                <p>
+                    The collected liquidity is used to issue lending products (e.g. flash loans) - which in itself return an interest.
+                    Earned interest is allocated to the liquidity provider / staker proportionally to its stake in the pool.
+                    The moment the liquidity supplier unstakes, the earned interest is transferred to the corresponding wallet, along with the staking rewards. 
+                </p>
+
+                <p class="supply-p">
+                </p>
+
+            </div>
+
+            <div class="payout-scheme">
+                <h1>
+                    Payout scheme
+                </h1>
+                <ul>
+                    <li><span class="highlight">Staking rewards:</span> 100% to supplier</li>
+                </ul>
+               
+                <p>
+                    Liquidity suppliers are entitled to 100% of the staking rewards. These can be claimed from the liquidity pool.
+                </p>
+                <ul>
+                    <li><span class="highlight">Interest earnings:</span> 50% supplier; 50% Sundae</li>
+                </ul>
+                
+                <p>
+                    Interest earnings are divided equally between the liquidity supplier and Sundae.
+                </p>
+                </ul>
+            </div>
+
+            <div class="disclaimer">
+                <p class="disclaimer-p">
+                    Sundae liquidity protocol is <span class="highlight">non-custodial</span>. 
+                    Liquidity pools and lending products are governed by the laws of smart contracts. 
+                    Sundae's smart contracts are designed in a manner that <span class="highlight">only the rightfull owner can lay claim on the pool's liquidity</span>.
+                </p>
+                <button class="learn-more background">
+                    Visit our Github for more information  
+                </button>
+            </div>
+
+            <div class="supply-div">
+                <h1 class="supply-h1">
+                    [3] Claim resources
+                </h1>
+                <p class="supply-p">
+                    Finally, withdrawing your liquidity and claiming your earnings can be done at any point in time by unstaking XRD from the validator node. 
+                    Claiming your resources can be achieved by returning Sundae validator node's LSU's.
+                    This returns the following resources to your wallet (depending on the amount of LSU's returned):
+                </p>
+                <ul>
+                    <li>Staked XRD</li>
+                    <li>Staking rewards (XRD) that you are entitled to</li>
+                    <li>Interest earned (XRD) by the liquidity pool</li>
+                </ul>
+                <p class="supply-p">
+                    Unstaked XRD takes 500 epochs (approx. 2 weeks) to return to the owners wallet, as is inherent to the Radix network.
+                    Like the unstaked XRD, the earned staking rewards and interest are subject to the same delay.
+                </p>
+
+                <div class="transaction" id="nr3">
+                    <div class="transaction-title">
+                        <img src="pictures/evaporate.svg" alt="liquid" id="transaction-icon">
+                        <h2 class="transaction-h2">Withdraw Resources</h2>
+                    </div>
+                    <input type="text" placeholder="LSU Amount" id="nftId" class="transaction-text" />
+                    <button id="withdrawLSU" class="learn-more transaction-button">Send</button>
+                </div>
+
+                <div class="container">
+                    <p>Receipt:<br>
+                    <pre id="receipt"></pre>
+                    </p>
+                </div>
+
+                <p class="supply-p">
+                    It was a pleasure earning together!
+                </p>
+            </div>
+        </section>
+
+        <hr>
+        
+        <footer class="footer-mobile">
+            <div class="sundae">
+                <h1>
+                    SUNDAE LIQUIDITY PROTOCOL
+                </h1>
+            </div>
+
+            <div class="menu">
+                <a href="...">ABOUT</a>
+                <a href="...">DOCS</a>
+                <a href="...">FAQ</a>
+                <a href="...">CONTACT</a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://twitter.com/your-twitter-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/twitter.svg" alt="Twitter Logo" class="social-logo">
+                </a>
+
+                <a href="https://github.com/your-github-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/github.svg" alt="GitHub Logo" class="social-logo">
+                </a>
+                <a href="https://discord.com/your-discord-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/discord.svg" alt="Discord Logo" class="social-logo">
+                </a>
+                <a href="https://t.me/your-telegram-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/telegram.svg" alt="Telegram Logo" class="social-logo">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>
+                    © 2023 Sundae Liquidity Protocol, Inc. All rights reserved
+                </p>
+            </div>
+        </footer>
+
+        <script src="scroll.js"></script>
+        <script src="scroll_phone.js"></script>
+        <script src="disable_scroll.js"></script>
+        <script src="supply.js"></script>
+        <script src="smooth_scroll.js"></script>
+
+    </body>
+</html>

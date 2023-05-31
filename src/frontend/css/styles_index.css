@@ -1,0 +1,459 @@
+/* SLOGAN */
+
+    section.slogan {
+        height: auto;
+        text-align: center;
+        position: relative;
+        margin-top: 100px;
+        margin-bottom: 10px;
+        direction: flex;
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    section.slogan div.slogan-div {
+        height: auto;
+        position: absolute;
+        z-index: 3;
+        width: 100%;
+    }
+
+    #slogan-h1 {
+        font-size: 300%;
+        font-weight: 450;
+        margin-top: 0;
+    }
+    
+    section.slogan .area-chart {
+        /* position: absolute; */
+        
+        /* Reset */
+        margin: 0;
+        padding: 0;
+        border: 0;
+        z-index: 2;
+
+        table-layout: fixed;
+    
+        /* Dimensions */
+        width: 100%;
+        height: auto;
+    }
+
+    section.slogan .area-chart tbody {
+        width: 100%;
+        height: var(--chart-height, 250px);
+    
+        /* Layout */
+        display: flex;
+        justify-content: stretch;
+        align-items: stretch;
+        flex-direction: row;
+    }
+    section.slogan .area-chart tr {
+        position: relative;
+        /* Even size items */
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;  
+    }
+
+    section.slogan .area-chart td {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    
+        /* Color */
+        background: var(--color, rgba(240, 50, 50, 0.75));
+        clip-path: polygon(
+            0% calc(100% * (1 - var(--start))),
+            100% calc(100% * (1 - var(--end))),
+            100% 100%,
+            0% 100%
+        );
+    }
+    section.slogan .area-chart td:nth-of-type(1) {
+        --color: var(--body2);
+    }
+    section.slogan .area-chart td:nth-of-type(2) {
+        --color: var(--body1);
+    }
+    section.slogan .area-chart td:nth-of-type(3) {
+        --color: #cadcc857;
+    }
+
+/* PROVIDER */
+
+    section.provider {
+        position: relative;
+        background: white;
+        margin: 0 50px;
+        height: auto;
+        padding: 20px 40px;
+        border-radius: 10px;
+    }
+
+    section.provider div.provider-h2 {
+        max-width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    section.provider div.provider-wrapper {
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+    }
+
+    section.provider div div.provider-container {
+        flex: 0 0 auto;
+        min-width: 300px;
+        max-width: 500px;
+        /* min-height: 200px; */
+        height: auto;
+        margin: 10px 10px 10px 0;
+        background-color: var(--boxcolor);
+        border-radius: 5px;
+        padding: 10px;
+        margin-right: 50px;
+    }
+
+    section.provider div div h2.provider-content-h {
+        margin: 10px;
+        display: flex;
+        flex-direction:row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    section.provider div div p.provider-content-p {
+        margin: 10px;
+        width: auto;
+        height: auto;
+        white-space: normal; 
+        font-size: 14px;
+    }
+
+    #provider-list-font {
+        white-space: normal; 
+        list-style: none;
+        line-height: 2;
+        color: rgb(73, 68, 51);
+        margin-left: 30px;
+        margin-right: 10px;
+        font-size: 14px;
+    }
+
+
+/* BORROWER */
+
+    section.borrower {
+        /* background: white; */
+        margin: 100px 50px;
+        height: auto;
+        padding: 0 40px;
+        /* display: flex;
+        flex-direction: column; */
+    }
+
+    section.borrower div.title {
+        height: auto;
+        text-align: center;
+    }
+
+    section.borrower div h1{
+        font-size: 200%;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    section.borrower div h2{
+        /* margin: 20px 0; */
+        margin-bottom: 40px;
+    }
+
+    section.borrower div.borrower-container {
+        flex: 0 0 auto;
+        width: auto;
+        height: auto;
+        margin: 10px 0;
+        background-color:var(--boxcolor);
+        border-radius: 5px;
+    }
+
+    section.borrower div p {
+        padding: 40px;
+    }
+
+    #button-width {
+        flex-grow: 0;
+    }
+
+    /* ROADMAP */
+
+    section.roadmap-box {
+        background: white;
+        display: flex;
+        flex-direction: column;
+        margin: 0 100px;
+        max-width: 100%;
+        justify-content: center;
+    }
+
+    section.roadmap-box div.title {
+        height: auto;
+        margin: 0 50px 20px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    section.roadmap-box div h1{
+        font-size: 200%;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    section.roadmap-box div.roadmap-feature {
+        margin: 50px 0;
+        width: 60%;
+        height: auto;
+        padding: 20px 50px;
+        display: inline-block;
+        border-radius: 5px;
+    }
+
+    section.roadmap-box div.first{
+        background: linear-gradient(175deg,
+        var(--body2),
+        var(--body1),
+        var(--body1),
+        rgb(246, 246, 246)
+        );
+        margin: 20px 0 50px 0;
+    }
+
+    section.roadmap-box div.rest{
+        background-color: var(--boxcolor);
+    }
+
+    section.roadmap-box div.right{
+        align-self: flex-end;
+    }
+
+    section.roadmap-box div.left{
+        float: left;
+    }
+
+    section.roadmap-box li{
+        margin-left: 20px;
+    }
+
+    .align-left {
+        align-self: flex-start;
+    }
+
+
+/* GITHUB */
+
+    section.github {
+        margin-top: 100px;
+        margin-bottom: 150px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #github-h1 {
+        font-size: 300%;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
+
+    section.github p.github-p {
+        margin-bottom: 50px;
+        height: auto;
+        padding: 0 100px;
+        text-align: center;
+    }
+
+
+@media only screen and (max-width: 1014px) {
+    section.slogan #slogan-h1 {
+        font-size: 250%;
+    }
+
+    section.provider div.provider-wrapper {
+        margin-bottom: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: flex;
+        flex-wrap: nowrap;
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+
+/* SLOGAN */
+
+    /* section.slogan {
+    }
+
+    section.slogan div.slogan-div{
+    } */
+
+    section.slogan #slogan-h1 {
+        font-size: 24px;
+        font-weight: 500;
+    }
+
+    section.slogan .area-chart tbody {
+        width: 100%;
+        height: 150px;
+    
+        /* Layout */
+        display: flex;
+        justify-content: stretch;
+        align-items: stretch;
+        flex-direction: row;
+    }
+
+/* PROVIDER */
+
+    section.provider {
+        margin: 10px 0;
+        padding: 10px 20px;
+        border-radius: 0;
+    }
+
+    /* section.provider div.title {
+        } */
+
+    section.provider div.title h2 {
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+    
+    /* section.provider div.provider-wrapper {
+        margin-bottom: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: flex;
+        flex-wrap: nowrap;
+    } */
+    
+    section.provider div div.provider-container {
+        width: 300px;
+        margin: 0 10px 0 0;
+        border-radius: 5px;
+        margin-right: 15px;
+    }
+    
+    section.provider div div h2.provider-content-h {
+        margin: 10px;
+    }
+    
+    section.provider div div p.provider-content-p {
+        font-size: 13px;
+    }
+
+    #provider-list-font li{
+        font-size: 13px;
+    }
+
+/* BORROWER */
+
+    section.borrower {
+        margin: 50px 0;
+        padding: 0;
+    }
+
+    section.borrower div.title {
+        margin: 0;
+    }
+    
+    section.borrower div h1{
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    section.borrower div h2{
+        margin-bottom: 20px;
+    }
+
+    section.borrower div.borrower-container {
+        margin: 10px 0;
+        border-radius: 0;
+        padding: 0;
+    }
+
+    section.borrower div p {
+        padding: 20px;
+        margin: 10px;
+    }
+
+    section.borrower div.button {
+        margin-left: 20px;
+    }
+
+/* ROADMAP */
+
+    section.roadmap-box {
+        margin: 0px;
+    }
+ 
+    section.roadmap-box div h1{
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    section.roadmap-box div.roadmap-feature {
+        width: auto;
+        height: auto;
+        padding: 20px 30px;
+        display: inline-block;
+        border-radius: 0px;
+        margin: 10px 0;
+    }
+
+/* GITHUB */
+
+   section.github {
+        margin: 100px 0;
+        height: auto;
+    }
+
+    #github-h1 {
+        font-size: 220%;
+        /* font-weight: 800; */
+        text-align: center;
+        margin: 0 100px;
+    }
+
+    section.github p.github-p {
+        margin: 40px 0;
+        height: auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+}

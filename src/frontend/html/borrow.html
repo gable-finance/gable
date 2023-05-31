@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sundae Liquidity Protocol</title>
+        <link rel="icon" href="pictures/logo10.png">
+        <link rel="stylesheet" href="generics.css">
+        <link rel="stylesheet" href="styles_borrow.css">
+        <link rel="stylesheet" href="header.css">
+        <link rel="stylesheet" href="footer.css">
+        <link rel="stylesheet" href="button.css">
+        <link rel="stylesheet" href="hamburger.css">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <div class="wrapper">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="pictures/logo10.png" alt="logo" class="logo">
+                        </a>
+                        
+                        <a href="index.html">
+                            <img src="pictures/logo8.png" alt="logo" class="logo-transparant">
+                        </a>
+                    </div>
+
+                    <div class="navigation-div">
+                        <ul class="navigation">
+                            <li><a class="menuItem" href="index.html">Home</a></li>
+                            <li><a class="menuItem" href="about.html">About</a></li>
+                            <li><a class="menuItem" href="flashloan.html">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard.html">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply.html">Supply</a></li>
+                            <li><a class="menuItem" href="borrow.html">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="menuToggle">
+
+                        <input type="checkbox" id="checkbox_check"/>
+                        
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        
+                        <ul id="menu">
+                            <li><a class="menuItem" href="index.html">Home</a></li>
+                            <li><a class="menuItem" href="about.html">About</a></li>
+                            <li><a class="menuItem" href="flashloan.html">Documentation</a></li>
+                            <li><a class="menuItem" href="dashboard.html">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply.html">Supply</a></li>
+                            <li><a class="menuItem" href="borrow.html">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="connectBtn">
+                        <radix-connect-button />
+                    </div>
+
+                </div>
+                
+            </nav>
+
+            <div id="banner">
+                <h1>
+                    Liquidity protocol on Radix DLT
+                </h1>
+            </div>
+
+        </header>
+
+        <section class="borrow-title">
+            <h1 class="borrow-title-h1">
+                Discover the Power of Flash Loans!
+            </h1>
+        </section>
+
+        <section class="flashloan">
+            <div class="flashloan-intro">
+                <p class="flashloan-p">
+                    Sundae Liquidity Protocol currently offers flash loans as its main feature. 
+                    Flash loans are loans that are issued and returned within a single (same) transaction.
+                    This page provides a guide on how users can utilize these flashloans.
+                </p>
+            </div>
+
+            <div class="flashloan-background">
+                <h2>
+                    Background on flash loans
+                </h2>
+                <p class="flashloan-p">
+                    Flash loans are made possible due to one of Radix's key features: atomic composability. 
+                    Atomic composability in Radix (and crypto in general) is the ability to combine multiple transactions into a single atomic transaction, allowing for complex transactions to be executed in a single step.
+                    This enables flash loans because it allows users to borrow assets and repay the loan in the same transaction, without the need for collateral or credit checks, as the entire transaction is executed atomically.
+                    Read more on atomic composability here.
+                </p>
+            </div>
+
+            <h2 id="borrow-title-h2">
+                Here is how to get started:
+            </h2>
+
+            <div class="flashloan-steps">
+                <h2>
+                    [1] Connect wallet
+                </h2>
+                <p class="flashloan-p">
+                    Connect your wallet to the Radix network. 
+                    For this you require to have the Radix wallet installed.
+                    More information on this step will follow. 
+                </p> 
+            </div>
+
+            <div class="flashloan-steps">
+                <h2>
+                    [2] Call flash loan function
+                </h2>
+                <p class="flashloan-p">
+                    Call the flash loan function on the smart contract, passing in the amount of funds you want to borrow. 
+                    The smart contract will execute the loan and send the funds to your wallet.
+                </p>
+            </div>
+
+            <div class="flashloan-steps">
+                <h2>
+                    [3] Use borrowed funds
+                </h2>
+                <p class="flashloan-p">
+                    Use the borrowed funds to execute your desired transaction or strategy. 
+                    Flash loans are typically used to take advantage of arbitrage opportunities or to execute complex trading strategies.
+                </p>
+            </div>
+
+            <div class="flashloan-steps">
+                <h2>
+                    [4] Return borrowed funds
+                </h2>
+                <p class="flashloan-p">
+                    Return the borrowed funds including interest rate to the smart contract before the end of the loan period, along with the small interest fee. 
+                    Failure to return the funds and fee will result in the transaction being reverted and the borrower losing the borrowed funds.
+                </p>
+            </div>
+
+            <div class="flashloan-interest-rates">
+                <h2>
+                    Interest rates
+                </h2>
+                <p class="flashloan-p">
+                    During the first months after go-live of Sundae, the interest rates will be static at 0.05%.
+                    After that, the interest rates will be dynamic to market conditions and demand. 
+                    On the 'Dashboard' page you can keep track of the interest rate.
+                </p>
+            </div>
+
+
+            <div class="flashloan-steps">
+                <h2>
+                    [5] Verify transaction
+                </h2>
+                <p class="flashloan-p">
+                    Verify that the loan has been fully paid back and that your wallet balance has returned to its original state.
+                </p>
+            </div>
+
+            <div class="flashloan-tip">
+                <h2>
+                    Tip!
+                </h2>
+                <p class="flashloan-p">
+                    Step 2 to 4 can be automated and executed at once by building a customized transaction manifest. 
+                    The transaction manifest makes it possible to compose multiple actions to be executed atomically within a single transaction.
+                    A demo and example of the automated execution of a flash loan on Sundae's will be provided later.
+                </p>
+            </div>
+
+            <div class="flashloan-disclaimer">
+                <p class="flashloan-p">
+                    <span class="highlight">Note:</span> Flash loans are a powerful tool that can be used to execute complex transactions and strategies. 
+                    However, they also come with significant risks and should only be used by experienced traders who understand the risks involved. 
+                    Additionally, borrowers should ensure that they fully understand the terms and conditions of the smart contract before executing a flash loan.
+                </p>
+            </div>
+        </section>
+
+        <hr>
+        
+        <footer class="footer-mobile">
+            <div class="sundae">
+                <h1>
+                    SUNDAE LIQUIDITY PROTOCOL
+                </h1>
+            </div>
+
+            <div class="menu">
+                <a href="...">ABOUT</a>
+                <a href="...">DOCS</a>
+                <a href="...">FAQ</a>
+                <a href="...">CONTACT</a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://twitter.com/your-twitter-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/twitter.svg" alt="Twitter Logo" class="social-logo">
+                </a>
+
+                <a href="https://github.com/your-github-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/github.svg" alt="GitHub Logo" class="social-logo">
+                </a>
+                <a href="https://discord.com/your-discord-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/discord.svg" alt="Discord Logo" class="social-logo">
+                </a>
+                <a href="https://t.me/your-telegram-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/telegram.svg" alt="Telegram Logo" class="social-logo">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>
+                    © 2023 Sundae Liquidity Protocol, Inc. All rights reserved
+                </p>
+            </div>
+        </footer>
+
+        <script src="scroll.js"></script>
+        <script src="scroll_phone.js"></script>
+        <script src="disable_scroll.js"></script>
+        <script type="module" src="/bundle.js"></script>
+
+    </body>
+</html>

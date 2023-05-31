@@ -1,0 +1,145 @@
+/* Import Open Sans font from Google Fonts */
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+
+/* VARIABLES */
+:root {
+    --firsttheme: #376D79; /* 428693 */
+    --firstthemefilter: invert(37%) sepia(11%) saturate(1784%) hue-rotate(144deg) brightness(97%) contrast(88%);
+    --secondtheme: #cbe7c9;
+    --thirdtheme: #afc7cd;
+    --fourththeme: #90a7ac;
+
+    /* --footer1: #f4fcf5;
+    --footer2: #ecf7eb; */
+
+    --body1: #e5f0f1;
+    --body2: #cbdadd;
+
+
+
+    --secondthemetransparant: #376d7939;
+    --secondtheme2: #dbe7da;
+    
+    --boxcolor:#F6F6F6;
+
+    --gradient1: #d1d1d1;
+    --gradient2: #f0f0f0;
+    --gradient3: #cadcc8;
+    --gradient4: #b2d6ae;
+  }
+
+/* GENERICS */
+
+body {
+    background: white;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    line-height: 2;
+    color: rgb(73, 68, 51);
+}
+
+h1 {
+    font-weight: 400;
+    color: black;
+    font-size: 26px;
+    margin-top: 10px;
+}
+
+h2 {
+    font-weight: 400;
+    font-size: 20px;
+    color: black;
+}
+
+h3 {
+    font-weight: 400;
+    font-size: 18px;
+}
+
+p {
+    line-height: 2;
+    font-size: 16px;
+    color: rgb(73, 68, 51);
+    margin: 10px 0;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    width: 100%;
+}
+
+li {
+    margin-right: 20px;
+}
+
+li::before {
+    content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+    color: var(--firsttheme); /* Change the color */
+    font-weight: bold; /* If you want it to be bold */
+    display: inline-block; /* Needed to add space between the bullet and the text */
+    width: 1em; /* Also needed for space (tweak if needed) */
+    margin-left: -1em; /* Also needed for space (tweak if needed) */
+}
+
+a {
+    color: black;
+    font-size: 18px;
+}
+
+a:hover {
+    color: var(--firsttheme);
+}
+
+span.highlight {
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 768px) {
+
+    /* GENERICS */
+    
+        /* body {
+        } */
+    
+        p {
+            font-size: 13px;
+        }
+    
+        ul {
+            font-size: 13px;
+        }
+    
+        li {
+            font-size: 13px;
+        }
+    
+        h1 {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    
+        h2 {
+            font-weight: 300;
+            font-size: 120%;
+        }
+    
+        a {
+            font-size: 16px;
+            color: #232323;
+            transition: color 0.3s ease;
+        }
+    
+        /* java */
+    
+        .no-scroll {
+            overflow: hidden;
+         }
+
+        }

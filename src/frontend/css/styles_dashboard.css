@@ -1,0 +1,105 @@
+section.stats {
+    background: var(--boxcolor);
+    height: auto;
+    width: auto;
+
+}
+
+section.stats div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    flex: 1; 
+    height: auto;
+}
+
+section.stats div div {
+    width: auto;
+    height: 200px;
+    border-right: solid;
+    border-color: lightgray;
+    margin: 10px 0;
+}
+
+section.stats div div h1{
+    font-size: 200%;
+    font-weight: 500;
+    max-width: 100%;
+    margin: 20px 0;
+    padding: 10px;
+}
+
+section.supplier-dashboard {
+    margin-top: 100px;
+    height: 800px;
+}
+
+section.supplier-dashboard h1 {
+    font-size: 300%;
+    font-weight: 300%;
+    text-align: center;
+}
+
+section.supplier-dashboard div.dashboard {
+    background: var(--boxcolor);
+    height: 80%;
+    margin: 0 50px;
+}
+
+
+@media only screen and (max-width: 768px) {
+    
+    #coming-soon {
+        font-size: 300%;
+        font-weight: 300%;
+        /* text-align: center; */
+    }
+
+    section.stats div {
+        /* display: flex; */
+        flex-direction: column;
+        /* align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        flex: 1; 
+        height: auto; */
+    }
+    section.stats div div {
+        width: 100%;
+        /* height: 200px; */
+        border-right: none;
+        border-bottom: solid;
+        border-color: lightgray;
+        /* margin: 0 10000px; */
+        /* padding: 0 50px; */
+        margin: 0 10px;
+    }
+
+    section.stats div div h1{
+        font-size: 150%;
+        font-weight: 400;
+        /* max-width: 100%; */
+        /* margin: 20px 0; */
+        /* padding: 10px; */
+    }
+
+    section.supplier-dashboard {
+        /* margin-top: 100px; */
+        height: 600px;
+        margin-bottom: 50px;
+    }
+    
+    section.supplier-dashboard h1 {
+        font-size: 200%;
+        font-weight: 300;
+        /* text-align: center; */
+    }
+    
+    section.supplier-dashboard div.dashboard {
+        background: var(--boxcolor);
+        height: 80%;
+        margin: 0;
+    }
+}
