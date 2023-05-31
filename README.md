@@ -33,14 +33,9 @@ npm install
 5. **Build and Run:** Build the project and start the development server by running:
 
 <pre>
-```bash
-npm install
-npm run start
-```
-</pre>
-
 npm run build
 npm run start
+</pre>
 
 6. **Access the Interface:** Open your web browser and visit `http://localhost:xxxx` to access the Liquidity Protocol interface.
 
