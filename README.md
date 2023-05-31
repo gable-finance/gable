@@ -22,11 +22,15 @@ To get started with the Liquidity Protocol, follow these steps:
 
 2. **Clone the Repository:** Clone this repository to your local machine using the following command:
 
+<pre>
 git clone https://github.com/your-username/liquidity-protocol.git
+</pre>
 
 3. **Install Dependencies:** Navigate to the project directory and install the required dependencies by running:
 
+<pre>
 npm install
+</pre>
 
 4. **Configure Environment Variables:** Set up the necessary environment variables for the project. Refer to the provided `.env.example` file for required variables and configurations.
 
