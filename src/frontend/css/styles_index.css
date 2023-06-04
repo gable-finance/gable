@@ -33,7 +33,7 @@
         border: 0;
         z-index: 2;
 
-        table-layout: fixed;
+        /* table-layout: fixed; */
     
         /* Dimensions */
         width: 100%;
@@ -41,7 +41,6 @@
     }
 
     section.slogan .area-chart tbody {
-        width: 100%;
         height: var(--chart-height, 250px);
     
         /* Layout */
@@ -49,6 +48,7 @@
         justify-content: stretch;
         align-items: stretch;
         flex-direction: row;
+        flex-wrap: wrap; 
     }
     section.slogan .area-chart tr {
         position: relative;
