@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Sundae Liquidity Protocol</title>
+        <link rel="icon" href="pictures/logo10.png">
+        <link rel="stylesheet" href="css/generics.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/styles_index.css">
+        <link rel="stylesheet" href="css/footer.css">
+        <link rel="stylesheet" href="css/button.css">
+        <link rel="stylesheet" href="css/hamburger.css">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <div id="banner-div">
+        <p id="banner-p">
+            Welcome to Sundae's pre-release. 
+            Sundae Liquidity Protocol (including this webpage) is still in development, and will release shortly after Radix Babylon launch. 
+        </p>
+        <button id="banner-dismiss">X</button>
+    </div>
+
+    <body>
+
+        <header>
+            <nav>
+                <div class="wrapper">
+                    <div class="logo">
+                        <a href="./">
+                            <img src="pictures/logo10.png" alt="logo" class="logo">
+                        </a>
+                        
+                        <a href="./">
+                            <img src="pictures/logo8.png" alt="logo" class="logo-transparant">
+                        </a>
+                    </div>
+                    <div class="navigation-div">
+                        <ul class="navigation">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="flashloan">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="menuToggle">
+
+                        <input type="checkbox" id="checkbox_check"/>
+                        
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        
+                        <ul id="menu">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="flashloan">Documentation</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <script type="module" src="java/bundle.js"></script>
+
+                    <div class="connectBtn">
+                        <radix-connect-button />
+                    </div>
+
+                </div>
+                
+            </nav>
+
+            <div id="banner">
+                <h1>
+                    Liquidity protocol on Radix DLT
+                </h1>
+            </div>
+
+        </header>
+
+        <section class="introduction">
+            <div>
+                <h1>
+                    Stake and Earn Interest, or Borrow
+                </h1>
+                <p>
+                    Sundae is a decentralized liquidity market protocol build on Radix DLT where users can participate as borrower or supplier.
+                    The protocol offers lending products for borrowers, and liquidity solutions for suppliers. 
+                    Built on Radix DLT, the protocol offers transparency, security, and innovative solutions to traders and investors.
+                    This allows users to enjoy fast and efficient transaction processing, low fees, and transparent terms.                     
+                </p>
+            </div>
+        </section>
+
+        <section class="slogan">
+            <div class="slogan-div">
+                <h1 id="slogan-h1">
+                    Stake and earn interest on your rewards
+                </h1>
+            </div>
+
+            <table class="area-chart">
+                <tbody>
+                    <tr>
+                        <td style="--start:0.1; --end:0.2;"> 50 </td>
+                        <td style="--start:0.0; --end:0.2;"> 20 </td>
+                        <td style="--start:0.3; --end:0.3;"> 40 </td>
+                    </tr>
+                    <tr>
+                        <td style="--start:0.2; --end:0.4;"> 50 </td>
+                        <td style="--start:0.2; --end:0.2;"> 20 </td>
+                        <td style="--start:0.3; --end:0.2;"> 40 </td>
+                    </tr>
+                    <tr>
+                        <td style="--start:0.4; --end:0.4;"> 50 </td>
+                        <td style="--start:0.2; --end:0.4;"> 20 </td>
+                        <td style="--start:0.2; --end:0.3;"> 40 </td>
+                    </tr>
+                    <tr>
+                        <td style="--start:0.4; --end:0.6;"> 80 </td>
+                        <td style="--start:0.4; --end:0.3;"> 50 </td>
+                        <td style="--start:0.3; --end:0.4;"> 10 </td>
+                    </tr>
+                    <tr>
+                        <td style="--start:0.6; --end:0.8;"> 40 </td>
+                        <td style="--start:0.3; --end:0.5;"> 30 </td>
+                        <td style="--start:0.4; --end:0.4;"> 20 </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+        <section class="provider">
+            <div class="provider-h2">
+                <h2>
+                    This is how it works:
+                </h2>
+            </div>
+
+            <div class="provider-wrapper">
+                <div class="provider-container">
+                    <h2 class="provider-content-h">
+                        [1] Stake XRD
+                    </h2>
+
+                    <p class="provider-content-p">
+                        The first step into becoming a liquidity provider, is to stake XRD at Sundae's validator node. 
+                        In return you will receive 'Liquid staking units' (LSU's) - which serve as proof of your stake.
+                    </p>   
+                    <p class="provider-content-p">
+                        The validator node claims the staking rewards on your behalve, and deposits them automatically into the liquidity pool.
+                    </p>
+                </div>
+
+                <!-- <div class="provider-container">    
+                    <h2 class="provider-content-h">
+                        [2] Deposit LSU's
+                    </h2>
+                    <p class="provider-content-p">
+                        Depositing these LSU's into the liquidity pool will register you as a liquidity provider. 
+                        These LSU's are stored safely by the protocol. <span class="highlight">Only</span> you are able to withdraw them again.
+                    </p>
+                </div> -->
+
+                <!-- <div class="provider-container">    
+                    <h2 class="provider-content-h">
+                        [3] Receive NFT
+                    </h2>
+                    <p class="provider-content-p">
+                        In return to depositing your LSU's, a unique NFT will be deposited to your wallet.
+                        Using the data of this NFT, the protocol keeps track of your initial stake, staking rewards, and earned interest.
+                    </p>  
+                </div> -->
+
+                <div class="provider-container">    
+                    <h2 class="provider-content-h">
+                        [2] Earn Interest
+                    </h2>
+                    <p class="provider-content-p">
+                        The by you provided liquidity is used to issue lending products (flash loans) to users of the protocol.
+                        The fee's collected from this service are allocated proportionally to you.
+                    </p>  
+                </div> 
+
+                <div class="provider-container">    
+                    <h2 class="provider-content-h">
+                        [3] Claim Resources
+                    </h2>
+
+                    <p class="provider-content-p">
+                        Finally, once you decide to withdraw your liquidity, the NFT allows you to <span class="highlight">instantly and at any time</span> claim:
+                    </p> 
+
+                    <ul id="provider-list-font">
+                        <li>LSU's that you have deposited to the protocol</li>
+                        <li>Staking rewards that you are entitled to</li>
+                        <li>Interest earned by the liquidity pool</li>
+                    </ul>
+
+                    <p class="provider-content-p">
+                        Subsequently these LSU's allow you to unstake and rerurn your staked XRD.
+                    </p>  
+                </div> 
+
+            </div>
+
+            <button class="learn-more">
+                Learn more
+            </button>
+
+        </section>
+
+        <section class="borrower">
+
+            <div class="title">
+                <h1>
+                    Access liquidity instantly; anywhere!
+                </h1>
+                <h2>
+                    Borrow at Sundae's:
+                </h2>
+            </div>
+
+            <div class="borrower-container">
+                <p>
+                    Sundae Liquidity Protocol currently offers flash loans as its main feature. 
+                    Flash loans enable you to take out loans without collateral that are executed within a single transaction.
+                    Liquidity can be accessed instantly and at low interest rates, to make profitable trades or take advantage of market inefficiencies. 
+                    This allows anyone to participate in DeFi markets in a more accessible and cost-effective way. 
+                    Overall, Sundae's flash loan feature offers a powerful tool for financial innovation and market participation.
+                </p>  
+            </div> 
+
+
+            <div class="button">
+                <button class="learn-more" id="button-margin-left button-width">
+                    Learn more
+                </button>
+            </div>
+
+        </section>
+
+        <section class="roadmap-box">
+
+            <div class="title">
+                <h1>
+                    Step by step ... One transaction at a time!
+                </h1>
+            </div>
+
+            <div class="roadmap-feature left first">
+                <h2>
+                    Version 1 - 13 August 2023
+                </h2>
+                <p>
+                    Sundae's first iteration of Sundae liquidity protocol will be released shortly after the Radix Babylon launch.
+                    This release will consist of the following features:
+                </p>
+
+                <ul>
+                    <li>
+                        <span class="highlight">Validator node</span>
+                    </li>
+                     
+                    <p>
+                        A validator node will be deployed that collects staking rewards, and deposits it in a liquidity pool on behalve of the staker.
+                    </p>
+
+                    <li>
+                        <span class="highlight">Liquidity pool</span>
+                    </li>
+
+                    <p>
+                        The first liquidity pool will collect liquidity via staking rewards.
+                        A novel approach to provide liquidity, that enables liquidity providers to leverage on their staking rewards.
+                        This offers unique benefits, especially at Babylon launch when the staking yield (APY) will be relatively high.
+                    </p>
+
+                    <li>
+                        <span class="highlight">Flash loan</span> 
+                    </li>
+                    <p>
+                        The first offered lending product will be flash loans.
+                        Flash loans offer instant liquidity and the ability to lower spreads accross exchanges.
+                        Bringing these features into the Radix ecosystem at an early stage will contribute to Radix's succes and ability to grow.
+                    </p>
+
+                </ul>
+            </div>
+
+            <div class="roadmap-feature right rest">
+
+                <h2>
+                    Version 1+
+                </h2>
+
+                <p>
+                    The remainder of 2023, after launch of Sundae Version 1, Sundae will lay priority on the following:
+                    <ul>
+                        <li>
+                            User adoption
+                        </li>
+                        <p>
+                            By utilizing social media channels (Twitter, Telegram, Youtube, etc.) and improving the user experience.
+                        </p>
+                        <li>
+                            Increased liquidity
+                        </li>
+                        <p>
+                            This will be achieved by promoting Sundae's validator node to XRD holders.
+                        </p>
+                    </ul> 
+                </p>
+            </div>
+
+            <div class="roadmap-feature left rest">
+
+                <h2>
+                    Version 2, ... , n
+                </h2>
+                <p>
+                    Subsequent iterations, taking place in 2024, will expand the protocol on the following aspects (in no particular order):
+                    
+                    <ul>
+                        <li>
+                            Native governance/utility token
+                        </li>
+
+                        <li>
+                            Lending products
+                        </li>
+
+                        <li>
+                            Supported tokens
+                        </li>
+
+                        <li>
+                            Liquidity pools and methods to provide liquidity
+                        </li>
+                    </ul>
+                </p>
+            </div>
+
+        </section>
+
+        <section class="github">
+            <h1 id="github-h1">
+                Decentral; Transparant; Secure
+            </h1>
+            <p class="github-p">
+                Sundae liquidity protocol is non-custodial. 
+                Liquidity pools and lending products are governed by the laws of smart contracts. 
+                Sundae's smart contracts are designed so that only the rightfull owner can lay claim on their portion of the pool's liquidity.
+            </p>
+            <button class="learn-more">
+                Visit our Github for more information  
+            </button>
+        </section>
+
+        <hr>
+    
+        <footer class="footer-mobile">
+            <div class="sundae">
+                <h1>
+                    SUNDAE LIQUIDITY PROTOCOL
+                </h1>
+            </div>
+
+            <div class="menu">
+                <a href="about">ABOUT</a>
+                <a href="http://docs.sundaefinance.net">DOCS</a>
+                <a href="http://docs.sundaefinance.net/faq">FAQ</a>
+                <a href="mailto:contact@sundae.finance">CONTACT</a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://twitter.com/your-twitter-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/twitter.svg" alt="Twitter Logo" class="social-logo">
+                </a>
+
+                <a href="https://github.com/your-github-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/github.svg" alt="GitHub Logo" class="social-logo">
+                </a>
+                <a href="https://discord.com/your-discord-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/discord.svg" alt="Discord Logo" class="social-logo">
+                </a>
+                <a href="https://t.me/your-telegram-profile" target="_blank" class="social-logo-link">
+                  <img src="pictures/telegram.svg" alt="Telegram Logo" class="social-logo">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>
+                    © 2023 Sundae Liquidity Protocol, Inc. All rights reserved
+                </p>
+            </div>
+        </footer>
+
+        <script src="java/scroll.js"></script>
+        <script src="java/scroll_phone.js"></script>
+        <script src="java/disable_scroll.js"></script>
+        <script src="java/temp-banner.js"></script>
+    </body>
+</html>

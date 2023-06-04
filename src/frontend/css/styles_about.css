@@ -49,6 +49,7 @@ div.slogan {
 
     section.team div img{
         height: 250px;
+        border-radius: 10px;
     }
 
 
