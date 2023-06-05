@@ -142,7 +142,6 @@
         white-space: normal; 
         list-style: none;
         line-height: 2;
-        color: rgb(73, 68, 51);
         margin-left: 30px;
         margin-right: 10px;
         font-size: 14px;
@@ -152,12 +151,9 @@
 /* BORROWER */
 
     section.borrower {
-        /* background: white; */
         margin: 100px 50px;
         height: auto;
         padding: 0 40px;
-        /* display: flex;
-        flex-direction: column; */
     }
 
     section.borrower div.title {
