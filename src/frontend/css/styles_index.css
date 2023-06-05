@@ -6,9 +6,6 @@
         position: relative;
         margin-top: 100px;
         margin-bottom: 10px;
-        direction: flex;
-        flex-direction: row;
-        align-items: flex-start;
     }
 
     section.slogan div.slogan-div {
@@ -25,17 +22,9 @@
     }
     
     section.slogan .area-chart {
-        /* position: absolute; */
-        
-        /* Reset */
         margin: 0;
         padding: 0;
         border: 0;
-        z-index: 2;
-
-        /* table-layout: fixed; */
-    
-        /* Dimensions */
         width: 100%;
         height: auto;
     }
@@ -43,19 +32,20 @@
     section.slogan .area-chart tbody {
         height: var(--chart-height, 250px);
     
-        /* Layout */
         display: flex;
-        justify-content: stretch;
-        align-items: stretch;
         flex-direction: row;
         flex-wrap: wrap; 
     }
     section.slogan .area-chart tr {
         position: relative;
+
         /* Even size items */
         flex-grow: 1;
         flex-shrink: 1;
         flex-basis: 0;  
+      
+        display: flex;
+        flex-direction: column;
     }
 
     section.slogan .area-chart td {
@@ -64,9 +54,13 @@
         right: 0;
         bottom: 0;
         left: 0;
+
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0;
     
-        /* Color */
         background: var(--color, rgba(240, 50, 50, 0.75));
+        
         clip-path: polygon(
             0% calc(100% * (1 - var(--start))),
             100% calc(100% * (1 - var(--end))),
@@ -83,6 +77,7 @@
     section.slogan .area-chart td:nth-of-type(3) {
         --color: #cadcc857;
     }
+      
 
 /* PROVIDER */
 
