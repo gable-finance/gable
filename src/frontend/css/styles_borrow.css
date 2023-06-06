@@ -1,102 +1,82 @@
 /* TITLE */
 
 section.borrow-title {
-    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     height: 250px;
-}
-
-section.borrow-title .borrow-title-h1 {
+  }
+  
+  section.borrow-title .borrow-title-h1 {
     font-size: 300%;
     font-weight: 800;
-    height: auto;
     text-align: center;
-    margin: 0
-}
-
-/* FLASHLOANS */
-
-/* section.flashloan {
-} */
-
-section.flashloan div.flashloan-intro {
+    margin: 0;
+  }
+  
+  /* FLASHLOANS */
+  
+  section.flashloan div.flashloan-intro {
     margin: 0 40px;
     background-color: var(--body1);
     padding: 20px 50px;
     border-radius: 5px;
-}
-
-section.flashloan div.flashloan-background {
+  }
+  
+  section.flashloan div.flashloan-background {
     margin: 40px 0;
     background-color: #e5e0d9;
     padding: 20px 50px;
-}
-
-#borrow-title-h2 {
+  }
+  
+  #borrow-title-h2 {
     text-align: center;
-}
-
-section.flashloan div.flashloan-steps {
+  }
+  
+  section.flashloan div.flashloan-steps {
     margin: 40px;
     background-color: var(--boxcolor);
     padding: 20px 50px;
     border-radius: 5px;
-}
-
-section.flashloan div.flashloan-interest-rates {
+  }
+  
+  section.flashloan div.flashloan-interest-rates {
     margin: 40px 0;
     background-color: #e5e0d9;
     padding: 20px 50px;
-}
-
-section.flashloan div.flashloan-tip {
+  }
+  
+  section.flashloan div.flashloan-tip {
     margin: 40px 0;
     background-color: #e5e0d9;
     padding: 20px 50px;
-}
-
-section.flashloan div.flashloan-disclaimer {
+  }
+  
+  section.flashloan div.flashloan-disclaimer {
     margin-top: 40px;
     padding: 20px 50px;
-}
-
-
-@media only screen and (max-width: 768px) {
+  }
+  
+  @media only screen and (max-width: 768px) {
 
     /* TITLE */
-
-    /* section.supply-title {
-    } */
-
     section.borrow-title .borrow-title-h1 {
-        font-size: 200%;
-        font-weight: 600;
-        height: auto;
+      font-size: 200%;
+      font-weight: 600;
     }
-
-    /* BORROW */
-
-    /* section.flashloan{
-        margin: 50px 0 0 0;
-    } */
-
+  
+    /* FLASHLOANS */
     section.flashloan div.flashloan-intro {
-        margin: 0;
+      margin: 0;
     }
-    
-
+  
     section.flashloan div.flashloan-steps {
-        margin: 40px 0;
-        /* background-color: var(--boxcolor);
-        padding: 20px 50px; */
+      margin: 40px 0;
     }
-
+  
     section.flashloan div.flashloan-disclaimer {
-        margin-top: 0px;
-        /* background-color: red; */
+      margin-top: 0;
     }
-
-}
+  }
+  

@@ -5,116 +5,89 @@ hr {
     height: 2px;
     background-color: rgb(73, 68, 51);
     margin: 0 50px;
-    margin-top: 100px;
+    margin-top: 50px;
     padding: 0 20px;
-}
-
-footer.footer-mobile {
-    height: auto;
+  }
+  
+  footer.footer-mobile {
     display: flex;
     flex-direction: column;
-    width: auto;
     margin: 0;
     padding: 0;
-}
-
-footer.footer-mobile div.sundae {
-    height: auto;
-    margin: 0;
+  }
+  
+  footer.footer-mobile div.sundae {
     padding: 20px 50px;
-}
-
-footer.footer-mobile div.sundae h1 {
+  }
+  
+  footer.footer-mobile div.sundae h1 {
     margin: 0;
     padding: 0;
     font-size: 100%;
     font-weight: 500;
-}
-
-footer.footer-mobile div.menu {
+  }
+  
+  footer.footer-mobile div.menu {
     background-color: var(--body1);
-    height: auto;
-    width: auto;
-    margin: 0;
     padding: 20px 50px;
     display: flex;
     flex-direction: column;
-}
-
-footer.footer-mobile div.menu a{
+  }
+  
+  footer.footer-mobile div.menu a {
     text-decoration: none !important;
     font-size: 14px !important;
-}
-
-footer.footer-mobile div.social-links {
-    padding: 20px 50px 0 50px;
+  }
+  
+  footer.footer-mobile div.social-links {
+    padding: 20px 50px 0;
     background-color: var(--body2);
     display: flex;
     flex-direction: row;
     align-items: center;
-}
-
-footer.footer-mobile div.social-links a {
-    height: auto;
+  }
+  
+  footer.footer-mobile div.social-links a {
     margin-right: 20px;
     margin-top: 10px;
-}
-
-footer.footer-mobile div.social-links a img:hover{
-    filter: var(--firstthemefilter)
-}
-
-footer.footer-mobile div.copyright{
+  }
+  
+  footer.footer-mobile div.social-links a img:hover {
+    filter: var(--firstthemefilter);
+  }
+  
+  footer.footer-mobile div.copyright {
     background-color: var(--body2);
     margin: 0;
-    padding: 0 0 20px 0;
-}
-
-footer.footer-mobile div.copyright p {
+    padding: 0 0 20px;
+  }
+  
+  footer.footer-mobile div.copyright p {
     margin: 0;
     padding: 10px 50px;
-}
-
-
-@media only screen and (max-width: 768px) {
-
-    /* footer.footer-desktop {
-    } */
-
-/* FOOTER */
-
+  }
+  
+  @media only screen and (max-width: 768px) {
+    /* FOOTER */
+  
     hr {
-        margin: 0;
+      margin: 0;
     }
-
-    /* footer.footer-mobile {
-    } */
-
+  
     footer.footer-mobile div.sundae {
-        padding: 10px 50px;
+      padding: 10px 50px;
     }
-
-    /* footer.footer-mobile div.sundae h1 {
-    } */
-
+  
     footer.footer-mobile div.menu {
-        padding: 10px 50px;
+      padding: 10px 50px;
     }
-
-    /* footer.footer-mobile div.menu a{
-    } */
-
+  
     footer.footer-mobile div.social-links {
-        padding: 10px 50px 0 50px;
+      padding: 10px 50px 0;
     }
-
+  
     footer.footer-mobile div.social-links a {
-        margin-right: 10px;
+      margin-right: 10px;
     }
-
-    /* footer.footer-mobile div.copyright{
-    } */
-
-    /* footer.footer-mobile div.copyright p {
-    } */
-}
+  }
+  
