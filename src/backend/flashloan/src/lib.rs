@@ -123,12 +123,12 @@ mod flashloan {
 
         }
 
-        pub fn get_loan(&mut self, amount: Decimal) -> (Bucket, Bucket) {  
+        pub fn get_flashloan(&mut self, amount: Decimal) -> (Bucket, Bucket) {  
 
             // ensure requested amount is positive 
             // and is less than the total available amount
             assert!(amount > dec!("0"), "Please provide an amount larger than 0");
-            assert!(amount < self.liquidity_pool_vault.amount(),
+            assert!(amount <= self.liquidity_pool_vault.amount(),
                 "Please request a loan amount smaller than {}", self.liquidity_pool_vault.amount()
             ); 
 
@@ -154,7 +154,7 @@ mod flashloan {
             return (transient_token, loan)
         }
 
-        pub fn repay_loan(&mut self, transient_token: Bucket, mut repayment: Bucket) -> Bucket {
+        pub fn repay_flashloan(&mut self, mut repayment: Bucket, transient_token: Bucket) -> Bucket {
 
             // ensure transient token is original
             assert_eq!(self.transient_token_address, transient_token.resource_address(),
