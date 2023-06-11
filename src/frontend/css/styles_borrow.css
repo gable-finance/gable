@@ -58,7 +58,7 @@ section.borrow-title {
     padding: 20px 50px;
   }
 
-  /* DOUBLE TAP - API */
+  /* DOUBLE TAB */
 
   .tab-container {
     margin: 50px 0;
@@ -96,7 +96,6 @@ section.borrow-title {
   
   .tab-content {
     display: none;
-    /* padding: 20px; */
     padding: 10px;
   }
   
@@ -105,24 +104,9 @@ section.borrow-title {
   }  
   
 
-  /* TEMP API */
-
-  div.callflashloan {
-    /* margin: 50px 0;
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
-    background-color: rgb(233, 232, 232);
-    border-radius: 5px;
-    border: 1px solid transparent; */
-    /* padding: 20px; */
-
-  }
+    /* API */
 
   p.flashloan-disclaimer {
-    /* background-color: red; */
-    /* margin: 10px 20px; */
     margin: 20px 10px;
     padding: 0;
   }
@@ -154,7 +138,7 @@ section.borrow-title {
     max-width: 100%;
     border: none;
     border-radius: 3px;
-    margin: 10px 10px;
+    margin: 10px;
     padding-left: 10px;
     background-color: var(--boxcolor);
     font-size: 18px;
@@ -177,6 +161,15 @@ section.borrow-title {
   .callflashloan-button:hover {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   }
+
+  #receipt-container {
+    margin: 10px;
+  }
+
+  #receipt {
+    overflow:scroll;
+    font-size: 16px;
+  }
  
   @media only screen and (max-width: 768px) {
 
@@ -197,6 +190,11 @@ section.borrow-title {
   
     section.flashloan div.flashloan-disclaimer {
       margin-top: 0;
+    }
+
+    #receipt {
+      overflow:scroll;
+      font-size: 14px;
     }
   }
   

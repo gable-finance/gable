@@ -38,7 +38,6 @@ body {
     margin: 0;
     padding: 0;
     line-height: 2;
-    /* color: rgb(73, 68, 51); */
     color: black;
 }
 
@@ -90,7 +89,8 @@ li::before {
 
 a {
     color: black;
-    font-size: 18px;
+    font-size: 16px;
+    /* text-decoration: none; */
 }
 
 a:hover {
@@ -129,9 +129,15 @@ span.highlight {
             font-weight: 300;
             font-size: 120%;
         }
+
+        h3 {
+            font-size: 14px;
+        }
     
         a {
-            font-size: 16px;
+            font-size: 13px;
+
+            /* font-size: 16px; */
             color: #232323;
             transition: color 0.3s ease;
         }

@@ -69,12 +69,40 @@ import {
   transient_address = "resource_tdx_c_1q2xltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssg3ygd5"; // temp
 
   //--------------------------------------------------------------------------------------------------------//
+
+        // *********** Build Flash Loan ***********
+        document.getElementById('buildflashloan').onclick = async function () {
+  
+          let xrd_amount = document.getElementById("buildamount").value;
+          let interest = xrd_amount * 0.05; // temp
+
+          let yourComponentAddress = "component_tdx_someaddress";
+        
+          let manifest = new ManifestBuilder()
+            .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
+            .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
+            .takeFromWorktop(xrdAddress, "xrd_bucket")
+            .callMethod(yourComponentAddress, "your_bucket", ["xrd_bucket", "your_arguments"])
+            .takeFromWorktop(xrdAddress, "xrd_bucket2")
+            .takeFromWorktop(transient_address, "transient_bucket")
+            .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket2"), Bucket("transient_bucket")])
+            .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
+            .build()
+            .toString();
+          console.log('Build flashloan manifest: ', manifest)
+      
+          // Show the receipt on the DOM
+          document.getElementById("receipt-container").style.display = "block";
+          document.getElementById('receipt').innerText = manifest;
+        };
+
+  //--------------------------------------------------------------------------------------------------------//
   
       // *********** Execute Flash Loan ***********
     document.getElementById('callflashloan').onclick = async function () {
   
       let xrd_amount = document.getElementById("xrdamount").value;
-      let interest = xrd_amount * 0.05;
+      let interest = xrd_amount * 0.05; // temp
     
       let manifest = new ManifestBuilder()
         .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
