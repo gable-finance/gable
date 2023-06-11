@@ -60,6 +60,8 @@
                         </ul>
                     </div>
 
+                    <script type="module" src="java/borrow.js"></script>
+
                     <div class="connectBtn">
                         <radix-connect-button />
                     </div>
@@ -87,7 +89,8 @@
                 <p class="flashloan-p">
                     Sundae Liquidity Protocol currently offers flash loans as its main feature. 
                     Flash loans are loans that are issued and returned within a single (same) transaction.
-                    This page provides a guide on how users can utilize these flashloans.
+                    This page provides a function to build and execute a flash loan.
+                    Before you get started it is advised to read through the documentation that is in place for borrowers on Sundae platform.
                 </p>
             </div>
 
@@ -120,15 +123,82 @@
 
             <div class="flashloan-steps">
                 <h2>
-                    [2] Call flash loan function
+                    [2] Build flash loan
                 </h2>
+
+                <p>Building and executing a flash loan generally consists of the following three steps.</p>
+
+                <h3>
+                    [2.1] Get a flash loan
+                </h3>
                 <p class="flashloan-p">
                     Call the flash loan function on the smart contract, passing in the amount of funds you want to borrow. 
                     The smart contract will execute the loan and send the funds to your wallet.
                 </p>
-            </div>
 
-            <div class="flashloan-steps">
+                <h3>
+                    [2.2] Use borrowed funds
+                </h3>
+
+                <p class="flashloan-p">
+                    Use the borrowed funds to execute your desired transaction or strategy. 
+                    Flash loans are typically used to take advantage of arbitrage opportunities or to execute complex trading strategies.
+                </p>
+
+                <h3>
+                    [2.3] Return borrowed funds
+                </h3>
+                <p class="flashloan-p">
+                    Return the borrowed funds including interest rate to the smart contract before the end of the loan period, along with the small interest fee. 
+                    Failure to return the funds and fee will result in the transaction being reverted and the borrower losing the borrowed funds.
+                </p>
+
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                      <button class="tab-button active" onclick="changeTab(event, 'content1')">Build Flash Loan</button>
+                      <button class="tab-button" onclick="changeTab(event, 'content2')">Execute Flash Loan</button>
+                    </div>
+
+                    <div id="content1" class="tab-content">
+                        <div class="calllashloan">
+                            <p class="flashloan-disclaimer">
+                                This operation builds a transaction for you that communicates twice with the flash loan component: (1) to get the flashloan, and (2) to repay the flashloan.
+                                This transaction fill fail without any further adjustments.
+                                You have to extend this transaction to your desired use case. 
+                            </p>
+                            <input type="text" placeholder="XRD Amount" id="xrdamount" class="callflashloan-text" />
+                            <button id="callflashloan" class="learn-more callflashloan-button">Send</button>
+                        </div>
+                    </div>
+
+                    <div id="content2" class="tab-content">
+                        <div class="buildflashloan">
+                            <p class="flashloan-disclaimer">
+                                <span class="highlight">Disclaimer:</span> 
+                                This operation executes a basic flashloan transaction, by getting the flash loan and immediately repaying it, without any operation inbetween
+                                You will lose the interest rate that is applicable to this loan.
+                                Only use this function for testing purposes.
+                            </p>
+                            <input type="text" placeholder="XRD Amount" id="xrdamount" class="callflashloan-text" />
+                            <button id="callflashloan" class="learn-more callflashloan-button">Send</button>
+                        </div>     
+                    </div>
+
+                </div>
+
+                    <div id="receipt-container" style="display: none;">
+                        <p>
+                            It was a pleasure earning together! <br>
+                            Receipt:<br>
+                            <pre id="receipt"></pre>
+                        </p>
+                    </div>
+
+
+
+            </div>
+            
+            <!-- <div class="flashloan-steps">
                 <h2>
                     [3] Use borrowed funds
                 </h2>
@@ -146,7 +216,7 @@
                     Return the borrowed funds including interest rate to the smart contract before the end of the loan period, along with the small interest fee. 
                     Failure to return the funds and fee will result in the transaction being reverted and the borrower losing the borrowed funds.
                 </p>
-            </div>
+            </div> -->
 
             <div class="flashloan-interest-rates">
                 <h2>
@@ -162,7 +232,7 @@
 
             <div class="flashloan-steps">
                 <h2>
-                    [5] Verify transaction
+                    [3] Verify transaction
                 </h2>
                 <p class="flashloan-p">
                     Verify that the loan has been fully paid back and that your wallet balance has returned to its original state.
@@ -230,7 +300,8 @@
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
-        <script type="module" src="java/bundle.js"></script>
+        <script src="java/tabs.js"></script>
 
+    
     </body>
 </html>

@@ -1,0 +1,19 @@
+CALL_METHOD
+    ComponentAddress("component_sim1qgehpqdhhr62xh76wh6gppnyn88a0uau68epljprvj3sxknsqr")
+    "lock_fee"
+    Decimal("2");
+CALL_METHOD
+    ComponentAddress("component_sim1qtfgu3mxx6v3udp7hpr5p7c0hcy7hnef9g9na9lnrmrsfwkxcf")
+    "call_flashloan"
+    Decimal("100");
+TAKE_FROM_WORKTOP 
+    ResourceAddress("resource_sim1qzpxw0xey0mmayjwpcvvwkwt6g2y2eq4wg03l27p2qcq7q5thu") 
+    Bucket("Transient");
+TAKE_FROM_WORKTOP 
+    ResourceAddress("resource_sim1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqz8qety") 
+    Bucket("XRD");
+CALL_METHOD
+    ComponentAddress("component_sim1qtfgu3mxx6v3udp7hpr5p7c0hcy7hnef9g9na9lnrmrsfwkxcf")
+    "repay_loan"
+    Bucket("Transient")
+    Bucket("XRD");

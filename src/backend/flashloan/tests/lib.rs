@@ -178,9 +178,9 @@ fn test_flashloan_instantiation() {
     // Test the `repay_flashloan` method (fail)
     // Repayed amount is 0.000000001 smaller than loan amount - should therefore fail
     // First set up dependencies:
-    //  Withdraw XRD for liquidity
-    //  Proof retrieved
-    //  Deposit liquidity
+    //  (1) Withdraw XRD for liquidity
+    //  (2) Proof retrieved
+    //  (3) Deposit liquidity
     // Call the get_loan function
     // Call the repay_loan to burn transient token
     // Thereafter deposit batch

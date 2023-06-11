@@ -57,7 +57,127 @@ section.borrow-title {
     margin-top: 40px;
     padding: 20px 50px;
   }
+
+  /* DOUBLE TAP - API */
+
+  .tab-container {
+    margin: 50px 0;
+    /* padding: 0; */
+    max-width: 600px;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    background-color: rgb(233, 232, 232);
+    border-radius: 5px;
+    border: 1px solid transparent;
+  }
   
+  .tab-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* margin-bottom: 20px; */
+  }
+  
+  .tab-button {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  /* .tab-button:hover {
+    background-color: #e0e0e0;
+  } */
+
+  .tab-button.active {
+    background-color: rgb(233, 232, 232);
+  }
+  
+  .tab-content {
+    display: none;
+    /* padding: 20px; */
+    padding: 10px;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }  
+  
+
+  /* TEMP API */
+
+  div.callflashloan {
+    /* margin: 50px 0;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    background-color: rgb(233, 232, 232);
+    border-radius: 5px;
+    border: 1px solid transparent; */
+    /* padding: 20px; */
+
+  }
+
+  p.flashloan-disclaimer {
+    /* background-color: red; */
+    /* margin: 10px 20px; */
+    margin: 20px 10px;
+    padding: 0;
+  }
+  
+  div.callflashloan-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .callflashloan-icon {
+    height: 10px;
+    width: 10px;
+  }
+  
+  .callflashloan-h2 {
+    color: var(--firsttheme);
+    padding: 0;
+    margin: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 26px;
+  }
+  
+  .callflashloan-text {
+    box-sizing: border-box;
+    display: block;
+    max-width: 100%;
+    border: none;
+    border-radius: 3px;
+    margin: 10px 10px;
+    padding-left: 10px;
+    background-color: var(--boxcolor);
+    font-size: 18px;
+    height: 40px;
+  }
+  
+  .callflashloan-text:focus {
+    outline: none;
+  }
+  
+  .callflashloan-button {
+    background-color: var(--boxcolor) !important;
+    margin: 10px !important;
+    width: 100px !important;
+    font-size: 18px !important;
+    border-radius: 3px !important;
+    color: black !important;
+  }
+  
+  .callflashloan-button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  }
+ 
   @media only screen and (max-width: 768px) {
 
     /* TITLE */

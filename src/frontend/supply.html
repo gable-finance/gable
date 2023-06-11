@@ -139,20 +139,6 @@
 
             </div>
 
-            <section class="instantiate" style="display: none;">
-                <h2>Instantiate lender component - TEMP</h2>
-                <input type="text" placeholder="Package address" id="packageAddress" />
-                <input type="text" placeholder="Account address" id="accountAddress" />
-                <p><button id="instantiateComponent">Instantiate component</button></p>
-                <div class="container">
-                  <p>Component Address: <span id="componentAddress"></span></p>
-                  <p>owner badge address: <span id="ownerAddress"></span></p>
-                  <p>admin badge address: <span id="badgeAddress"></span></p>
-                  <p>transient token address: <span id="transientAddress"></span></p>
-                  <p>nft address: <span id="nftAddress"></span></p>
-                </div>
-            </section>
-
             <div class="supply-div">
                 <h1 class="supply-h1">
                     Collecting liquidity via staking rewards
@@ -240,7 +226,86 @@
                     <pre id="receipt"></pre>
                 </p>
             </div>
+
         </section>
+
+        <!-- TEMP  -->
+
+        <section  style="display: none;">
+
+            <div class="instantiate"> 
+                <h2>Instantiate lender component - TEMP</h2>
+                <input type="text" placeholder="Package address" id="packageAddress" />
+                <input type="text" placeholder="Account address" id="accountAddress" />
+                <p><button id="instantiateComponent">Instantiate component</button></p>
+                <div class="container">
+                <p>Component Address: <span id="componentAddress"></span></p>
+                <p>owner badge address: <span id="ownerAddress"></span></p>
+                <p>admin badge address: <span id="badgeAddress"></span></p>
+                <p>transient token address: <span id="transientAddress"></span></p>
+                <p>nft address: <span id="nftAddress"></span></p>
+                </div>
+            </div>
+
+            <!-- TEMP  -->
+
+
+            <div class="adminliquidity" id="nr1">
+                <div class="adminliquidity-title">
+                    <h2 class="adminliquidity-h2">Deposit Admin Liquidity</h2>
+                </div>
+                <input type="text" placeholder="XRD Amount" id="depositamount" class="adminliquidity-text" />
+                <button id="adminliquidity" class="learn-more adminliquidity-button">Send</button>
+            </div>
+
+            <div id="receipt-container" style="display: none;">
+                <p>
+                    It was a pleasure earning together! <br>
+                    Receipt:<br>
+                    <pre id="receipt"></pre>
+                </p>
+            </div>
+
+            <!-- TEMP  -->
+
+            <div class="interest" id="nr1">
+                <div class="interest-title">
+                    <h2 class="interest-h2">Update Interest Rate</h2>
+                </div>
+                <input type="text" placeholder="XRD Amount" id="interestrate" class="interest-text" />
+                <button id="interest" class="learn-more interest-button">Send</button>
+            </div>
+
+            <div id="receipt-container" style="display: none;">
+                <p>
+                    It was a pleasure earning together! <br>
+                    Receipt:<br>
+                    <pre id="receipt"></pre>
+                </p>
+            </div>
+
+            <!-- TEMP  -->
+
+            <div class="callflashloan" id="nr1">
+                <div class="callflashloan-title">
+                    <img src="pictures/evaporate.svg" alt="liquid" id="callflashloan-icon">
+                    <h2 class="callflashloan-h2">Execute Flash Loan</h2>
+                </div>
+                <input type="text" placeholder="XRD Amount" id="xrdamount" class="callflashloan-text" />
+                <button id="callflashloan" class="learn-more callflashloan-button">Send</button>
+            </div>
+
+            <div id="receipt-container" style="display: none;">
+                <p>
+                    It was a pleasure earning together! <br>
+                    Receipt:<br>
+                    <pre id="receipt"></pre>
+                </p>
+            </div>
+
+        </section>
+
+        <!-- TEMP -->
 
         <hr>
         
