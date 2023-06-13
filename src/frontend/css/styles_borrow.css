@@ -196,5 +196,10 @@ section.borrow-title {
       overflow:scroll;
       font-size: 14px;
     }
+
+    .tab-button {
+      font-size: 14px;
+      color: black;
+    }
   }
   
