@@ -9,6 +9,15 @@ struct AmountDue {
     interest_rate: Decimal
 }
 
+#[derive(Debug)]
+#[derive(NonFungibleData)]
+#[derive(ScryptoSbor)]
+struct LiquiditySupplier {
+    lsu_amount: Decimal,
+    entry_epoch: u64,
+}
+
+
 #[blueprint]
 mod flashloan {
     struct Flashloan {
@@ -20,7 +29,11 @@ mod flashloan {
         liquidity_emmissions: Decimal,
         liquidity_pool_vault: Vault,
 
-        supplier_hashmap: HashMap<ComponentAddress, Vec<Decimal>>,
+        supplier_hashmap: HashMap<NonFungibleLocalId, Vec<Decimal>>,
+
+        lsu_vault: Vault,
+        lsu_nft_address: ResourceAddress,
+        lsu_nft_nr: u64,
 
         interest_rate: Decimal,
 
@@ -29,7 +42,6 @@ mod flashloan {
 
     impl Flashloan {
 
-        //GOOD
         pub fn instantiate_lender() -> (Bucket, ComponentAddress) {
 
             // provision fungible resource and generate owner's badge
@@ -65,6 +77,17 @@ mod flashloan {
                 .burnable(rule!(require(owner_badge.resource_address())), LOCKED)
                 .restrict_deposit(rule!(deny_all), LOCKED)
                 .create_with_no_initial_supply();
+
+            // provision non-fungible resource
+            // serves as proof of lsu deposit
+            let lsu_nft: ResourceAddress = ResourceBuilder::new_integer_non_fungible::<LiquiditySupplier>()
+                .metadata(
+                    "name", 
+                    "User liquidity provider token"
+                )
+                .mintable(rule!(require(owner_badge.resource_address())), LOCKED)
+                .burnable(rule!(require(owner_badge.resource_address())), LOCKED)
+                .create_with_no_initial_supply();
             
             let rule = AccessRulesConfig::new()
                 .method("admin_deposit_liquidity", rule!(require(
@@ -73,18 +96,18 @@ mod flashloan {
                 .method("admin_withdraw_liquidity", rule!(require(
                     admin_badge.resource_address()
                     )), LOCKED)
-                .method("add_supplier", rule!(require(
-                    admin_badge.resource_address()
-                    )), LOCKED)
-                .method("add_supplier", rule!(require(
-                    admin_badge.resource_address()
-                    )), LOCKED)
-                .method("remove_supplier", rule!(require(
-                    admin_badge.resource_address()
-                    )), LOCKED)
-                .method("transfer_supplier", rule!(require(
-                    admin_badge.resource_address()
-                    )), LOCKED)
+                // .method("add_supplier", rule!(require(
+                //     admin_badge.resource_address()
+                //     )), LOCKED)
+                // .method("add_supplier", rule!(require(
+                //     admin_badge.resource_address()
+                //     )), LOCKED)
+                // .method("remove_supplier", rule!(require(
+                //     admin_badge.resource_address()
+                //     )), LOCKED)
+                // .method("transfer_supplier", rule!(require(
+                //     admin_badge.resource_address()
+                //     )), LOCKED)
                 .method("update_supplier_info", rule!(require(
                     admin_badge.resource_address()
                     )), LOCKED)
@@ -97,7 +120,7 @@ mod flashloan {
                 .default(rule!(allow_all), LOCKED);            
 
             let flashloan_component = Self {
-                // declare badges
+
                 owner_badge_vault: Vault::with_bucket(owner_badge),
                 admin_badge_address: admin_badge.resource_address(),
 
@@ -107,6 +130,10 @@ mod flashloan {
                 liquidity_pool_vault: Vault::new(RADIX_TOKEN),
 
                 supplier_hashmap: HashMap::new(),
+
+                lsu_vault: Vault::new(RADIX_TOKEN),
+                lsu_nft_address: lsu_nft,
+                lsu_nft_nr: 0,
 
                 interest_rate: dec!("0"),
 
@@ -180,12 +207,13 @@ mod flashloan {
             let interest_amount: Decimal = loan_amount * interest_rate;
             let repayment_amount: Decimal = loan_amount + interest_amount;
 
+            // allocate the liquidity earnings
             self.liquidity_interest += interest_amount / dec!("2");
             self.liquidity_admin += interest_amount / dec!("2");
 
             // log
             info!("Repayment amount required: {} XRD", &loan_amount);
-            info!("interest amount required: {} XRD", &interest_rate);
+            info!("interest amount required: {} XRD", &interest_amount);
 
             // ensure at least full repayment amount is offered
             assert!(repayment.amount() >= repayment_amount, 
@@ -240,6 +268,13 @@ mod flashloan {
             info!("admin liquidity before withdrawal: {} XRD", self.liquidity_admin);
             info!("admin liquidity withdrawn: {} XRD", amount);
 
+            debug!("{:?}", self.supplier_hashmap);
+
+            // update the suppliers hashmap before returning earnings
+            self.update_supplier_info();
+
+            debug!("{:?}", self.supplier_hashmap);
+
             // substract withdrawed amount from admin liquidity
             self.liquidity_admin -= amount;
 
@@ -254,139 +289,105 @@ mod flashloan {
 
         }
 
+        // temporary 
+        // replicating validator node's staking rewards collection
         pub fn deposit_batch(&mut self, bucket: Bucket) {
-
-            self.liquidity_emmissions += bucket.amount();
 
             self.liquidity_pool_vault.put(bucket);
         }
 
-        pub fn add_supplier(&mut self, account_address: ComponentAddress, epoch: Decimal, lsu_amount: Decimal) {
+        pub fn staker_deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
 
-            assert!(epoch >= dec!("0"), "Please provide an epoch number equal or larger than 0");
-            assert!(lsu_amount >= dec!("0"), "Please provide an lsu amount equal or larger than 0");
+            assert_eq!(lsu_tokens.resource_address(), self.lsu_vault.resource_address(),
+            "Please provide liquidity pool tokens generated by the Sundae validator node");
 
-            info!("address: {:?}, epoch: {}, lsu amount: {}"
-                , account_address
-                , epoch
-                , lsu_amount);
+            assert!(lsu_tokens.amount() > dec!("0"), 
+                "Please provide an amount of liquidity pool tokens greater than zero");
 
-            // initiate epoch and rewards (0)
-            // let epoch: Decimal = scrypto::math::Decimal::from(Runtime::current_epoch());
+            debug!("{:?}", self.supplier_hashmap);
+
+            // update the suppliers hashmap before returning earnings
+            self.update_supplier_info();
+
+            debug!("{:?}", self.supplier_hashmap);
+
+            // increase the lsu local id by 1
+            self.lsu_nft_nr += 1;
+
+            // borrow the nft's resource manager
+            let lsu_nft_resource_manager: ResourceManager = borrow_resource_manager!(self.lsu_nft_address);
+
+            let epoch: u64 = Runtime::current_epoch();
+
+            // mint nft containing deposited vector<lsu amount, epoch>
+            let lsu_nft: Bucket = self.owner_badge_vault.authorize(||
+                lsu_nft_resource_manager.mint_non_fungible(
+                    &NonFungibleLocalId::Integer(self.lsu_nft_nr.into()),
+                    LiquiditySupplier {
+                        lsu_amount: lsu_tokens.amount(),
+                        entry_epoch: epoch,
+                    }
+                )
+            );
+
+            // determine variables for vector in supplier hashmaps
+            let epoch: Decimal = scrypto::math::Decimal::from(epoch);
+            let amount: Decimal = lsu_tokens.amount() as Decimal;
             let rewards: Decimal = dec!("0");
 
-            // create vector for this specific supplier to be insterted in the hashmap
-            let supplier_vec: Vec<Decimal> = vec![epoch, lsu_amount, rewards];
+            // insert variables in vector
+            let lsu_nft_data: Vec<Decimal> = vec![epoch, amount, rewards];
 
-            // if supplier already exists, re-use its vector in the hashmap
-            // sum the lsu amounts and leave epoch and rewards intact.
-            if let Some(i) = self.supplier_hashmap.get_mut(&account_address) {
-                i[1] += lsu_amount;
-            }
-            // else insert a new vector for this supplier in the hashmap
-            else {
-                self.supplier_hashmap.insert(account_address, supplier_vec);
-            }
+            // insert nft local id as key and vector as value into supplier hashmap
+            self.supplier_hashmap.insert(NonFungibleLocalId::Integer(self.lsu_nft_nr.into()), lsu_nft_data);
 
-            debug!("HashMap: {:?}", self.supplier_hashmap.get(&account_address));
+            // put provided lsu in lsu vault
+            self.lsu_vault.put(lsu_tokens);
+
+            debug!("{:?}", self.supplier_hashmap);
+
+            // return nft as proof of lsu deposit to user
+            return lsu_nft
         }
 
-        pub fn remove_supplier(&mut self, account_address: ComponentAddress, lsu_amount: Decimal) -> Bucket {
+        pub fn staker_withdraw_lsu(&mut self, lsu_nft: Bucket) -> (Bucket, Bucket) {
 
-            debug!("hashmap: {:?}", self.supplier_hashmap);
+            assert_eq!(lsu_nft.resource_address(), self.lsu_nft_address,
+            "Please provide the lsu NFT generated by the Sundae validator node");
 
-            // check if account is present
-            assert!(self.supplier_hashmap.contains_key(&account_address), "account address not found");
+            assert_eq!(lsu_nft.amount(), dec!("1"),
+            "Please provide only one nft");
 
-            // if let Some(&supplier_lsu) = self.supplier_hashmap.get(&account_address).and_then(|i| i.get(1)) {
-            //     assert!(lsu_amount > supplier_lsu, "Supplied LSUs are less than burned LSUs")
-            // };
+            debug!("{:?}", self.supplier_hashmap);
 
-            let lsu_supplied: Decimal = self.supplier_hashmap[&account_address][1];
-            let rewards: Decimal = self.supplier_hashmap[&account_address][2];
+            // update the suppliers hashmap before returning earnings
+            self.update_supplier_info();
 
-            // check if burned lsu's doesnt exceed present lsu's
-            assert!(lsu_supplied >= lsu_amount,
-                "supplier lsu's are less than burned lsu's");
+            debug!("{:?}", self.supplier_hashmap);
 
-            if lsu_supplied > lsu_amount {
-                // return portion of rewards
-                let payout_amount: Decimal = rewards * (lsu_amount / lsu_supplied);
-                let payout: Bucket = self.liquidity_pool_vault.take(payout_amount);
+            // get the local id of the provided nft, as it resembles the key in supplier hashmap
+            let lsu_nft_nr = lsu_nft.non_fungible_local_id();
 
-                info!("{} {} {}", lsu_supplied, lsu_amount, payout_amount);
+            debug!("{:?}", lsu_nft_nr);
 
-                // adjust hashmap entry with returned lsu and xrd
-                if let Some(vector) = self.supplier_hashmap.get_mut(&account_address) {
-                    vector[1] -= lsu_amount;
-                    vector[2] -= payout_amount;
-                }
+            debug!("{:?}", self.supplier_hashmap[&lsu_nft_nr]);
 
-                debug!("hashmap: {:?}", self.supplier_hashmap);
+            // withdraw entitled lsu's and earning from vaults, and return as bucket
+            let lsu: Bucket = self.lsu_vault.take(self.supplier_hashmap[&lsu_nft_nr][1]);
+            let rewards: Bucket = self.liquidity_pool_vault.take(self.supplier_hashmap[&lsu_nft_nr][2]);
 
-                return payout
-            }
-            else {
-                // return all rewards
-                let payout: Bucket = self.liquidity_pool_vault.take(rewards);
+            // remove the suppliers entry from the supplier hashmap
+            self.supplier_hashmap.remove(&lsu_nft_nr);
 
-                // remove hashmap entry
-                self.supplier_hashmap.remove(&account_address);
+            debug!("{:?}", self.supplier_hashmap);
 
-                debug!("hashmap: {:?}", self.supplier_hashmap);
+            // burn the provided nft
+            self.owner_badge_vault.authorize(||
+                lsu_nft.burn()
+                );
 
-                return payout
-            };
-
-        }
-        
-        pub fn transfer_supplier(&mut self, old_account_address: ComponentAddress, new_account_address: ComponentAddress, transferred_lsu_amount: Decimal) {
-            
-            debug!("hashmap: {:?}", self.supplier_hashmap);
-
-            // check old address pressence in hashmap
-            assert!(self.supplier_hashmap.contains_key(&old_account_address), "account address not found");
-
-            let old_lsu_amount: Decimal = self.supplier_hashmap[&old_account_address][1];
-            let rewards: Decimal = self.supplier_hashmap[&old_account_address][2];
-
-            if old_lsu_amount > transferred_lsu_amount {
-
-                // return portion of rewards
-                let transferred_rewards: Decimal = rewards * (transferred_lsu_amount / old_lsu_amount);
-
-                // adjust old account in hashmap 
-                if let Some(vector) = self.supplier_hashmap.get_mut(&old_account_address) {
-                    vector[1] -= transferred_lsu_amount;
-                    vector[2] -= transferred_rewards;
-                }
-
-                // transfer info to new account in hashmap
-                let epoch = scrypto::math::Decimal::from(Runtime::current_epoch());
-                let new_account_vec: Vec<Decimal> = vec![epoch, transferred_lsu_amount, transferred_rewards];
-
-                    // change account if already exists
-                if let Some(vector) = self.supplier_hashmap.get_mut(&new_account_address) {
-                    vector[1] += transferred_lsu_amount;
-                    vector[2] += transferred_rewards;
-                }
-                    // add new account if not
-                else {
-                    self.supplier_hashmap.insert(new_account_address, new_account_vec);
-                }
-                
-            }
-            else if old_lsu_amount == transferred_lsu_amount {
-
-                // remove old account and write vector to new account in hashmap
-                if let Some(vector) = self.supplier_hashmap.remove(&old_account_address) {
-                    // Insert a new key-value pair with the desired key and the same value
-                    self.supplier_hashmap.insert(new_account_address, vector);
-                }
-                
-            };
-
-            debug!("hashmap: {:?}", self.supplier_hashmap);
+            // return lsu's and rewards to the user
+            return (lsu, rewards)
         }
         
         pub fn update_supplier_info(&mut self) {
@@ -396,20 +397,33 @@ mod flashloan {
             info!("admin liquidity: {} XRD", self.liquidity_admin);
             debug!("{:?}", self.supplier_hashmap);
 
-            // calculate newly earned rewards based on collected emmissions and interest fee's
-            let new_rewards: Decimal = self.liquidity_interest + self.liquidity_emmissions;
-            
-            //self.liquidity_pool_vault.amount() - self.liquidity_admin;
+            // the following calculations are made to determine the amount of
+            // undistributed supplier earnings (rewards + interest), that has to be distributed:
+            //
+            //  total liquidity = admin liquidity + supplier distributed earnings + supplier undistributed earnings
+            //
+            //  supplier undistributed earnings  = total liquidity - admin liquidity - supplier distributed earnings
 
-            let lsu_total: Decimal = self.supplier_hashmap.values().filter_map(|i| i.get(1)).copied().sum();
+            // determine 'total liquidity' 
+            let total_liquidity: Decimal = self.liquidity_pool_vault.amount();
 
+            // determine 'admin liquidity'
+            let admin_liquidity: Decimal = self.liquidity_admin;
+
+            // determine 'supplier distributed earnings' by summing the rewards in the hashmap
+            let supplier_distributed_earnings: Decimal = self.supplier_hashmap.values().filter_map(|i| i.get(2)).copied().sum();
+
+            // calculate the suppliers (undistributed) earnings
+            let supplier_undistributed_earnings: Decimal = total_liquidity - admin_liquidity - supplier_distributed_earnings;
+
+            // loop over all entries in the hashmap to update information
             for i in self.supplier_hashmap.values_mut() {
-                // administrate the distribution of the newly earned rewards 
+                // distribute the newly earned rewards 
                 // to the stakers existing accumulated rewards
-                let staker_lsu = i[1];
+                let supplier_lsu = i[1];
             
                 // distribute the newly earned rewards based on staker's lsu relative to pool's lsu  
-                i[2] += new_rewards * (staker_lsu / lsu_total);
+                i[2] += supplier_undistributed_earnings * (supplier_lsu / self.lsu_vault.amount());
             };
 
             debug!("{:?}", self.supplier_hashmap);
@@ -418,7 +432,7 @@ mod flashloan {
 
         pub fn update_interest_rate(&mut self, interest_rate: Decimal){
 
-            assert!(interest_rate > dec!("0"), "Please provide a positive interest rate");
+            assert!(interest_rate >= dec!("0"), "Please provide an interest rate larger than 0");
 
             info!("Interest rate before change: {}", self.interest_rate);
 
@@ -441,72 +455,131 @@ mod flashloan {
     }
 }
 
-        // OUTDATED
-        // pub fn staker_deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
-        //     // assert_eq!(lsu_tokens.resource_address(), self.liquidity_pool_vault.resource_address(),
-        //     // "Please provide liquidity pool tokens generated by the Delegate Finance validator node");
 
-        //     assert!(lsu_tokens.amount() > dec!("0"), 
-        //         "Please provide an amount of liquidity pool tokens greater than zero");
+        // pub fn add_supplier(&mut self, account_address: ComponentAddress, epoch: Decimal, lsu_amount: Decimal) {
 
-        //     debug!("{:?}", self.lsu_nft_data);
+        //     assert!(epoch >= dec!("0"), "Please provide an epoch number equal or larger than 0");
+        //     assert!(lsu_amount >= dec!("0"), "Please provide an lsu amount equal or larger than 0");
 
-        //     self.lsu_nft_nr += 1;
+        //     info!("address: {:?}, epoch: {}, lsu amount: {}"
+        //         , account_address
+        //         , epoch
+        //         , lsu_amount);
 
-        //     let lsu_nft_resource_manager: ResourceManager = borrow_resource_manager!(self.lsu_nft_address);
-
-        //     let lsu_nft: Bucket = self.owner_badge_vault.authorize(||
-        //         lsu_nft_resource_manager.mint_non_fungible(
-        //             &NonFungibleLocalId::Integer(self.lsu_nft_nr.into()),
-        //             LiquidityProvider {
-        //                 lsu_amount: lsu_tokens.amount(),
-        //                 entry_epoch: Runtime::current_epoch(),
-        //             }
-        //         )
-        //     );
-
-        //     let epoch: Decimal = scrypto::math::Decimal::from(Runtime::current_epoch());
-        //     let amount: Decimal = lsu_tokens.amount() as Decimal;
+        //     // initiate epoch and rewards (0)
+        //     // let epoch: Decimal = scrypto::math::Decimal::from(Runtime::current_epoch());
         //     let rewards: Decimal = dec!("0");
 
-        //     let lsu_nft_data: Vec<Decimal> = vec![epoch, amount, rewards];
+        //     // create vector for this specific supplier to be insterted in the hashmap
+        //     let supplier_vec: Vec<Decimal> = vec![epoch, lsu_amount, rewards];
 
-        //     self.lsu_nft_data.insert(NonFungibleLocalId::Integer(self.lsu_nft_nr.into()), lsu_nft_data);
+        //     // if supplier already exists, re-use its vector in the hashmap
+        //     // sum the lsu amounts and leave epoch and rewards intact.
+        //     if let Some(i) = self.supplier_hashmap.get_mut(&account_address) {
+        //         i[1] += lsu_amount;
+        //     }
+        //     // else insert a new vector for this supplier in the hashmap
+        //     else {
+        //         self.supplier_hashmap.insert(account_address, supplier_vec);
+        //     }
 
-        //     self.lsu_vault.put(lsu_tokens);
-
-        //     debug!("{:?}", self.lsu_nft_data);
-
-        //     return lsu_nft
+        //     debug!("HashMap: {:?}", self.supplier_hashmap.get(&account_address));
         // }
 
-        // OUTDATED
-        // pub fn staker_withdraw_lsu(&mut self, lsu_nft: Bucket) -> (Bucket, Bucket) {
+                // pub fn remove_supplier(&mut self, account_address: ComponentAddress, lsu_amount: Decimal) -> Bucket {
 
-        //     assert_eq!(lsu_nft.resource_address(), self.lsu_nft_address,
-        //     "Please provide the lsu NFT generated by the Delegate Finance validator node");
+        //     debug!("hashmap: {:?}", self.supplier_hashmap);
 
-        //     assert_eq!(lsu_nft.amount(), dec!("1"),
-        //     "Please provide only one nft");
+        //     // check if account is present
+        //     assert!(self.supplier_hashmap.contains_key(&account_address), "account address not found");
 
-        //     let lsu_nft_nr = lsu_nft.non_fungible_local_id();
+        //     // if let Some(&supplier_lsu) = self.supplier_hashmap.get(&account_address).and_then(|i| i.get(1)) {
+        //     //     assert!(lsu_amount > supplier_lsu, "Supplied LSUs are less than burned LSUs")
+        //     // };
 
-        //     debug!("{:?}", lsu_nft_nr);
-        //     debug!("{:?}", self.lsu_nft_data);
-        //     debug!("{:?}", self.lsu_nft_data[&lsu_nft_nr]);
+        //     let lsu_supplied: Decimal = self.supplier_hashmap[&account_address][1];
+        //     let rewards: Decimal = self.supplier_hashmap[&account_address][2];
 
-        //     let lsu: Bucket = self.lsu_vault.take(self.lsu_nft_data[&lsu_nft_nr][1]);
-        //     let rewards: Bucket = self.liquidity_pool_vault.take(self.lsu_nft_data[&lsu_nft_nr][2]);
+        //     // check if burned lsu's doesnt exceed present lsu's
+        //     assert!(lsu_supplied >= lsu_amount,
+        //         "supplier lsu's are less than burned lsu's");
 
-        //     debug!("{:?}", self.lsu_nft_data);
+        //     if lsu_supplied > lsu_amount {
+        //         // return portion of rewards
+        //         let payout_amount: Decimal = rewards * (lsu_amount / lsu_supplied);
+        //         let payout: Bucket = self.liquidity_pool_vault.take(payout_amount);
 
-        //     self.lsu_nft_data.remove(&lsu_nft_nr);
+        //         info!("{} {} {}", lsu_supplied, lsu_amount, payout_amount);
 
-        //     debug!("{:?}", self.lsu_nft_data);
+        //         // adjust hashmap entry with returned lsu and xrd
+        //         if let Some(vector) = self.supplier_hashmap.get_mut(&account_address) {
+        //             vector[1] -= lsu_amount;
+        //             vector[2] -= payout_amount;
+        //         }
 
-        //     self.owner_badge_vault.authorize(||
-        //         lsu_nft.burn()
-        //         );
+        //         debug!("hashmap: {:?}", self.supplier_hashmap);
 
-        //     return (lsu, rewards)
+        //         return payout
+        //     }
+        //     else {
+        //         // return all rewards
+        //         let payout: Bucket = self.liquidity_pool_vault.take(rewards);
+
+        //         // remove hashmap entry
+        //         self.supplier_hashmap.remove(&account_address);
+
+        //         debug!("hashmap: {:?}", self.supplier_hashmap);
+
+        //         return payout
+        //     };
+
+        // }
+        
+        // pub fn transfer_supplier(&mut self, old_account_address: ComponentAddress, new_account_address: ComponentAddress, transferred_lsu_amount: Decimal) {
+            
+        //     debug!("hashmap: {:?}", self.supplier_hashmap);
+
+        //     // check old address pressence in hashmap
+        //     assert!(self.supplier_hashmap.contains_key(&old_account_address), "account address not found");
+
+        //     let old_lsu_amount: Decimal = self.supplier_hashmap[&old_account_address][1];
+        //     let rewards: Decimal = self.supplier_hashmap[&old_account_address][2];
+
+        //     if old_lsu_amount > transferred_lsu_amount {
+
+        //         // return portion of rewards
+        //         let transferred_rewards: Decimal = rewards * (transferred_lsu_amount / old_lsu_amount);
+
+        //         // adjust old account in hashmap 
+        //         if let Some(vector) = self.supplier_hashmap.get_mut(&old_account_address) {
+        //             vector[1] -= transferred_lsu_amount;
+        //             vector[2] -= transferred_rewards;
+        //         }
+
+        //         // transfer info to new account in hashmap
+        //         let epoch = scrypto::math::Decimal::from(Runtime::current_epoch());
+        //         let new_account_vec: Vec<Decimal> = vec![epoch, transferred_lsu_amount, transferred_rewards];
+
+        //             // change account if already exists
+        //         if let Some(vector) = self.supplier_hashmap.get_mut(&new_account_address) {
+        //             vector[1] += transferred_lsu_amount;
+        //             vector[2] += transferred_rewards;
+        //         }
+        //             // add new account if not
+        //         else {
+        //             self.supplier_hashmap.insert(new_account_address, new_account_vec);
+        //         }
+                
+        //     }
+        //     else if old_lsu_amount == transferred_lsu_amount {
+
+        //         // remove old account and write vector to new account in hashmap
+        //         if let Some(vector) = self.supplier_hashmap.remove(&old_account_address) {
+        //             // Insert a new key-value pair with the desired key and the same value
+        //             self.supplier_hashmap.insert(new_account_address, vector);
+        //         }
+                
+        //     };
+
+        //     debug!("hashmap: {:?}", self.supplier_hashmap);
         // }
