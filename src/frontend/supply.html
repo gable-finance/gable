@@ -82,6 +82,7 @@
             <fieldset id="left">
                 <legend>Supply Liquidity</legend>
                 <input type="button" value="[1] Stake XRD" onClick="smoothScroll('#nr1')" /> 
+                <input type="button" value="[2] Supply LSU" onClick="smoothScroll('#nr2')" />
             </fieldset>
 
             <fieldset id="right">
@@ -108,8 +109,6 @@
                 <p class="supply-p">
                     The first step into supplying liquidity is to stake your XRD at Sundae validator node.
                     In return you will receive 'Liquid staking units' (LSU's) - which serve as proof of your stake.
-                    These LSU's can, at any point in time, be used to withdraw your stake from the validator, plus your earned rewards and interest from the liquidity pool.
-                    See step 2 for more information.
                 </p>
                 <p  class="supply-p">
                     <span class="highlight">Note:</span> as you probably noticed, the validator node fee is set at 100%.
@@ -126,6 +125,41 @@
                         <h2 class="transaction-h2">Stake XRD</h2>
                     </div>
                     <input type="text" placeholder="XRD amount" id="amountLSU" class="transaction-text"/>
+                    <button id="supplyLSU" class="learn-more transaction-button">Send</button>
+                </div>
+
+                <div id="receipt-container" style="display: none;">
+                    <p>
+                        Congratulations, you are now a liquidity provider! <br>
+                        Receipt:<br>
+                        <pre id="receipt"></pre>
+                    </p>
+                </div>
+            </div>
+
+            <div class="supply-div">
+                <h1 class="supply-h1">
+                    [2] Deposit LSU's into Sundae's liquidity pool
+                </h1>
+                <p class="supply-p">
+                    The second step is to deposit the Sundae validator node LSU's into the liquidity pool smart contract. 
+                    By doing so, you register yourself as liquidity provided.
+                    Sundae's smart contract will now adminstrate the staking rewards and interest earnings that you earn over time.
+                </p>
+
+                <p class="supply-p">
+                    In exchange to depositing your LSU's, you receive a non-fungible token (NFT). 
+                    Inside the data of this NFT, the amount of LSU's that you are entitled too is registered.
+                    This NFT serves as your proof of supply.
+                    With this NFT you can claim all the resources that you are entitled to (see step 3).
+                </p>
+
+                <div class="transaction" id="nr2">
+                    <div class="transaction-title">
+                        <img src="pictures/liquid2.svg" alt="liquid" id="transaction-icon">
+                        <h2 class="transaction-h2">Supply LSU's</h2>
+                    </div>
+                    <input type="text" placeholder="LSU amount" id="amountLSU" class="transaction-text"/>
                     <button id="supplyLSU" class="learn-more transaction-button">Send</button>
                 </div>
 
@@ -198,16 +232,16 @@
                 <p class="supply-p">
                     Finally, withdrawing your liquidity and claiming your earnings can be done at any point in time by unstaking XRD from the validator node. 
                     Claiming your resources can be achieved by returning Sundae validator node's LSU's.
-                    This returns the following resources to your wallet (depending on the amount of LSU's returned):
+                    This returns the following resources to your wallet:
                 </p>
                 <ul>
-                    <li>Staked XRD</li>
+                    <li>LSU's that you have deposited into the liquidity pool</li>
                     <li>Staking rewards (XRD) that you are entitled to</li>
-                    <li>Interest earned (XRD) by the liquidity pool</li>
+                    <li>Interest earnings (XRD) that you are entitled to</li>
                 </ul>
                 <p class="supply-p">
-                    Unstaked XRD takes 500 epochs (approx. 2 weeks) to return to the owners wallet, as is inherent to the Radix network.
-                    Like the unstaked XRD, the earned staking rewards and interest are subject to the same delay.
+                    Once your LSU's are returned to your wallet you can use these to withdraw your stake from the Sundae validator node.
+                    This takes 500 epochs (approx. 2 weeks) to return, as is inherent to the Radix network.
                 </p>
 
                 <div class="transaction" id="nr3">
