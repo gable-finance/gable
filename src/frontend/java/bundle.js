@@ -127,16 +127,21 @@ document.getElementById('instantiateComponent').onclick = async function () {
     transient_address = commitReceipt.details.referenced_global_entities[3]
     document.getElementById('transientAddress').innerText = transient_address;
     // ****** Set resourceAddress variable with gateway api commitReciept payload ******
-    // nft_address = commitReceipt.details.referenced_global_entities[4]
-    // document.getElementById('nftAddress').innerText = nft_address;
+    nft_address = commitReceipt.details.referenced_global_entities[4]
+    document.getElementById('nftAddress').innerText = nft_address;
   }
 
-
-//--------------------------------------------------------------------------------------------------------//
 
 componentAddress = "component_tdx_c_1qwxltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssa7pd6s"; // temp
 admin_badge = "resource_tdx_c_1q86k5n5fvgccu75qgsmsm5ytyuw326zv6e8t7nzzcehs8ap7gg"; // temp
 transient_address = "resource_tdx_c_1q2xltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssg3ygd5"; // temp
+
+//--------------------------------------------------------------------------------------------------------//
+
+  // *********** Stake XRD ***********
+
+//--------------------------------------------------------------------------------------------------------//
+
 
   // *********** Supply LSU's ***********
 document.getElementById('supplyLSU').onclick = async function () {
@@ -194,7 +199,7 @@ document.getElementById('withdrawLSU').onclick = async function () {
   let nft_id = document.getElementById("nftId").value;
 
   let manifest = new ManifestBuilder()
-    .callMethod(accountAddress, "withdraw_non_fungibles", [Address(nft_address)], "#1#")
+    // .callMethod(accountAddress, "withdraw_non_fungibles", [Address(nft_address)], "#1#")
     .withdrawNonFungiblesFromAccount(accountAddress, nft_address, [nft_id])
     .takeFromWorktopByIds([nft_id], nft_address, "bucket1")
     .callMethod(componentAddress, "staker_withdraw_lpu", [Bucket("bucket1")])
