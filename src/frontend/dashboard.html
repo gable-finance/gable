@@ -5,6 +5,13 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" 
+            content=
+            "Decentralized liquidity market protocol built on Radix DLT, where users can participate as borrowers or suppliers.
+            The protocol offers lending products for borrowers, and liquidity solutions for suppliers. 
+            Built on Radix DLT, the protocol offers transparency, security, and innovative solutions for traders and investors.
+            This allows users to enjoy fast and efficient transaction processing, low fees, and transparent terms.">
+        <meta name="keywords" content="DeFi, Radix, Lending, Liquidity, Flashloan, Staking, Loan, Pool">
         <title>Sundae Liquidity Protocol</title>
         <link rel="icon" href="pictures/logo10.png">
         <link rel="stylesheet" href="css/generics.css">
@@ -17,91 +24,92 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
-    <body>        <header>
-        <nav>
-            <div class="wrapper">
-                <div class="logo">
-                    <a href="./">
-                        <img src="pictures/logo10.png" alt="logo" class="logo">
-                    </a>
-                    
-                    <a href="./">
-                        <img src="pictures/logo8.png" alt="logo" class="logo-transparant">
-                    </a>
+    <body>        
+        <header>
+            <nav>
+                <div class="wrapper">
+                    <div class="logo">
+                        <a href="./">
+                            <img src="pictures/logo10.png" alt="logo" class="logo">
+                        </a>
+                        
+                        <a href="./">
+                            <img src="pictures/logo8.png" alt="logo" class="logo-transparant">
+                        </a>
+                    </div>
+
+                    <div class="navigation-div">
+                        <ul class="navigation">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="menuToggle">
+
+                        <input type="checkbox" id="checkbox_check"/>
+                        
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        
+                        <ul id="menu">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="connectBtn">
+                        <radix-connect-button />
+                    </div>
+
                 </div>
+                
+            </nav>
 
-                <div class="navigation-div">
-                    <ul class="navigation">
-                        <li><a class="menuItem" href="./">Home</a></li>
-                        <li><a class="menuItem" href="about">About</a></li>
-                        <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
-                        <li><a class="menuItem" href="dashboard">Dashboard</a></li>
-                        <li><a class="menuItem" href="supply">Supply</a></li>
-                        <li><a class="menuItem" href="borrow">Borrow</a></li>
-                    </ul>
-                </div>
-
-                <div id="menuToggle">
-
-                    <input type="checkbox" id="checkbox_check"/>
-                    
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    
-                    <ul id="menu">
-                        <li><a class="menuItem" href="./">Home</a></li>
-                        <li><a class="menuItem" href="about">About</a></li>
-                        <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
-                        <li><a class="menuItem" href="dashboard">Dashboard</a></li>
-                        <li><a class="menuItem" href="supply">Supply</a></li>
-                        <li><a class="menuItem" href="borrow">Borrow</a></li>
-                    </ul>
-                </div>
-
-                <div class="connectBtn">
-                    <radix-connect-button />
-                </div>
-
+            <div id="banner">
+                <h1>
+                    Liquidity protocol on Radix DLT
+                </h1>
             </div>
-            
-        </nav>
 
-        <div id="banner">
+            </header>
+
+        <section class="stats">
+            <div>
+                <div>
+                    <h1>
+                        *Liquidity*
+                    </h1>
+                </div>
+                <div>
+                    <h1>
+                        *Interest rate*
+                    </h1>
+                </div>
+                <div>
+                    <h1>
+                        *APY*
+                    </h1>
+                </div>
+            </div>
+        </section>
+
+        <section class="supplier-dashboard">
             <h1>
-                Liquidity protocol on Radix DLT
+                Dashboard
             </h1>
-        </div>
-
-    </header>
-
-    <section class="stats">
-        <div>
-            <div>
-                <h1>
-                    *Liquidity*
-                </h1>
+            <div class="dashboard">
             </div>
-            <div>
-                <h1>
-                    *Interest rate*
-                </h1>
-            </div>
-            <div>
-                <h1>
-                    *APY*
-                </h1>
-            </div>
-        </div>
-    </section>
-
-    <section class="supplier-dashboard">
-        <h1>
-            Dashboard
-        </h1>
-        <div class="dashboard">
-        </div>
-    </section>
+        </section>
 
         <hr>
         
