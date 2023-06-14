@@ -127,7 +127,8 @@
                     [2] Build flash loan
                 </h2>
 
-                <p>Building and executing a flash loan generally consists of the following three steps.</p>
+                <p>Building and executing a flash loan can be broken down in three steps, as illustrated below. 
+                </p>
 
                 <h3>
                     [2.1] Get a flash loan
@@ -153,6 +154,34 @@
                     Return the borrowed funds including interest rate to the smart contract before the end of the loan period, along with the small interest fee. 
                     Failure to return the funds and fee will result in the transaction being reverted and the borrower losing the borrowed funds.
                 </p>
+            </div>
+            
+
+            <div class="flashloan-steps">
+
+
+                <h2>
+                    Flash loan on Sundae
+                </h2>
+
+                <p class="flashloan-p">
+                    Below 2 function are offered that: 
+                </p>
+
+                <ul class="flasloan-ul">
+                    <li>
+                        <span class="highlight">build</span> a transaction manifest script, that you can expand to your use case.
+                    </li>
+                    <li>
+                        <span class="highlight">execute</span> a flash loan, by getting and repaying the loan, without any operations in between.
+                    </li>
+                </ul> 
+
+                <p class="flashloan-p">
+                    These functions help you set-up step 2.1 and 2.2 as mentioned above. 
+                    It is up to you use the borrowed funds and expand the transaction to your use case
+                </p>
+
 
                 <div class="tab-container">
                     <div class="tab-buttons">
@@ -210,7 +239,7 @@
                     Interest rates
                 </h2>
                 <p class="flashloan-p">
-                    During the first months after go-live of Sundae, the interest rates will be static at 0.05%.
+                    During the first months after go-live of Sundae, the interest rates will be kept static at 0.05%.
                     After that, the interest rates will be dynamic to market conditions and demand. 
                     On the 'Dashboard' page you can keep track of the interest rate.
                 </p>
@@ -222,11 +251,11 @@
                     [3] Verify transaction
                 </h2>
                 <p class="flashloan-p">
-                    Verify that the loan has been fully paid back and that your wallet balance has returned to its original state.
+                    Verify that the loan has been fully paid back.
                 </p>
             </div>
 
-            <div class="flashloan-tip">
+            <!-- <div class="flashloan-tip">
                 <h2>
                     Tip!
                 </h2>
@@ -235,7 +264,7 @@
                     The transaction manifest makes it possible to compose multiple actions to be executed atomically within a single transaction.
                     A demo and example of the automated execution of a flash loan on Sundae's will be provided later.
                 </p>
-            </div>
+            </div> -->
 
             <div class="flashloan-disclaimer">
                 <p class="flashloan-p">

@@ -40,6 +40,10 @@ section.borrow-title {
     padding: 20px 50px;
     border-radius: 5px;
   }
+
+  section.flashloan ul.flasloan-ul {
+    padding-left: 20px;
+  }
   
   section.flashloan div.flashloan-interest-rates {
     margin: 40px 0;
