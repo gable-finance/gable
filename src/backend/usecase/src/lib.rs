@@ -9,15 +9,15 @@ struct AmountDue {
 }
 
 #[blueprint]
-mod flashloan_caller {
-    struct Flashloancall {
+mod opportunity {
+    struct Opportunity {
         lender_component_address: ComponentAddress,
         receiver_vault: Vault,
         opportunity_vault: Vault,
     }
 
-    impl Flashloancall {
-        pub fn instantiate_caller(lenders_component: ComponentAddress, opportunity: Bucket) -> ComponentAddress {
+    impl Opportunity {
+        pub fn instantiate_opportunity(lenders_component: ComponentAddress, opportunity: Bucket) -> ComponentAddress {
 
             // fail if opportunity is not an XRD bucket
             assert!(opportunity.resource_address() == RADIX_TOKEN,
