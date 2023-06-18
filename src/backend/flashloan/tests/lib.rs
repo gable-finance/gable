@@ -15,6 +15,8 @@ fn test_flashloan_instantiation() {
     // Publish package
     let package_address = test_runner.compile_and_publish(this_package!());
 
+    //----------------------------------------------------------------------------------------------\\
+
     //**** TEST INSTANTIATER ****\\
 
     let manifest = ManifestBuilder::new()
@@ -37,7 +39,7 @@ fn test_flashloan_instantiation() {
 
     println!("{:?}\n", receipt);
     let component = receipt.expect_commit(true).new_component_addresses()[0];
-    let _owner_badge = receipt.expect_commit(true).new_resource_addresses()[0];
+    let owner_badge = receipt.expect_commit(true).new_resource_addresses()[0];
     let admin_badge = receipt.expect_commit(true).new_resource_addresses()[1];
     let transient = receipt.expect_commit(true).new_resource_addresses()[2];
     let nft = receipt.expect_commit(true).new_resource_addresses()[3];
@@ -62,6 +64,8 @@ fn test_flashloan_instantiation() {
     );
     println!("{:?}\n", receipt);
     receipt.expect_commit(false);
+
+    //----------------------------------------------------------------------------------------------\\
 
     //**** TEST UPDATE_INTEREST_RATE ****\\
 
@@ -92,6 +96,8 @@ fn test_flashloan_instantiation() {
     println!("{:?}\n", receipt);
     receipt.expect_commit(true);
 
+
+    //----------------------------------------------------------------------------------------------\\
 
     //**** TEST ADMIN_DEPOSIT_LIQUIDITY ****\\
 
@@ -146,6 +152,57 @@ fn test_flashloan_instantiation() {
     );
     println!("{:?}\n", receipt);
     receipt.expect_commit(true);
+    
+    //----------------------------------------------------------------------------------------------\\
+
+        //**** TEST ADMIN_WITHDRAW_LIQUIDITY ****\\
+
+        let manifest = ManifestBuilder::new()
+        // Test the `admin_withdraw_liquidity` method (succes)
+        // Proof passed and correct amount provided
+        .create_proof_from_account(account_component, admin_badge)
+        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("50")))
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .build();
+    
+        let receipt = test_runner.execute_manifest_ignoring_fee(
+            manifest,
+            vec![NonFungibleGlobalId::from_public_key(&public_key)],
+        );
+        println!("{:?}\n", receipt);
+        receipt.expect_commit(true);
+
+        let manifest = ManifestBuilder::new()
+        // Test the `admin_withdraw_liquidity` method (fail)
+        // Proof passed but incorrect amount provided
+        .create_proof_from_account(account_component, admin_badge)
+        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("51")))
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .build();
+    
+        let receipt = test_runner.execute_manifest_ignoring_fee(
+            manifest,
+            vec![NonFungibleGlobalId::from_public_key(&public_key)],
+        );
+        println!("{:?}\n", receipt);
+        receipt.expect_commit(false);
+
+        let manifest = ManifestBuilder::new()
+        // Test the `admin_withdraw_liquidity` method (fail)
+        // Correct amount provided but wrong proof
+        .create_proof_from_account(account_component, owner_badge)
+        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("50")))
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .build();
+    
+        let receipt = test_runner.execute_manifest_ignoring_fee(
+            manifest,
+            vec![NonFungibleGlobalId::from_public_key(&public_key)],
+        );
+        println!("{:?}\n", receipt);
+        receipt.expect_commit(false);
+
+    //----------------------------------------------------------------------------------------------\\
 
     //**** TEST GET_FLASHLOAN ****\\
 
@@ -202,6 +259,8 @@ fn test_flashloan_instantiation() {
     println!("{:?}\n", receipt);
     receipt.expect_commit(true);
 
+    //----------------------------------------------------------------------------------------------\\
+
     //**** TEST REPAY_FLASHLOAN ****\\
 
     let manifest = ManifestBuilder::new()
@@ -237,6 +296,8 @@ fn test_flashloan_instantiation() {
     );
     println!("{:?}\n", receipt);
     receipt.expect_commit(false);
+
+    //----------------------------------------------------------------------------------------------\\
 
     //**** TEST staker_deposit_lsu ****\\
 
@@ -312,12 +373,9 @@ fn test_flashloan_instantiation() {
     println!("{:?}\n", receipt);
     receipt.expect_commit(false);
 
+    //----------------------------------------------------------------------------------------------\\
 
     //**** TEST staker_withdraw_lsu ****\\
-
-    // if let Some(non_fungible_id) = non_fungible_id {
-    //     let extract_non_fungible_id = non_fungible_id;
-    // }
 
     let manifest = ManifestBuilder::new()
     // Test the `staker_withdraw_lsu` method (succes)
