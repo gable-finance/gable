@@ -94,7 +94,7 @@
 
             <fieldset id="right">
                 <legend>Withdraw Liquidity</legend>
-                <input type="button" value="[2] Unstake XRD" onClick="smoothScroll('#nr3')" />
+                <input type="button" value="[2] Withdraw LSU" onClick="smoothScroll('#nr3')" />
             </fieldset>
         </section>
 
@@ -131,15 +131,15 @@
                         <img src="pictures/liquid2.svg" alt="liquid" id="transaction-icon">
                         <h2 class="transaction-h2">Stake XRD</h2>
                     </div>
-                    <input type="text" placeholder="XRD amount" id="amountLSU" class="transaction-text"/>
-                    <button id="supplyLSU" class="learn-more transaction-button">Send</button>
+                    <input type="text" placeholder="XRD amount" id="amountXRD" class="transaction-text"/>
+                    <button id="stakeXRD" class="learn-more transaction-button">Send</button>
                 </div>
 
-                <div id="receipt-container" style="display: none;">
+                <div id="stake-receipt-container" style="display: none;">
                     <p>
                         Congratulations, you are now a liquidity provider! <br>
                         Receipt:<br>
-                        <pre id="receipt"></pre>
+                        <pre id="stake-receipt"></pre>
                     </p>
                 </div>
             </div>
@@ -170,11 +170,11 @@
                     <button id="supplyLSU" class="learn-more transaction-button">Send</button>
                 </div>
 
-                <div id="receipt-container" style="display: none;">
+                <div id="supply-receipt-container" style="display: none;">
                     <p>
                         Congratulations, you are now a liquidity provider! <br>
                         Receipt:<br>
-                        <pre id="receipt"></pre>
+                        <pre id="supply-receipt"></pre>
                     </p>
                 </div>
 
@@ -257,28 +257,30 @@
                         <img src="pictures/evaporate.svg" alt="liquid" id="transaction-icon">
                         <h2 class="transaction-h2">Withdraw Resources</h2>
                     </div>
-                    <input type="text" placeholder="LSU Amount" id="nftId" class="transaction-text" />
+                    <input type="text" placeholder="NFT Local ID" id="nftId" class="transaction-text" />
                     <button id="withdrawLSU" class="learn-more transaction-button">Send</button>
                 </div>
 
-            <div id="receipt-container" style="display: none;">
-                <p>
-                    It was a pleasure earning together! <br>
-                    Receipt:<br>
-                    <pre id="receipt"></pre>
-                </p>
+                <div id="withdraw-receipt-container" style="display: none;">
+                    <p>
+                        It was a pleasure earning together! <br>
+                        Receipt:<br>
+                        <pre id="withdraw-receipt"></pre>
+                    </p>
+                </div>
+
             </div>
+
 
         </section>
 
         <!-- TEMP  -->
 
-        <section  style="display: none;">
+        <section> <!-- style="display: none;">-->  
 
             <div class="instantiate"> 
                 <h2>Instantiate lender component - TEMP</h2>
                 <input type="text" placeholder="Package address" id="packageAddress" />
-                <input type="text" placeholder="Account address" id="accountAddress" />
                 <p><button id="instantiateComponent">Instantiate component</button></p>
                 <div class="container">
                 <p>Component Address: <span id="componentAddress"></span></p>
@@ -287,6 +289,24 @@
                 <p>transient token address: <span id="transientAddress"></span></p>
                 <p>nft address: <span id="nftAddress"></span></p>
                 </div>
+            </div>
+
+            <!-- TEMP  -->
+
+
+            <div class="rewardsliquidity" id="nr1">
+                <div class="rewardsliquidity-title">
+                    <h2 class="rewardsliquidity-h2">Deposit Staking Rewards</h2>
+                </div>
+                <input type="text" placeholder="XRD Amount" id="rewardsamount" class="rewardsliquidity-text" />
+                <button id="rewardsliquidity" class="learn-more adminliquidity-button">Send</button>
+            </div>
+
+            <div id="rewardsliquidity-receipt-container" style="display: none;">
+                <p>
+                    Receipt:<br>
+                    <pre id="rewardsliquidity-receipt"></pre>
+                </p>
             </div>
 
             <!-- TEMP  -->
@@ -302,7 +322,6 @@
 
             <div id="receipt-container" style="display: none;">
                 <p>
-                    It was a pleasure earning together! <br>
                     Receipt:<br>
                     <pre id="receipt"></pre>
                 </p>
@@ -314,13 +333,12 @@
                 <div class="interest-title">
                     <h2 class="interest-h2">Update Interest Rate</h2>
                 </div>
-                <input type="text" placeholder="XRD Amount" id="interestrate" class="interest-text" />
+                <input type="text" placeholder="Interest Rate" id="interestrate" class="interest-text" />
                 <button id="interest" class="learn-more interest-button">Send</button>
             </div>
 
             <div id="receipt-container" style="display: none;">
                 <p>
-                    It was a pleasure earning together! <br>
                     Receipt:<br>
                     <pre id="receipt"></pre>
                 </p>
@@ -328,20 +346,17 @@
 
             <!-- TEMP  -->
 
-            <div class="callflashloan" id="nr1">
-                <div class="callflashloan-title">
-                    <img src="pictures/evaporate.svg" alt="liquid" id="callflashloan-icon">
-                    <h2 class="callflashloan-h2">Execute Flash Loan</h2>
+            <div class="hashmap" id="nr1">
+                <div class="hashmap-title">
+                    <h2 class="hashmap-h2">Update Hashmap Rate</h2>
                 </div>
-                <input type="text" placeholder="XRD Amount" id="xrdamount" class="callflashloan-text" />
-                <button id="callflashloan" class="learn-more callflashloan-button">Send</button>
+                <button id="hashmap" class="learn-more interest-button">Send</button>
             </div>
 
-            <div id="receipt-container" style="display: none;">
+            <div id="hashmap-receipt-container" style="display: none;">
                 <p>
-                    It was a pleasure earning together! <br>
                     Receipt:<br>
-                    <pre id="receipt"></pre>
+                    <pre id="hashmap-receipt"></pre>
                 </p>
             </div>
 
@@ -389,7 +404,7 @@
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
-        <script src="java/supply.js"></script>
+        <!-- <script src="java/supply.js"></script> -->
         <script src="java/smooth_scroll.js"></script>
 
     </body>

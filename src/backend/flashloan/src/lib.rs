@@ -205,6 +205,7 @@ mod flashloan {
 
             // calculate amount due
             let interest_amount: Decimal = loan_amount * interest_rate;
+
             let repayment_amount: Decimal = loan_amount + interest_amount;
 
             // allocate the liquidity earnings
@@ -444,17 +445,26 @@ mod flashloan {
 
             // loop over all entries in the hashmap to update information
             for i in self.supplier_hashmap.values_mut() {
-                // distribute the newly earned rewards 
-                // to the stakers existing accumulated rewards
-                let supplier_lsu = i[1];
 
-                let supplier_stake = supplier_lsu / self.lsu_vault.amount();
+                // determine suppliers lsu stake
+                let supplier_lsu = i[1];
+                // determine suppliers xrd stake
+                let supplier_xrd = i[2];
+
+                // determine suppliers lsu stake relative to pool's total lsu
+                let supplier_relative_lsu_stake = supplier_lsu / self.lsu_vault.amount();
+                // determine suppliers xrd stake relative to pool's total xrd
+                let supplier_relative_xrd_stake = supplier_xrd / supplier_distributed_interest
             
-                // distribute the newly earned rewards based on staker's lsu relative to pool's lsu  
-                i[2] += supplier_undistributed_rewards * supplier_stake;
-                i[3] += supplier_undistributed_interest * supplier_stake;
+                // distribute:
+                //      the new staking rewards based on staker's lsu relative to pool's total lsu
+                i[2] += supplier_undistributed_rewards * supplier_relative_lsu_stake;
+                //      the new interest earnings based on staker's xrd relative to pool's total xrd
+                i[3] += supplier_undistributed_interest * supplier_relative_xrd_stake;
 
             };
+
+            self.liquidity_interest = dec!("0");
 
             debug!("{:?}", self.supplier_hashmap);
             

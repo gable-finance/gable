@@ -79,7 +79,6 @@ let nft_address // nft address
 // ************ Instantiate component and fetch component and resource addresses *************
 document.getElementById('instantiateComponent').onclick = async function () {
     let packageAddress = document.getElementById("packageAddress").value;
-    // let accountAddress = document.getElementById("accountAddress").value;
 
     let manifest = new ManifestBuilder()
       .callFunction(packageAddress, "Flashloan", "instantiate_lender", [""])
@@ -132,13 +131,16 @@ document.getElementById('instantiateComponent').onclick = async function () {
   }
 
 
-componentAddress = "component_tdx_c_1qwxltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssa7pd6s"; // temp
-admin_badge = "resource_tdx_c_1q86k5n5fvgccu75qgsmsm5ytyuw326zv6e8t7nzzcehs8ap7gg"; // temp
-transient_address = "resource_tdx_c_1q2xltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssg3ygd5"; // temp
+componentAddress = "component_tdx_c_1qwna687m89hckaa094wzdqnszj6u2kugnjuy5955yguqwvjf6z"; // temp
+admin_badge = "resource_tdx_c_1qys73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37smtcm9z"; // temp
+transient_address = "resource_tdx_c_1q2na687m89hckaa094wzdqnszj6u2kugnjuy5955yguqmrhvdx"; // temp
+nft_address = "resource_tdx_c_1qgs73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37sy90sha" // temp
 
 //--------------------------------------------------------------------------------------------------------//
 
   // *********** Stake XRD ***********
+
+  // dependent on validator node
 
 //--------------------------------------------------------------------------------------------------------//
 
@@ -150,8 +152,8 @@ document.getElementById('supplyLSU').onclick = async function () {
 
   let manifest = new ManifestBuilder()
     .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(amountLSU)])
-    .takeFromWorktop(xrdAddress, "xrd_bucket")
-    .callMethod(componentAddress, "staker_deposit_lpu", [Bucket("xrd_bucket")])
+    .takeFromWorktop(xrdAddress, "lsu_bucket")
+    .callMethod(componentAddress, "staker_deposit_lsu", [Bucket("lsu_bucket")])
     .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
     .build()
     .toString();
@@ -186,8 +188,8 @@ document.getElementById('supplyLSU').onclick = async function () {
   console.log('Deposit Lpu Committed Details Receipt', commitReceipt)
 
   // Show the receipt on the DOM
-  document.getElementById("receipt-container").style.display = "block";
-  document.getElementById('receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
+  document.getElementById("supply-receipt-container").style.display = "block";
+  document.getElementById('supply-receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
 };
 
 
@@ -202,7 +204,7 @@ document.getElementById('withdrawLSU').onclick = async function () {
     // .callMethod(accountAddress, "withdraw_non_fungibles", [Address(nft_address)], "#1#")
     .withdrawNonFungiblesFromAccount(accountAddress, nft_address, [nft_id])
     .takeFromWorktopByIds([nft_id], nft_address, "bucket1")
-    .callMethod(componentAddress, "staker_withdraw_lpu", [Bucket("bucket1")])
+    .callMethod(componentAddress, "staker_withdraw_lsu", [Bucket("bucket1")])
     .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
     .build()
     .toString();
@@ -237,15 +239,40 @@ document.getElementById('withdrawLSU').onclick = async function () {
   console.log('Withdraw Lsu Committed Details Receipt', commitReceipt)
 
   // Show the receipt on the DOM
-  document.getElementById('receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
+  document.getElementById("withdraw-receipt-container").style.display = "block";
+  document.getElementById('withdraw-receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
 };
 
 //--------------------------------------------------------------------------------------------------------//
 
-  // *********** Deposit Admint Liquidity ***********
+  // *********** Deposit Staking Rewards ***********
+  document.getElementById('rewardsliquidity').onclick = async function () {
+
+    let xrd_amount = document.getElementById("rewardsamount").value;
+  
+    let manifest = new ManifestBuilder()
+      .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(xrd_amount)])
+      .takeFromWorktop(xrdAddress, "xrd_bucket")
+      .callMethod(componentAddress, "deposit_batch", [Bucket("xrd_bucket")])
+      .build()
+      .toString();
+  
+    console.log('call flashloan manifest: ', manifest)
+  
+    // Send manifest to extension for signing
+    const result = await rdt
+      .sendTransaction({
+        transactionManifest: manifest,
+        version: 1,
+      })
+  };
+
+//--------------------------------------------------------------------------------------------------------//
+
+  // *********** Deposit Admin Liquidity ***********
   document.getElementById('adminliquidity').onclick = async function () {
 
-    let xrd_amount = document.getElementById("xrdamount").value;
+    let xrd_amount = document.getElementById("depositamount").value;
   
     let manifest = new ManifestBuilder()
       .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(xrd_amount)])
@@ -289,6 +316,53 @@ document.getElementById('withdrawLSU').onclick = async function () {
         version: 1,
       })
   };
+
+
+//--------------------------------------------------------------------------------------------------------//
+
+    // *********** Update Hashmap ***********
+    document.getElementById('hashmap').onclick = async function () {
+    
+      let manifest = new ManifestBuilder()
+        .createProofFromAccount(accountAddress, admin_badge)
+        .createProofFromAuthZone(admin_badge, "BadgeProof")
+        .callMethod(componentAddress, "update_supplier_info", [])
+        .build()
+        .toString();
+    
+      console.log('call update_supplier_info manifest: ', manifest)
+    
+      // Send manifest to extension for signing
+      const result = await rdt
+        .sendTransaction({
+          transactionManifest: manifest,
+          version: 1,
+        })
+
+      if (result.isErr()) throw result.error
+
+      console.log("Deposit Lpu sendTransaction Result: ", result)
+
+      // Fetch the transaction status from the Gateway SDK
+      let status = await transactionApi.transactionStatus({
+        transactionStatusRequest: {
+          intent_hash_hex: result.value.transactionIntentHash
+        }
+      });
+      console.log('Deposit Lpu TransactionAPI transaction/status: ', status)
+
+      // fetch commit reciept from gateway api 
+      let commitReceipt = await transactionApi.transactionCommittedDetails({
+        transactionCommittedDetailsRequest: {
+          intent_hash_hex: result.value.transactionIntentHash
+        }
+      })
+      console.log('Deposit Lpu Committed Details Receipt', commitReceipt)
+
+      // Show the receipt on the DOM
+      document.getElementById("hashmap-receipt-container").style.display = "block";
+      document.getElementById('hashmap-receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
+    };
 
 //-----------------------------------------------------------------------------------------------------------//
   // *********** Execute Flash Loan ***********

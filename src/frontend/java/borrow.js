@@ -64,9 +64,10 @@ import {
   let nft_address // nft address
     
   // Global states
-  componentAddress = "component_tdx_c_1qwxltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssa7pd6s"; // temp
-  admin_badge = "resource_tdx_c_1q86k5n5fvgccu75qgsmsm5ytyuw326zv6e8t7nzzcehs8ap7gg"; // temp
-  transient_address = "resource_tdx_c_1q2xltzyu94nesddh0yyq9h9vuzz5l904n2yt93ltfsssg3ygd5"; // temp
+  componentAddress = "component_tdx_c_1qwna687m89hckaa094wzdqnszj6u2kugnjuy5955yguqwvjf6z"; // temp
+  admin_badge = "resource_tdx_c_1qys73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37smtcm9z"; // temp
+  transient_address = "resource_tdx_c_1q2na687m89hckaa094wzdqnszj6u2kugnjuy5955yguqmrhvdx"; // temp
+  nft_address = "resource_tdx_c_1qgs73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37sy90sha" // temp  
 
   //--------------------------------------------------------------------------------------------------------//
 
@@ -143,6 +144,6 @@ import {
       console.log('Deposit Lpu Committed Details Receipt', commitReceipt)
   
       // Show the receipt on the DOM
-      document.getElementById("receipt-container").style.display = "block";
-      document.getElementById('receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
+      document.getElementById("borrow-receipt-container").style.display = "block";
+      document.getElementById('borrow-receipt').innerText = JSON.stringify(commitReceipt.details.receipt, null, 2);
     };
