@@ -130,11 +130,11 @@ document.getElementById('instantiateComponent').onclick = async function () {
     document.getElementById('nftAddress').innerText = nft_address;
   }
 
-
-componentAddress = "component_tdx_c_1qwna687m89hckaa094wzdqnszj6u2kugnjuy5955yguqwvjf6z"; // temp
-admin_badge = "resource_tdx_c_1qys73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37smtcm9z"; // temp
-transient_address = "resource_tdx_c_1q2na687m89hckaa094wzdqnszj6u2kugnjuy5955yguqmrhvdx"; // temp
-nft_address = "resource_tdx_c_1qgs73a7k2ead40ewtlgs73lau3hlhtnn3y4guvd4z37sy90sha" // temp
+  // Global states
+  componentAddress = "component_tdx_c_1qved97g6ge57lkx95fza63hg2nn8aryjwj3tg596sgxs64u5sz"; // temp
+  admin_badge = "resource_tdx_c_1qy2kzkck8c2l6pl7jjrn2r9luf64tlpczyhse835kgsqjgylrd"; // temp
+  transient_address = "resource_tdx_c_1qged97g6ge57lkx95fza63hg2nn8aryjwj3tg596sgxs06e38x"; // temp
+  nft_address = "resource_tdx_c_1qg2kzkck8c2l6pl7jjrn2r9luf64tlpczyhse835kgsqdxn53j" // temp
 
 //--------------------------------------------------------------------------------------------------------//
 

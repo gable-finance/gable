@@ -30,6 +30,7 @@ mod flashloan {
         liquidity_pool_vault: Vault,
 
         supplier_hashmap: HashMap<NonFungibleLocalId, Vec<Decimal>>,
+        supplier_hashmap_epoch: u64,
 
         lsu_vault: Vault,
         lsu_nft_address: ResourceAddress,
@@ -130,6 +131,7 @@ mod flashloan {
                 liquidity_pool_vault: Vault::new(RADIX_TOKEN),
 
                 supplier_hashmap: HashMap::new(),
+                supplier_hashmap_epoch: 0,
 
                 lsu_vault: Vault::new(RADIX_TOKEN),
                 lsu_nft_address: lsu_nft,
@@ -449,22 +451,29 @@ mod flashloan {
                 // determine suppliers lsu stake
                 let supplier_lsu = i[1];
                 // determine suppliers xrd stake
-                let supplier_xrd = i[2];
+                let supplier_xrd = i[2] + i[3];
 
                 // determine suppliers lsu stake relative to pool's total lsu
                 let supplier_relative_lsu_stake = supplier_lsu / self.lsu_vault.amount();
-                // determine suppliers xrd stake relative to pool's total xrd
-                let supplier_relative_xrd_stake = supplier_xrd / supplier_distributed_interest
-            
+
+                let supplier_relative_xrd_stake = if supplier_distributed_interest != dec!("0") {
+                    supplier_xrd / supplier_distributed_earnings
+                } else {
+                    // Handle the case where `supplier_distributed_interest` is zero.
+                    // Assigning a default value (`supplier_relative_lsu_stake`).
+                    supplier_relative_lsu_stake
+                };
+
                 // distribute:
                 //      the new staking rewards based on staker's lsu relative to pool's total lsu
                 i[2] += supplier_undistributed_rewards * supplier_relative_lsu_stake;
                 //      the new interest earnings based on staker's xrd relative to pool's total xrd
                 i[3] += supplier_undistributed_interest * supplier_relative_xrd_stake;
 
-            };
+            }; 
 
             self.liquidity_interest = dec!("0");
+            self.supplier_hashmap_epoch = Runtime::current_epoch();
 
             debug!("{:?}", self.supplier_hashmap);
             

@@ -85,20 +85,23 @@
 
         <section class="stats">
             <div>
-                <div>
+                <div class="stats-div">
                     <h1>
-                        *Liquidity*
+                        Liquidity
                     </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="pool-amount"></pre></div>
                 </div>
-                <div>
-                    <h1>
-                        *Interest rate*
+                <div class="stats-div">
+                    <h1 class="stats-h1">
+                        Interest rate
                     </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
                 </div>
-                <div>
+                <div class="stats-div">
                     <h1>
-                        *APY*
+                        APY
                     </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
                 </div>
             </div>
         </section>
@@ -107,7 +110,50 @@
             <h1>
                 Dashboard
             </h1>
+            <div class="dashboard-input">
+                <div class="dashboard-go">
+                    <input type="text" placeholder="NFT Local ID" id="nft-local-id" class="dashboard-text"/>
+                    <button id="get-user-info" class="learn-more dashboard-button">Go</button>
+                </div>
+                <div id="error-message" style="display: none;">
+                    <div class="error-content">
+                      <span id="error-text"></span>
+                    </div>
+                    <button id="close-button">x</button>
+                  </div>
+                  
+            </div>
             <div class="dashboard">
+                <div class="dashboard-category">
+                    <h1 class="stats-h1">
+                        LSU Amount
+                    </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="lsu-amount"></pre></div>
+                </div>
+                <div class="dashboard-category">
+                    <h1 class="stats-h1">
+                        XRD Stake
+                    </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="xrd-stake"></pre></div>
+                </div>
+                <div class="dashboard-category">
+                    <h1 class="stats-h1">
+                        XRD Staking Rewards
+                    </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="stake-rewards"></pre></div>
+                </div>
+                <div class="dashboard-category">
+                    <h1 class="stats-h1">
+                        XRD Interest Earnings
+                    </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="interest-earnings"></pre></div>
+                </div>
+                <div class="dashboard-category">
+                    <h1 class="stats-h1">
+                        Total XRD
+                    </h1>
+                    <div class="stats-placeholder"><pre class="show-stats" id="total-xrd"></pre></div>
+                </div>
             </div>
         </section>
 
@@ -151,7 +197,8 @@
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
-        <script type="module" src="java/bundle.js"></script>
+        <!-- <script type="module" src="java/bundle.js"></script> -->
+        <script type="module" src="java/dashboard.js"></script>
 
     </body>
 </html>

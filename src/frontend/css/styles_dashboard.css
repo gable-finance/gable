@@ -2,7 +2,6 @@ section.stats {
     background: var(--boxcolor);
     height: auto;
     width: auto;
-
 }
 
 section.stats div {
@@ -15,7 +14,11 @@ section.stats div {
     height: auto;
 }
 
-section.stats div div {
+section.stats div div.stats-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: auto;
     height: 200px;
     border-right: solid;
@@ -25,15 +28,58 @@ section.stats div div {
 
 section.stats div div h1{
     font-size: 200%;
-    font-weight: 500;
+    font-weight: 400;
     max-width: 100%;
-    margin: 20px 0;
-    padding: 10px;
+    margin: 0;
+    margin-top: 20px;
+    padding: 0;
 }
+
+.show-stats{
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+    line-height: 2;
+    color: black;
+}
+
+#error-message {
+    display: flex;
+    flex-direction: row;
+    /* align-items: center; */
+    /* justify-content: space-between; */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgb(190, 190, 225);
+    color: black;
+    border: 1px solid rgb(171, 171, 213);
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    word-break: break-word; /* Allow the error message to wrap to the next line */
+  }
+  
+  .error-content {
+    flex-grow: 1; /* Allow the error content to expand and fill the available space */
+  }
+  
+  #close-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+  }
 
 section.supplier-dashboard {
     margin-top: 100px;
-    height: 800px;
 }
 
 section.supplier-dashboard h1 {
@@ -42,64 +88,188 @@ section.supplier-dashboard h1 {
     text-align: center;
 }
 
-section.supplier-dashboard div.dashboard {
-    background: var(--boxcolor);
-    height: 80%;
-    margin: 0 50px;
+section.supplier-dashboard .dashboard-input{
+    padding: 0;
 }
 
+section.supplier-dashboard .dashboard-go {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 50px;
+    padding: 0;
+}
+
+.dashboard-text {
+    box-sizing: border-box;
+    display: block;
+    max-width: 100%;
+    border: none;
+    border-radius: 3px;
+    padding-left: 10px;
+    background-color: var(--boxcolor);
+    font-size: 18px;
+    height: 40px;
+}
+
+.dashboard-text:focus {
+    outline: none;
+}
+
+.dashboard-button {
+    background-color: var(--secondthemetransparant) !important;
+    margin: 0 10px !important;
+    width: 80px !important;
+    font-size: 18px !important;
+    border-radius: 3px !important;
+}
+
+.dashboard-button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+section.supplier-dashboard div.dashboard {
+    background: var(--boxcolor);
+    margin: 0 50px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+section.supplier-dashboard div.dashboard h1.stats-h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
+}
+
+section.supplier-dashboard .dashboard-category {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: none;
+    border-bottom: solid;
+    border-color: lightgray;
+    padding: 20px;
+}
+
+section.supplier-dashboard .dashboard-category:last-child {
+    border-bottom: none; /* Remove the bottom border for the last div */
+}
+
+div.stats-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+}
 
 @media only screen and (max-width: 768px) {
     
     #coming-soon {
         font-size: 300%;
         font-weight: 300%;
-        /* text-align: center; */
     }
 
     section.stats div {
-        /* display: flex; */
         flex-direction: column;
-        /* align-items: center;
-        justify-content: center;
-        max-width: 100%;
-        flex: 1; 
-        height: auto; */
+        padding: 10px;
     }
-    section.stats div div {
-        width: 100%;
-        /* height: 200px; */
+
+    section.stats div div.stats-div {
+        width: 80%;
         border-right: none;
         border-bottom: solid;
         border-color: lightgray;
-        /* margin: 0 10000px; */
-        /* padding: 0 50px; */
         margin: 0 10px;
+        height: auto;
     }
 
-    section.stats div div h1{
+    section.stats div div:last-child {
+        border-bottom: none; /* Remove the bottom border for the last div */
+    }
+
+    section.stats div div h1 {
         font-size: 150%;
-        font-weight: 400;
-        /* max-width: 100%; */
-        /* margin: 20px 0; */
-        /* padding: 10px; */
+        font-weight: 300;
+    }
+
+    .show-stats{
+        font-weight: 300;
+        font-size: 130%;
     }
 
     section.supplier-dashboard {
-        /* margin-top: 100px; */
-        height: 600px;
         margin-bottom: 50px;
     }
     
     section.supplier-dashboard h1 {
         font-size: 200%;
         font-weight: 300;
-        /* text-align: center; */
+    }
+
+    section.supplier-dashboard .dashboard-go {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-text {
+        /* box-sizing: border-box;
+        display: block;
+        max-width: 100%;
+        border: none;
+        border-radius: 3px;
+        padding-left: 10px;
+        background-color: var(--boxcolor);
+        font-size: 18px;*/
+        height: 50px; 
+        text-align: center;
+    }
+    
+    .dashboard-text:focus {
+        outline: none;
+    }
+    
+    .dashboard-button {
+        /* background-color:; */
+        margin: 0 !important;
+        width: 100% !important;
+        /* font-size: 18px !important;
+        border-radius: 3px !important; */
+    }
+    
+    .dashboard-button:hover {
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     }
     
     section.supplier-dashboard div.dashboard {
         background: var(--boxcolor);
-        height: 80%;
         margin: 0;
     }
+
+    section.supplier-dashboard div.dashboard h1.stats-h1{
+        font-size: 150%;
+        font-weight: 300;
+    }
+
+    #error-message {
+        /* display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgb(190, 190, 225);
+        color: black;
+        border: 1px solid rgb(171, 171, 213);
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); */
+        width: auto;
+
+      }
+
 }
