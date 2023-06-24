@@ -97,17 +97,47 @@
                     </h1>
                     <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
                 </div>
-                <div class="stats-div">
-                    <h1>
-                        APY
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                <div class="apy">
+                    <h1>APY</h1>
+                    <div class="apy-div">
+                        <div class="stats-divs">
+                            <h1>
+                                Staking
+                            </h1>
+                            <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                        </div>
+                        <div class="stats-divs">
+                            <h1>
+                                Supplying
+                            </h1>
+                            <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                        </div>
+                        <div class="stats-divs">
+                            <h1>
+                                Total
+                            </h1>
+                            <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <section class="chart-section">
+            <h1 class="h1">
+                APY Charts
+            </h1>
+            <div id="button">
+                <button class="chart-button" id="chart1Btn" onclick="toggleChart('chart1')">Staking APY</button>
+                <button class="chart-button" id="chart2Btn" onclick="toggleChart('chart2')">Supplier APY</button>
+                <button class="chart-button" id="chart3Btn" onclick="toggleChart('chart3')">Total APY</button>
+            </div>
+            
+            <div id="chart"></div>
+        </section>
+        
         <section class="supplier-dashboard">
-            <h1>
+            <h1 class="h1">
                 Dashboard
             </h1>
             <div class="dashboard-input">
@@ -120,8 +150,7 @@
                       <span id="error-text"></span>
                     </div>
                     <button id="close-button">x</button>
-                  </div>
-                  
+                  </div>      
             </div>
             <div class="dashboard">
                 <div class="dashboard-category">
@@ -199,6 +228,8 @@
         <script src="java/disable_scroll.js"></script>
         <!-- <script type="module" src="java/bundle.js"></script> -->
         <script type="module" src="java/dashboard.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="java/charts.js" type="text/javascript"></script>
 
     </body>
 </html>

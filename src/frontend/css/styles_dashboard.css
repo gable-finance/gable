@@ -1,3 +1,5 @@
+/* STATS */
+
 section.stats {
     background: var(--boxcolor);
     height: auto;
@@ -9,7 +11,7 @@ section.stats div {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    max-width: 100%;
+    /* max-width: 100%; */
     flex: 1; 
     height: auto;
 }
@@ -20,11 +22,40 @@ section.stats div div.stats-div {
     justify-content: center;
     align-items: center;
     width: auto;
-    height: 200px;
+    max-width: 400px;
+    /* height: 200px; */
     border-right: solid;
     border-color: lightgray;
     margin: 10px 0;
 }
+
+section.stats div div.stats-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    max-width: 400px;
+    margin: 10px 20px;
+    position: relative; /* Add position: relative to the div */
+}
+
+/* section.stats div div.stats-divs::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    width: 1.5px;
+    height: 70%;
+    background-color: lightgray;
+} */
+
+section.stats div div.stats-divs:first-child::before {
+    display: none; /* Hide the border on the first div */
+}
+
+
 
 section.stats div div h1{
     font-size: 200%;
@@ -33,6 +64,17 @@ section.stats div div h1{
     margin: 0;
     margin-top: 20px;
     padding: 0;
+}
+
+section.stats div div.apy {
+    display: flex;
+    flex-direction: column;
+}
+
+section.stats div div div.apy-div {
+    display: flex;
+    flex: 1;
+    width: 100%;
 }
 
 .show-stats{
@@ -46,6 +88,45 @@ section.stats div div h1{
     line-height: 2;
     color: black;
 }
+
+section.chart-section {
+    margin: 100px 0;
+}
+
+section.chart-section #chart {
+    max-width: 100%; 
+    height: 500px;
+}
+
+section.chart-section #button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+section.chart-section .chart-button {
+    background-color: var(--secondthemetransparant);
+    border-radius: 2px;
+    border-width: 0;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 20px;
+    list-style: none;
+    margin: 0 20px;
+    padding: 10px 50px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 10px;
+    width: auto;
+    font-size: 20px;
+}
+
+/* DASHBOARD */
 
 #error-message {
     display: flex;
@@ -82,7 +163,7 @@ section.supplier-dashboard {
     margin-top: 100px;
 }
 
-section.supplier-dashboard h1 {
+.h1 {
     font-size: 300%;
     font-weight: 300%;
     text-align: center;
@@ -194,6 +275,8 @@ div.stats-placeholder {
     section.stats div div h1 {
         font-size: 150%;
         font-weight: 300;
+        margin: 0;
+        padding: 0;
     }
 
     .show-stats{
@@ -201,11 +284,48 @@ div.stats-placeholder {
         font-size: 130%;
     }
 
+    section.stats div div div.apy-div {
+        flex-direction: row;
+        margin: 0;
+        padding: 0;
+    }
+
+
+    section.chart-section #button {
+        width: 100%;
+        display: flex;
+        /* justify-content: center; */
+    }
+    
+    section.chart-section .chart-button {
+        background-color: var(--secondthemetransparant);
+        border-radius: none;
+        border-width: none;
+        /* cursor: pointer; */
+        /* display: inline-block; */
+        /* line-height: 20px; */
+        /* list-style: none; */
+        margin: 0 2px;
+        padding: 0;
+        /* text-align: center;
+        transition: all 200ms;
+        vertical-align: baseline;
+        white-space: nowrap;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        margin-top: 10px;
+        width: auto;
+        font-size: 20px; */
+        width: 100%;
+        height: 40px;
+    }
+
     section.supplier-dashboard {
         margin-bottom: 50px;
     }
     
-    section.supplier-dashboard h1 {
+    .h1  {
         font-size: 200%;
         font-weight: 300;
     }
