@@ -1,9 +1,21 @@
+
+#h1 {
+    font-size: 300%;
+    font-weight: 300;
+    text-align: center;
+    margin: 0;
+}
+
 /* STATS */
 
 section.stats {
+    position: relative;
     background: var(--boxcolor);
-    height: auto;
     width: auto;
+}
+
+.info-container:hover .tooltip {
+    display: block;
 }
 
 section.stats div {
@@ -11,9 +23,7 @@ section.stats div {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    /* max-width: 100%; */
-    flex: 1; 
-    height: auto;
+    flex: 1;
 }
 
 section.stats div div.stats-div {
@@ -21,11 +31,8 @@ section.stats div div.stats-div {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: auto;
     max-width: 400px;
-    /* height: 200px; */
-    border-right: solid;
-    border-color: lightgray;
+    border-right: solid lightgray;
     margin: 10px 0;
 }
 
@@ -34,35 +41,19 @@ section.stats div div.stats-divs {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: auto;
     max-width: 400px;
     margin: 10px 20px;
-    position: relative; /* Add position: relative to the div */
+    position: relative;
 }
-
-/* section.stats div div.stats-divs::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -1px;
-    width: 1.5px;
-    height: 70%;
-    background-color: lightgray;
-} */
 
 section.stats div div.stats-divs:first-child::before {
-    display: none; /* Hide the border on the first div */
+    display: none;
 }
 
-
-
-section.stats div div h1{
+section.stats div div h1 {
     font-size: 200%;
     font-weight: 400;
-    max-width: 100%;
-    margin: 0;
-    margin-top: 20px;
+    margin: 20px 0 0;
     padding: 0;
 }
 
@@ -72,12 +63,45 @@ section.stats div div.apy {
 }
 
 section.stats div div div.apy-div {
+    position: relative;
     display: flex;
     flex: 1;
     width: 100%;
 }
 
-.show-stats{
+.info-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.info-icon {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    z-index: 999;
+    font-size: 13px;
+    width: 250px;
+}
+
+.info-container:hover .tooltip {
+    display: block;
+}
+
+.show-stats {
     font-family: Roboto;
     font-style: normal;
     font-weight: 400;
@@ -89,13 +113,21 @@ section.stats div div div.apy-div {
     color: black;
 }
 
+/* CHART */
+
 section.chart-section {
-    margin: 100px 0;
+    margin: 100px 50px;
+}
+
+section.chart-section p {
+    text-align: center;
+    margin: 30px 0 50px 0;
 }
 
 section.chart-section #chart {
-    max-width: 100%; 
+    max-width: 100%;
     height: 500px;
+    margin: 0;
 }
 
 section.chart-section #button {
@@ -126,13 +158,15 @@ section.chart-section .chart-button {
     font-size: 20px;
 }
 
+.chart-button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
 /* DASHBOARD */
 
 #error-message {
     display: flex;
     flex-direction: row;
-    /* align-items: center; */
-    /* justify-content: space-between; */
     position: fixed;
     bottom: 20px;
     left: 50%;
@@ -143,40 +177,41 @@ section.chart-section .chart-button {
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    word-break: break-word; /* Allow the error message to wrap to the next line */
-  }
-  
-  .error-content {
-    flex-grow: 1; /* Allow the error content to expand and fill the available space */
-  }
-  
-  #close-button {
+    word-break: break-word;
+}
+
+.error-content {
+    flex-grow: 1;
+}
+
+#close-button {
     background: none;
     border: none;
     font-size: 18px;
     font-weight: bold;
     color: black;
     cursor: pointer;
-  }
+}
 
 section.supplier-dashboard {
-    margin-top: 100px;
+    margin: 100px 0;
+    padding: 0 50px;
 }
 
-.h1 {
-    font-size: 300%;
-    font-weight: 300%;
+section.supplier-dashboard p {
     text-align: center;
+    margin: 30px 0 50px 0;
+    text-align: left;
 }
 
-section.supplier-dashboard .dashboard-input{
+section.supplier-dashboard .dashboard-input {
     padding: 0;
 }
 
 section.supplier-dashboard .dashboard-go {
     display: flex;
     flex-direction: row;
-    margin: 20px 50px;
+    margin: 20px 0;
     padding: 0;
 }
 
@@ -210,34 +245,30 @@ section.supplier-dashboard .dashboard-go {
 
 section.supplier-dashboard div.dashboard {
     background: var(--boxcolor);
-    margin: 0 50px;
     height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
-section.supplier-dashboard div.dashboard h1.stats-h1 {
+div.dashboard h1.stats-h1 {
     margin: 0;
     padding: 0;
-    font-size: 30px;
+    font-size: 22px;
+    width: 100%;
+    text-align: center;
 }
 
-section.supplier-dashboard .dashboard-category {
-    width: 80%;
+div.dashboard h1.stats-h1:first-child {
+    font-weight: bold;
+}
+
+div.dashboard div.dashboard-div {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: none;
     align-items: center;
-    border-right: none;
-    border-bottom: solid;
-    border-color: lightgray;
-    padding: 20px;
-}
-
-section.supplier-dashboard .dashboard-category:last-child {
-    border-bottom: none; /* Remove the bottom border for the last div */
+    padding: 20px 0;
 }
 
 div.stats-placeholder {
@@ -262,14 +293,13 @@ div.stats-placeholder {
     section.stats div div.stats-div {
         width: 80%;
         border-right: none;
-        border-bottom: solid;
-        border-color: lightgray;
+        border-bottom: solid lightgray;
         margin: 0 10px;
         height: auto;
     }
 
     section.stats div div:last-child {
-        border-bottom: none; /* Remove the bottom border for the last div */
+        border-bottom: none;
     }
 
     section.stats div div h1 {
@@ -279,7 +309,7 @@ div.stats-placeholder {
         padding: 0;
     }
 
-    .show-stats{
+    .show-stats {
         font-weight: 300;
         font-size: 130%;
     }
@@ -290,44 +320,50 @@ div.stats-placeholder {
         padding: 0;
     }
 
+    /* CHART */
+
+    section.chart-section {
+        margin: 0 10px;
+    }
+
 
     section.chart-section #button {
         width: 100%;
         display: flex;
-        /* justify-content: center; */
     }
     
     section.chart-section .chart-button {
         background-color: var(--secondthemetransparant);
         border-radius: none;
         border-width: none;
-        /* cursor: pointer; */
-        /* display: inline-block; */
-        /* line-height: 20px; */
-        /* list-style: none; */
         margin: 0 2px;
         padding: 0;
-        /* text-align: center;
-        transition: all 200ms;
-        vertical-align: baseline;
-        white-space: nowrap;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-        margin-top: 10px;
-        width: auto;
-        font-size: 20px; */
         width: 100%;
         height: 40px;
+        font-size: 15px;
     }
 
+    section.chart-section #chart {
+        max-width: 100%; 
+        height: 300px;
+    }
+
+    /* DASHBOARD */
+
+    /* section.supplier-dashboard {
+        margin: 100px 0;
+        padding: 0 50px;
+    } */
+
     section.supplier-dashboard {
-        margin-bottom: 50px;
+        margin-top: 0;
+        padding: 10px;
     }
     
-    .h1  {
+    #h1  {
         font-size: 200%;
         font-weight: 300;
+        margin-top: 100px;
     }
 
     section.supplier-dashboard .dashboard-go {
@@ -336,14 +372,6 @@ div.stats-placeholder {
     }
 
     .dashboard-text {
-        /* box-sizing: border-box;
-        display: block;
-        max-width: 100%;
-        border: none;
-        border-radius: 3px;
-        padding-left: 10px;
-        background-color: var(--boxcolor);
-        font-size: 18px;*/
         height: 50px; 
         text-align: center;
     }
@@ -353,11 +381,8 @@ div.stats-placeholder {
     }
     
     .dashboard-button {
-        /* background-color:; */
         margin: 0 !important;
         width: 100% !important;
-        /* font-size: 18px !important;
-        border-radius: 3px !important; */
     }
     
     .dashboard-button:hover {
@@ -369,27 +394,20 @@ div.stats-placeholder {
         margin: 0;
     }
 
+    /* div.dashboard h1.stats-h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 22px;
+        width: 100%;
+        text-align: center;
+    } */
+
     section.supplier-dashboard div.dashboard h1.stats-h1{
-        font-size: 150%;
+        font-size: 90%;
         font-weight: 300;
     }
 
     #error-message {
-        /* display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: rgb(190, 190, 225);
-        color: black;
-        border: 1px solid rgb(171, 171, 213);
-        padding: 10px 20px;
-        border-radius: 4px;
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); */
         width: auto;
-
-      }
-
+    }
 }

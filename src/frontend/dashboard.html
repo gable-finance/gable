@@ -99,6 +99,7 @@
                 </div>
                 <div class="apy">
                     <h1>APY</h1>
+
                     <div class="apy-div">
                         <div class="stats-divs">
                             <h1>
@@ -119,14 +120,27 @@
                             <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
                         </div>
                     </div>
+
+                    <div class="info-container">
+                        <span class="info-icon">ℹ️</span>
+                        <span class="tooltip">
+                            The "Staking APY" is the yield earned by staking with the Sundae validator node. <br>
+                            The "Interest APY" is the annual yield on staking rewards in the liquidity pool, compounding the overall yield. <br>
+                            The "Total APY" is the multiplication of both APYs.
+                        </span>
+                    </div>
+
                 </div>
             </div>
         </section>
 
         <section class="chart-section">
-            <h1 class="h1">
+            <h1 id="h1">
                 APY Charts
             </h1>
+            <p>
+                The charts below display the historical development of staking rewards, interest earnings, and total APY provided to liquidity suppliers by Sundae.
+            </p>
             <div id="button">
                 <button class="chart-button" id="chart1Btn" onclick="toggleChart('chart1')">Staking APY</button>
                 <button class="chart-button" id="chart2Btn" onclick="toggleChart('chart2')">Supplier APY</button>
@@ -137,13 +151,17 @@
         </section>
         
         <section class="supplier-dashboard">
-            <h1 class="h1">
+            <h1 id="h1">
                 Dashboard
             </h1>
+            <p>
+                The dashboard below provides a personalized overview of your earnings on Sundae. 
+                Connect your wallet to access your customized view or enter the local ID(s) of the Sundae 'proof of supply' NFT(s) you own.
+            </p>
             <div class="dashboard-input">
                 <div class="dashboard-go">
                     <input type="text" placeholder="NFT Local ID" id="nft-local-id" class="dashboard-text"/>
-                    <button id="get-user-info" class="learn-more dashboard-button">Go</button>
+                    <button id="get-nft-info" class="learn-more dashboard-button">Go</button>
                 </div>
                 <div id="error-message" style="display: none;">
                     <div class="error-content">
@@ -152,8 +170,19 @@
                     <button id="close-button">x</button>
                   </div>      
             </div>
+
             <div class="dashboard">
-                <div class="dashboard-category">
+
+                <div class="dashboard-div" style="border-bottom: solid lightgray;">
+                    <h1 class="stats-h1">NFT Local ID</h1>
+                    <h1 class="stats-h1">LSU Amount</h1>
+                    <h1 class="stats-h1">Staking Rewards</h1>
+                    <h1 class="stats-h1">Interest Earnings</h1>
+                </div>
+
+                <div class="dashboard" id="results-container"></div>
+
+                <!-- <div class="dashboard-category">
                     <h1 class="stats-h1">
                         LSU Amount
                     </h1>
@@ -182,7 +211,7 @@
                         Total XRD
                     </h1>
                     <div class="stats-placeholder"><pre class="show-stats" id="total-xrd"></pre></div>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -226,6 +255,7 @@
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
+        <script src="java/information.js"></script>
         <!-- <script type="module" src="java/bundle.js"></script> -->
         <script type="module" src="java/dashboard.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
