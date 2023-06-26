@@ -1,54 +1,26 @@
-import { RadixDappToolkit } from '@radixdlt/radix-dapp-toolkit';
 import { StateApi } from '@radixdlt/babylon-gateway-api-sdk';
 import { componentAddress, xrdAddress, nft_address } from './global-states.js';
-
-let accountAddress;
-
-const dAppId = 'account_tdx_c_1pyu3svm9a63wlv6qyjuns98qjsnus0pzan68mjq2hatqejq9fr'; // temp
-
-const rdt = RadixDappToolkit(
-  {
-    dAppDefinitionAddress: dAppId,
-    dAppName: 'Sundae Liquidity Protocol',
-  },
-  (requestData) => {
-    requestData({
-      accounts: { quantifier: 'atLeast', quantity: 1 },
-    }).map(({ data: { accounts } }) => {
-      // set your application state
-      console.log('account data: ', accounts);
-      accountAddress = accounts[0].address;
-    });
-  },
-  {
-    networkId: 12,
-    onDisconnect: () => {
-      // clear your application state
-    },
-    onInit: ({ accounts }) => {
-      // set your initial application state
-      console.log('onInit accounts: ', accounts);
-      if (accounts.length > 0) {
-        accountAddress = accounts[0].address;
-      }
-    },
-  }
-);
-console.log('dApp Toolkit: ', rdt);
+import { accountAddress } from './accountAddress.js'
 
 // Instantiate Gateway SDK
 const stateApi = new StateApi();
+// const accountAddress = data.accountAddress;
 
 // call functions
 document.addEventListener('DOMContentLoaded', async () => {
   // Function to be executed once the page is loaded
   await getPoolAmount();
   await getValues();
-  await getNftInfo();
+
+  // await getNftInfo();
   document.getElementById('get-nft-info').addEventListener('click', async () => {
     getNftInfo();
   });
-  // getAccountInfo();
+
+  if (typeof accountAddress !== 'undefined') {
+    getNftInfo();
+  }
+
 });
 
 // get the component state
@@ -107,6 +79,8 @@ async function getPoolAmount() {
 
 // get entity non fungible state > get entity non fungible ids
 async function getNftIds() {
+  console.log(accountAddress)
+
   const stateEntityNonFungiblesPageRequest = {
     address: accountAddress,
     aggregation_level: 'Vault',
@@ -158,6 +132,12 @@ async function getNftIds() {
 
 // get the nft info (earnings) of the user
 async function getNftInfo() {
+
+  // Initialize variables to store the sum
+  let total_lsu = 0;
+  let total_staking_rewards = 0;
+  let total_interest_earnings = 0;
+
   let nft_local_id = document.getElementById('nft-local-id').value;
 
   // Function to check if the key starts and ends with a hashtag
@@ -178,7 +158,7 @@ async function getNftInfo() {
     // Check if nft_local_id is provided
     if (nft_local_id) {
       // Split the nft_local_id string into an array of IDs
-      idArray = nft_local_id.split(',');
+      idArray = nft_local_id.replace(/\s/g, '').split(',');
     } else {
       // Call getNftIds() to retrieve the array of IDs
       idArray = await getNftIds();
@@ -213,13 +193,18 @@ async function getNftInfo() {
           let staking_rewards = values[2];
           let interest_earnings = values[3];
 
-          // Convert the strings to numbers
-          lsu_amount = parseFloat(lsu_amount);
-          staking_rewards = parseFloat(staking_rewards);
-          interest_earnings = parseFloat(interest_earnings);
+          // Convert the strings to numbers and round to two decimal points
+          lsu_amount = parseFloat(lsu_amount).toFixed(2);
+          staking_rewards = parseFloat(staking_rewards).toFixed(2);
+          interest_earnings = parseFloat(interest_earnings).toFixed(2);
+
+          // Update the sum variables
+          total_lsu += parseFloat(lsu_amount);
+          total_staking_rewards += parseFloat(staking_rewards);
+          total_interest_earnings += parseFloat(interest_earnings);
 
           // Calculate the total XRD
-          const total_xrd = staking_rewards + staking_rewards + interest_earnings;
+          const total_xrd = (parseFloat(staking_rewards) + parseFloat(staking_rewards) + parseFloat(interest_earnings)).toFixed(2);
 
           // Create HTML elements to display the results
           const resultElement = document.createElement('div');
@@ -245,6 +230,12 @@ async function getNftInfo() {
       displayErrorMessage('Entry not found.');
     }
   }
+
+  // Update the HTML placeholders with the calculated sums
+  document.getElementById('total-lsu').textContent = (total_lsu.toFixed(2) + ' LSU');
+  document.getElementById('total-staking-rewards').textContent = (total_staking_rewards.toFixed(2) + ' XRD');
+  document.getElementById('total-interest-earnings').textContent = (total_interest_earnings.toFixed(2) + ' XRD');
+
 }
 
 // Display error message

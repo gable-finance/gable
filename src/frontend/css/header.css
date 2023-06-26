@@ -1,3 +1,59 @@
+/* DASHBOARD */
+section.dashboard {
+  display: none;
+}
+
+.web-dashboard {
+  background-color: #f6f6f670;
+  background: linear-gradient(
+      0deg,
+      var(--boxcolor),
+      var(--boxcolor),
+      #f6f6f683,
+      #f6f6f62b,
+      #f6f6f600
+    );
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-evenly;
+  /* background-color: red; */
+  /* flex-direction: row; */
+  min-width: 300px;
+  max-width: 450px;
+  width: 50%;
+  height: auto;
+  border-top-left-radius: 5px;
+}
+
+.web-dashboard-div {
+  /* background-color: ; */
+  padding: 10px;
+  margin: 0;
+  /* margin: 5px; */
+  /* width: 100%; */
+  /* background-color: blue; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.web-dashboard-div h1 {
+  text-align: center;
+  /* padding: 0 !important; */
+  margin: 0 !important;
+  /* background-color: green; */
+  font-size: 20px;
+  font-weight: 400;
+  /* color: var(--firsttheme); */
+}
+
+/* #web-dashboard-title {
+  color: var(--firsttheme);
+} */
+
 /* BANNER */
 header nav div div.logo a {
     position: relative;
@@ -136,6 +192,7 @@ header nav div div.logo a {
   /* BANNER */
   /* banner with background */
   #banner {
+    position: relative;
     width: 100%;
     height: 500px;
     display: flex;
@@ -149,7 +206,7 @@ header nav div div.logo a {
   }
   
   /* hide text  */
-  #banner.hide-text {
+ .hide-text {
     visibility: hidden;
   }
   
@@ -196,6 +253,7 @@ header nav div div.logo a {
   }
   
   @media only screen and (min-width: 768px) {
+
     nav.scrolled {
       background: var(--firsttheme);
       height: 60px;
@@ -219,6 +277,54 @@ header nav div div.logo a {
   }
   
   @media only screen and (max-width: 768px) {
+
+    .web-dashboard {
+      display: none;
+    }
+
+    /* DASHBOARD */
+    section.dashboard {
+      margin-top: 30px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    section.dashboard .dashboard-container{
+      height: auto;
+      margin: 20px;
+      padding: 20px 30px !important;
+      width: 80%;
+      background-color: var(--boxcolor);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+    section.dashboard .dashboard-div {
+      text-align: center;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      /* width: fit-content !important; */
+      width: auto !important;
+      /* background-color: green; */
+    }
+
+    section.dashboard .dashboard-div h1{
+      /* color: var(--firsttheme); */
+      font-size: 18px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: fit-content;
+      /* background-color: green; */
+      text-align: center;
+    }
+
+
     /* TEMP BANNER */
     #banner-p {
       padding-left: 10px;
@@ -293,7 +399,7 @@ header nav div div.logo a {
       margin-top: 25px;
     }
   
-    #banner.hide-text {
+    .hide-text {
       visibility: visible;
     }
   

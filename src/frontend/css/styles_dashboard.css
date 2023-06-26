@@ -31,19 +31,9 @@ section.stats div div.stats-div {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    max-width: 400px;
+    max-width: 300px;
     border-right: solid lightgray;
     margin: 10px 0;
-}
-
-section.stats div div.stats-divs {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    max-width: 400px;
-    margin: 10px 20px;
-    position: relative;
 }
 
 section.stats div div.stats-divs:first-child::before {
@@ -51,7 +41,7 @@ section.stats div div.stats-divs:first-child::before {
 }
 
 section.stats div div h1 {
-    font-size: 200%;
+    font-size: 25px;
     font-weight: 400;
     margin: 20px 0 0;
     padding: 0;
@@ -65,10 +55,36 @@ section.stats div div.apy {
 section.stats div div div.apy-div {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     flex: 1;
     width: 100%;
 }
 
+section.stats div div.apy-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* max-width: 400px; */
+    /* margin: 10px 20px; */
+    /* position: relative; */
+    /* flex-wrap: wrap; */
+    width: 100%;
+}
+
+.show-stats {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-size: 25px;
+    margin: 0;
+    padding: 0;
+    line-height: 2;
+    color: black;
+}
+
+    /* INFO */
 .info-container {
     display: flex;
     align-items: center;
@@ -99,18 +115,6 @@ section.stats div div div.apy-div {
 
 .info-container:hover .tooltip {
     display: block;
-}
-
-.show-stats {
-    font-family: Roboto;
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-    line-height: 2;
-    color: black;
 }
 
 /* CHART */
@@ -156,6 +160,7 @@ section.chart-section .chart-button {
     margin-top: 10px;
     width: auto;
     font-size: 20px;
+    color: black
 }
 
 .chart-button:hover {
@@ -251,8 +256,8 @@ section.supplier-dashboard div.dashboard {
 }
 
 div.dashboard h1.stats-h1 {
-    margin: 0;
-    padding: 0;
+    /* margin: 0;
+    padding: 0; */
     font-size: 22px;
     width: 100%;
     text-align: center;
@@ -262,11 +267,19 @@ div.dashboard h1.stats-h1:first-child {
     font-weight: bold;
 }
 
+.bold {
+    font-weight: bold;
+}
+
+.border-top {
+    border-top: solid lightgray;
+}
+
 div.dashboard div.dashboard-div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-bottom: none;
+    /* border-bottom: none; */
     align-items: center;
     padding: 20px 0;
 }
@@ -279,11 +292,6 @@ div.stats-placeholder {
 }
 
 @media only screen and (max-width: 768px) {
-    
-    #coming-soon {
-        font-size: 300%;
-        font-weight: 300%;
-    }
 
     section.stats div {
         flex-direction: column;
@@ -293,7 +301,7 @@ div.stats-placeholder {
     section.stats div div.stats-div {
         width: 80%;
         border-right: none;
-        border-bottom: solid lightgray;
+        border-bottom: solid 1px lightgray;
         margin: 0 10px;
         height: auto;
     }
@@ -303,15 +311,15 @@ div.stats-placeholder {
     }
 
     section.stats div div h1 {
-        font-size: 150%;
+        font-size: 20px;
         font-weight: 300;
-        margin: 0;
+        margin-top: 20px;
         padding: 0;
     }
 
     .show-stats {
         font-weight: 300;
-        font-size: 130%;
+        font-size: 20px;
     }
 
     section.stats div div div.apy-div {
@@ -343,17 +351,16 @@ div.stats-placeholder {
         font-size: 15px;
     }
 
+    .chart-button:hover {
+        box-shadow: none;
+    }
+
     section.chart-section #chart {
         max-width: 100%; 
         height: 300px;
     }
 
     /* DASHBOARD */
-
-    /* section.supplier-dashboard {
-        margin: 100px 0;
-        padding: 0 50px;
-    } */
 
     section.supplier-dashboard {
         margin-top: 0;
@@ -384,23 +391,15 @@ div.stats-placeholder {
         margin: 0 !important;
         width: 100% !important;
     }
-    
+
     .dashboard-button:hover {
-        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        box-shadow: none;
     }
     
     section.supplier-dashboard div.dashboard {
         background: var(--boxcolor);
         margin: 0;
     }
-
-    /* div.dashboard h1.stats-h1 {
-        margin: 0;
-        padding: 0;
-        font-size: 22px;
-        width: 100%;
-        text-align: center;
-    } */
 
     section.supplier-dashboard div.dashboard h1.stats-h1{
         font-size: 90%;

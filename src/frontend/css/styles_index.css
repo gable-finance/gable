@@ -280,6 +280,11 @@ section.slogan {
   }
   
   @media only screen and (max-width: 768px) {
+
+    section.slogan {
+      margin-top: 70px;
+    }
+
     /* SLOGAN */
     section.slogan #slogan-h1 {
       font-size: 24px;

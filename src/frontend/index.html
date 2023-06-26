@@ -85,8 +85,6 @@
                         </ul>
                     </div>
 
-                    <script type="module" src="java/bundle.js"></script>
-
                     <div class="connectBtn">
                         <radix-connect-button />
                     </div>
@@ -96,11 +94,24 @@
             </nav>
 
             <div id="banner">
-                <h1>
+                <h1 id="banner-text">
                     Liquidity protocol on Radix DLT
                 </h1>
+                <div class="web-dashboard">
+                    <div class="web-dashboard-div">
+                        <h1 id="web-dashboard-title">Liquidity</h1>
+                        <h1>123,456.78 XRD</h1>
+                    </div>
+                    <div class="web-dashboard-div">
+                        <h1 id="web-dashboard-title">Interest Rate</h1>
+                        <h1>0.10%</h1>
+                    </div>
+                    <div class="web-dashboard-div">
+                        <h1 id="web-dashboard-title">APY</h1>
+                        <h1>9.21%</h1>
+                    </div>
+                </div>
             </div>
-
         </header>
 
         <section class="introduction">
@@ -114,6 +125,23 @@
                     Built on Radix DLT, the protocol offers transparency, security, and innovative solutions for traders and investors.
                     This allows users to enjoy fast and efficient transaction processing, low fees, and transparent terms.                     
                 </p>
+            </div>
+        </section>
+
+        <section class="dashboard">
+            <div class="dashboard-container">
+                <div class="dashboard-div">
+                    <h1>Liquidity</h1>
+                    <h1>123,456.78 XRD</h1>
+                </div>
+                <div class="dashboard-div">
+                    <h1>Interest Rate</h1>
+                    <h1>0.10%</h1>
+                </div>
+                <div class="dashboard-div">
+                    <h1>APY</h1>
+                    <h1>9.21%</h1>
+                </div>
             </div>
         </section>
 
@@ -433,6 +461,9 @@
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
         <script src="java/temp-banner.js"></script>
+
+        <script type="module" src="java/radixToolkit.js"></script>
+
 
     </body>
 </html>
