@@ -89,13 +89,13 @@
                     <h1>
                         Liquidity
                     </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="pool-amount"><h1>123,456.78 XRD</h1></pre></div>
+                    <div class="stats-placeholder"><pre class="show-stats" id="pool-amount">123,456.78 XRD</pre></div>
                 </div>
                 <div class="stats-div">
                     <h1 class="stats-h1">
                         Interest rate
                     </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre><h1>0.10%</h1></div>
+                    <div class="stats-placeholder"><pre class="show-stats" id="interest-rate">0.10%</pre></div>
                 </div>
                 <div class="apy">
                     <h1>APY</h1>
@@ -105,24 +105,19 @@
                             <h1>
                                 Staking
                             </h1>
-                            <h1>8.33%</h1> <!--TEMP-->
-                            <div class="stats-placeholder">
-                                <pre class="show-stats" id="interest-rate"></pre>
-                            </div>
+                            <pre class="show-stats" id="apy-staking">7.46%</pre>
                         </div>
                         <div class="apy-divs">
                             <h1>
                                 Interest
                             </h1>
-                            <h1>7.42%</h1> <!--TEMP-->
-                            <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                            <pre class="show-stats" id="apy-interest">8.34%</pre>
                         </div>
                         <div class="apy-divs">
                             <h1>
                                 Total
                             </h1>
-                            <h1>9.21%</h1> <!--TEMP-->
-                            <div class="stats-placeholder"><pre class="show-stats" id="interest-rate"></pre></div>
+                            <pre class="show-stats" id="apy-total">8.08%</pre>
                         </div>
                     </div>
 
@@ -170,10 +165,10 @@
                 </div>
                 <div id="error-message" style="display: none;">
                     <div class="error-content">
-                      <span id="error-text"></span>
+                        <span id="error-text"></span>
+                        <button id="close-button">x</button>
                     </div>
-                    <button id="close-button">x</button>
-                  </div>      
+                </div>
             </div>
 
             <div class="dashboard">
@@ -287,6 +282,8 @@
         <!-- <script type="module" src="java/bundle.js"></script> -->
         <script type="module" src="java/radixToolkit.js"></script>
         <script type="module" src="java/dashboard.js"></script>
+        <script type="module" src="java/dashboardGeneric.js"></script>
+
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="java/charts.js" type="text/javascript"></script>
 

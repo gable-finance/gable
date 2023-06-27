@@ -278,52 +278,33 @@ header nav div div.logo a {
   
   @media only screen and (max-width: 768px) {
 
-    .web-dashboard {
-      display: none;
+    .banner-index {
+      height: 300px !important;
+    }
+
+    .header-index {
+      background-size: 200% 200%;
+      animation: none;
+      height: 300px;
+    }
+
+    .banner-text-index {
+      padding-bottom: 50px;
     }
 
     /* DASHBOARD */
-    section.dashboard {
-      margin-top: 30px;
+    div.web-dashboard {
       width: 100%;
-      display: flex;
-      justify-content: center;
+      bottom: 0;
+      right: auto;
+      min-width: none;
+      max-width: none;
+      border-top-left-radius: 0px;
     }
 
-    section.dashboard .dashboard-container{
-      height: auto;
-      margin: 20px;
-      padding: 20px 30px !important;
-      width: 80%;
-      background-color: var(--boxcolor);
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-evenly;
+    .web-dashboard-div h1 {
+      font-size: 16px;
     }
-
-    section.dashboard .dashboard-div {
-      text-align: center;
-      margin: 0 !important;
-      padding: 0 !important;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      /* width: fit-content !important; */
-      width: auto !important;
-      /* background-color: green; */
-    }
-
-    section.dashboard .dashboard-div h1{
-      /* color: var(--firsttheme); */
-      font-size: 18px !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      width: fit-content;
-      /* background-color: green; */
-      text-align: center;
-    }
-
 
     /* TEMP BANNER */
     #banner-p {
@@ -397,6 +378,7 @@ header nav div div.logo a {
     /* ensure text is in center - thus 50px lower to account for navigation bar*/
     #banner h1 {
       margin-top: 25px;
+      /* margin-bottom: 50px; */
     }
   
     .hide-text {

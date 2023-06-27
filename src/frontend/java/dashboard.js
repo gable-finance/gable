@@ -1,5 +1,5 @@
 import { StateApi } from '@radixdlt/babylon-gateway-api-sdk';
-import { componentAddress, xrdAddress, nft_address } from './global-states.js';
+import { nft_address } from './global-states.js';
 import { accountAddress } from './accountAddress.js'
 
 // Instantiate Gateway SDK
@@ -8,9 +8,6 @@ const stateApi = new StateApi();
 
 // call functions
 document.addEventListener('DOMContentLoaded', async () => {
-  // Function to be executed once the page is loaded
-  await getPoolAmount();
-  await getValues();
 
   // await getNftInfo();
   document.getElementById('get-nft-info').addEventListener('click', async () => {
@@ -22,60 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
 });
-
-// get the component state
-async function getState() {
-  const stateEntityDetailsRequest = {
-    addresses: [componentAddress],
-  };
-
-  let response = await stateApi.stateEntityDetails({ stateEntityDetailsRequest });
-
-  if (response.items[0].details === undefined) return;
-
-  let state = response.items[0].details.state.data_json;
-
-  console.log(response);
-
-  return state;
-}
-
-// get values from state
-async function getValues() {
-  let state = await getState();
-
-  let last_epoch = state.fields[7].value;
-  let interest_rate = state.fields[11].value;
-
-  let interest_rate_percentage = interest_rate * 100;
-
-  document.getElementById('interest-rate').innerText = interest_rate_percentage + '%';
-
-  console.log(state);
-  console.log(last_epoch);
-  console.log(interest_rate);
-}
-
-// get the amount of liquidity in the pool from state
-async function getPoolAmount() {
-  const stateEntityFungibleResourceVaultsPageRequest = {
-    address: componentAddress,
-    resource_address: xrdAddress,
-  };
-
-  let response = await stateApi.entityFungibleResourceVaultPage({
-    stateEntityFungibleResourceVaultsPageRequest,
-  });
-
-  if (response.items[0].amount === undefined) return;
-
-  let pool_amount = response.items[0].amount;
-
-  document.getElementById('pool-amount').innerText = pool_amount + ' XRD';
-
-  console.log(response);
-  console.log(pool_amount);
-}
 
 // get entity non fungible state > get entity non fungible ids
 async function getNftIds() {

@@ -33,7 +33,6 @@ section.stats div div.stats-div {
     align-items: center;
     max-width: 300px;
     border-right: solid lightgray;
-    margin: 10px 0;
 }
 
 section.stats div div.stats-divs:first-child::before {
@@ -43,13 +42,19 @@ section.stats div div.stats-divs:first-child::before {
 section.stats div div h1 {
     font-size: 25px;
     font-weight: 400;
-    margin: 20px 0 0;
+    margin: 0;
     padding: 0;
 }
 
 section.stats div div.apy {
     display: flex;
     flex-direction: column;
+    padding-top: 20px;
+}
+
+section.stats div div #apy-h1 {
+    /* padding: 0; */
+    /* margin-bottom: 0 !importa; */
 }
 
 section.stats div div div.apy-div {
@@ -65,11 +70,9 @@ section.stats div div.apy-divs {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* max-width: 400px; */
-    /* margin: 10px 20px; */
-    /* position: relative; */
-    /* flex-wrap: wrap; */
     width: 100%;
+    margin: 0;
+    padding-bottom: 20px;
 }
 
 .show-stats {
@@ -84,7 +87,8 @@ section.stats div div.apy-divs {
     color: black;
 }
 
-    /* INFO */
+/* INFO */
+
 .info-container {
     display: flex;
     align-items: center;
@@ -170,33 +174,34 @@ section.chart-section .chart-button {
 /* DASHBOARD */
 
 #error-message {
+    position: relative;
+    background-color:var(--thirdtheme);
+    padding: 20px;
+    color: #fff;
+    display: none;
+  }
+  
+.error-content {
     display: flex;
-    flex-direction: row;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgb(190, 190, 225);
-    color: black;
-    border: 1px solid rgb(171, 171, 213);
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    word-break: break-word;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
 }
 
-.error-content {
-    flex-grow: 1;
+#error-text {
+    flex: 1;
+    font-size: 16px;
+    text-align: center;
 }
 
 #close-button {
     background: none;
     border: none;
     font-size: 18px;
-    font-weight: bold;
-    color: black;
+    color: white;
     cursor: pointer;
-}
+    justify-content: flex-end;
+} 
 
 section.supplier-dashboard {
     margin: 100px 0;
@@ -284,13 +289,6 @@ div.dashboard div.dashboard-div {
     padding: 20px 0;
 }
 
-div.stats-placeholder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60px;
-}
-
 @media only screen and (max-width: 768px) {
 
     section.stats div {
@@ -303,7 +301,9 @@ div.stats-placeholder {
         border-right: none;
         border-bottom: solid 1px lightgray;
         margin: 0 10px;
+        padding: 0 10px;
         height: auto;
+        /* background-color: green; */
     }
 
     section.stats div div:last-child {
@@ -313,7 +313,7 @@ div.stats-placeholder {
     section.stats div div h1 {
         font-size: 20px;
         font-weight: 300;
-        margin-top: 20px;
+        margin-top: 10px;
         padding: 0;
     }
 
@@ -322,10 +322,24 @@ div.stats-placeholder {
         font-size: 20px;
     }
 
+    section.stats div div.apy {
+        padding-top: 0;
+    }
+
     section.stats div div div.apy-div {
         flex-direction: row;
         margin: 0;
         padding: 0;
+    }
+
+    section.stats div div.apy-divs {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        padding: 0 20px;
+        /* background-color: green; */
     }
 
     /* CHART */
@@ -333,7 +347,6 @@ div.stats-placeholder {
     section.chart-section {
         margin: 0 10px;
     }
-
 
     section.chart-section #button {
         width: 100%;
@@ -361,6 +374,24 @@ div.stats-placeholder {
     }
 
     /* DASHBOARD */
+
+    /* DASHBOARD */
+
+    #error-message {
+        padding: 10px;
+    }
+    
+    .error-content {
+        padding: 0 10px;
+    }
+
+    #error-text {
+        font-size: 14px;
+    }
+
+    #close-button {
+        font-size: 16px;
+    } 
 
     section.supplier-dashboard {
         margin-top: 0;
