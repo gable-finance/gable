@@ -1,7 +1,7 @@
 import { ManifestBuilder, Decimal, Bucket, Expression, Address } from '@radixdlt/radix-dapp-toolkit'
 import { TransactionApi } from "@radixdlt/babylon-gateway-api-sdk";
 import { accountAddress } from './accountAddress.js'
-import { componentAddress, xrdAddress, transient_address} from './global-states.js';
+import { componentAddress, xrdAddress, transient_address, admin_badge} from './global-states.js';
 import { rdt } from './radixToolkit.js'
 
 // Instantiate Gateway SDK

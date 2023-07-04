@@ -1,6 +1,8 @@
 import { StateApi } from '@radixdlt/babylon-gateway-api-sdk';
 import { nft_address } from './global-states.js';
 import { accountAddress } from './accountAddress.js'
+import { getState } from './dashboardGeneric.js';
+// import { fetchNftData } from './postgreSQL.js';
 
 // Instantiate Gateway SDK
 const stateApi = new StateApi();
@@ -12,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // await getNftInfo();
   document.getElementById('get-nft-info').addEventListener('click', async () => {
     getNftInfo();
+    fetchNftData();
   });
 
   if (typeof accountAddress !== 'undefined') {
@@ -19,6 +22,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
 });
+
+function fetchNftData(){
+  // Define the API URL
+  const apiUrl = 'http://127.0.0.1:5000/api/nft_data';
+
+  // Define the nft_ids parameter
+  // const nftIds = ['#1#', '#2#'];
+
+  let nftIdsInput = document.getElementById('nft-local-id').value;
+  const nftIds = nftIdsInput.split(',').map(id => id.trim());
+
+  // Create the query string
+  const queryString = nftIds.map(id => `nft_ids=${encodeURIComponent(id)}`).join('&');
+
+  // Make the API call
+  fetch(`${apiUrl}?${queryString}`)
+    .then(response => response.json())
+    .then(data => {
+      // Process the API response data
+      console.log(data);
+    })
+    .catch(error => {
+      // Handle any errors
+      console.error(error);
+    });
+}
+
 
 // get entity non fungible state > get entity non fungible ids
 async function getNftIds() {

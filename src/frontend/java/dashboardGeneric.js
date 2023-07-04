@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // get the component state
-async function getState() {
+export async function getState() {
   const stateEntityDetailsRequest = {
     addresses: [componentAddress],
   };
