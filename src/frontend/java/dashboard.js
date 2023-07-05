@@ -2,7 +2,6 @@ import { StateApi } from '@radixdlt/babylon-gateway-api-sdk';
 import { nft_address } from './global-states.js';
 import { accountAddress } from './accountAddress.js'
 import { getState } from './dashboardGeneric.js';
-// import { fetchNftData } from './postgreSQL.js';
 
 // Instantiate Gateway SDK
 const stateApi = new StateApi();
@@ -14,44 +13,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // await getNftInfo();
   document.getElementById('get-nft-info').addEventListener('click', async () => {
     getNftInfo();
-    fetchNftData();
   });
 
   if (typeof accountAddress !== 'undefined') {
     getNftInfo();
   }
-
 });
 
-function fetchNftData(){
-  // Define the API URL
-  const apiUrl = 'http://127.0.0.1:5000/api/nft_data';
-
-  // Define the nft_ids parameter
-  // const nftIds = ['#1#', '#2#'];
-
-  let nftIdsInput = document.getElementById('nft-local-id').value;
-  const nftIds = nftIdsInput.split(',').map(id => id.trim());
-
-  // Create the query string
-  const queryString = nftIds.map(id => `nft_ids=${encodeURIComponent(id)}`).join('&');
-
-  // Make the API call
-  fetch(`${apiUrl}?${queryString}`)
-    .then(response => response.json())
-    .then(data => {
-      // Process the API response data
-      console.log(data);
-    })
-    .catch(error => {
-      // Handle any errors
-      console.error(error);
-    });
-}
-
-
 // get entity non fungible state > get entity non fungible ids
-async function getNftIds() {
+export async function getNftIds() {
   console.log(accountAddress)
 
   const stateEntityNonFungiblesPageRequest = {
@@ -236,3 +206,258 @@ function hideErrorMessage() {
   // Hide the error message
   errorMessage.style.display = 'none';
 }
+
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(function () {
+  drawCharts('chart1'); // Display chart1 by default
+  drawCharts2('chart4'); // Display chart4 by default
+});
+
+
+async function drawCharts(chartId) {
+  const options = {
+    vAxis: {
+      title: 'Percentage',
+      minValue: 0,
+      maxValue: 10,
+      format: "#'%'",
+      minorGridlines: {
+        count: 0,
+      },
+      gridlines: {
+        color: 'lightgray',
+        opacity: 0.0,
+        count: 5,
+      },
+    },
+    hAxis: {
+      title: 'Year',
+    },
+    backgroundColor: 'transparent',
+    colors: ['#cbe7c9'],
+    chartArea: {
+      width: '80%',
+      height: '70%',
+    },
+    legend: {
+      position: 'none',
+    },
+  };
+
+  let chart;
+  let dataTable;
+
+  if (chartId === 'chart1') {
+    dataTable = google.visualization.arrayToDataTable([
+      ['Year', '%'],
+      ['2013', 5],
+      ['2014', 6],
+      ['2015', 4],
+      ['2016', 6],
+    ]);
+  } else if (chartId === 'chart2') {
+    dataTable = google.visualization.arrayToDataTable([
+      ['Year', '%'],
+      ['2013', 8],
+      ['2014', 7],
+      ['2015', 6],
+      ['2016', 5],
+    ]);
+  } else if (chartId === 'chart3') {
+    dataTable = google.visualization.arrayToDataTable([
+      ['Year', '%'],
+      ['2013', 3],
+      ['2014', 4],
+      ['2015', 5],
+      ['2016', 6],
+    ]);
+  }
+
+  chart = new google.visualization.AreaChart(document.getElementById('chart'));
+  chart.draw(dataTable, options);
+
+  // Redraw the chart whenever the window is resized
+  window.addEventListener('resize', function () {
+    chart = new google.visualization.AreaChart(document.getElementById('chart'));
+    chart.draw(dataTable, options);
+  });
+}
+
+// Event listeners for toggling charts
+document.getElementById('chart1Btn').addEventListener('click', function () {
+  drawCharts('chart1');
+});
+
+document.getElementById('chart2Btn').addEventListener('click', function () {
+  drawCharts('chart2');
+});
+
+document.getElementById('chart3Btn').addEventListener('click', function () {
+  drawCharts('chart3');
+});
+
+
+// fetch nft info from postgreSQL database
+export async function fetchNftData() {
+  // Define the API URL
+  const apiUrl = 'http://127.0.0.1:5000/api/nft_data';
+
+  try {
+    // Retrieve the non-fungible IDs
+    const nftIdsInput = await getNftIds();
+
+    console.log(nftIdsInput);
+
+    // Create the query string
+    const queryString = nftIdsInput.map((id) => `nft_ids=${encodeURIComponent(id)}`).join('&');
+
+    console.log(queryString);
+
+    // Make the API call
+    const response = await fetch(`${apiUrl}?${queryString}`);
+
+    console.log(response);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch NFT data');
+    }
+
+    const data = await response.json();
+
+    // Process the API response data
+    console.log(data);
+
+    const aggregatedData = {};
+
+    for (const entry of data) {
+      const timestamp = entry.timestamp;
+      const interest_earnings = entry.interest_earnings;
+      const staking_rewards = entry.staking_rewards;
+      const total_earnings = interest_earnings + staking_rewards;
+
+      if (!aggregatedData[timestamp]) {
+        aggregatedData[timestamp] = {
+          staking_rewards: 0,
+          interest_earnings: 0,
+          total_earnings: 0,
+        };
+      }
+
+      aggregatedData[timestamp].staking_rewards += staking_rewards;
+      aggregatedData[timestamp].interest_earnings += interest_earnings;
+      aggregatedData[timestamp].total_earnings += total_earnings;
+    }
+
+    console.log("Aggregated data per timestamp:");
+    console.log(aggregatedData);
+
+    return aggregatedData;
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+  }
+}
+
+// Function to process the table data into three separate DataTables
+async function processTableData() {
+  const dataArray = await fetchNftData();
+
+  console.log("dataArray:");
+  console.log(dataArray);
+
+  const dataTable4 = new google.visualization.DataTable();
+  dataTable4.addColumn('date', 'Date');
+  dataTable4.addColumn('number', 'XRD');
+
+  const dataTable5 = new google.visualization.DataTable();
+  dataTable5.addColumn('date', 'Date');
+  dataTable5.addColumn('number', 'XRD');
+
+  const dataTable6 = new google.visualization.DataTable();
+  dataTable6.addColumn('date', 'Date');
+  dataTable6.addColumn('number', 'XRD');
+
+  for (const [timestamp, entry] of Object.entries(dataArray)) {
+    const date = new Date(timestamp);
+    const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const staking_rewards = entry.staking_rewards;
+    const interest_earnings = entry.interest_earnings;
+    const total_earnings = entry.total_earnings;
+
+    dataTable4.addRow([formattedDate, staking_rewards]);
+    dataTable5.addRow([formattedDate, interest_earnings]);
+    dataTable6.addRow([formattedDate, total_earnings]);
+  }
+
+  console.log("dataTable4:");
+  console.log(dataTable4);
+
+  return [dataTable4, dataTable5, dataTable6];
+}
+
+async function drawCharts2(chartId) {
+  const [dataTable4, dataTable5, dataTable6] = await processTableData();
+
+  const options = {
+    vAxis: {
+      title: 'XRD',
+      minorGridlines: {
+        count: 0,
+      },
+      gridlines: {
+        color: 'lightgray',
+        opacity: 0.0,
+      },
+    },
+    hAxis:{
+      title: 'Date',
+      gridlines: {
+        color: 'transparent',
+      },
+    },
+    backgroundColor: 'transparent',
+    colors: ['#cbe7c9'],
+    chartArea: {
+      height: '70%',
+    },
+    legend: {
+      position: 'none',
+    },
+  };
+
+  console.log("distinct dates");
+  console.log(dataTable4.getDistinctValues(0));
+
+  let chart;
+
+  if (chartId === 'chart4') {
+    chart = new google.visualization.AreaChart(document.getElementById('chart2'));
+    chart.draw(dataTable4, options);
+  } else if (chartId === 'chart5') {
+    chart = new google.visualization.AreaChart(document.getElementById('chart2'));
+    chart.draw(dataTable5, options);
+  } else if (chartId === 'chart6') {
+    chart = new google.visualization.AreaChart(document.getElementById('chart2'));
+    chart.draw(dataTable6, options);
+  }
+
+  // Redraw the chart whenever the window is resized
+  window.addEventListener('resize', function () {
+    chart = new google.visualization.AreaChart(document.getElementById('chart2'));
+    chart.draw(dataTable4, options);
+  });
+}
+
+// Event listeners for toggling charts
+document.getElementById('chart4Btn').addEventListener('click', function () {
+  drawCharts2('chart4');
+});
+
+document.getElementById('chart5Btn').addEventListener('click', function () {
+  drawCharts2('chart5');
+});
+
+document.getElementById('chart6Btn').addEventListener('click', function () {
+  drawCharts2('chart6');
+});

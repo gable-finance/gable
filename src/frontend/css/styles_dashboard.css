@@ -138,6 +138,13 @@ section.chart-section #chart {
     margin: 0;
 }
 
+section.chart-section #chart2 {
+    max-width: 100%;
+    height: 400px;
+    margin: 20px 0;
+    padding: 0;
+}
+
 section.chart-section #button {
     width: 100%;
     display: flex;
@@ -373,7 +380,10 @@ div.dashboard div.dashboard-div {
         height: 300px;
     }
 
-    /* DASHBOARD */
+    section.chart-section #chart2 {
+        max-width: 100%; 
+        height: 300px;
+    }
 
     /* DASHBOARD */
 

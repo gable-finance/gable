@@ -142,10 +142,11 @@
                 The charts below display the historical development of staking rewards, interest earnings, and total APY provided to liquidity suppliers by Sundae.
             </p>
             <div id="button">
-                <button class="chart-button" id="chart1Btn" onclick="toggleChart('chart1')">Staking APY</button>
-                <button class="chart-button" id="chart2Btn" onclick="toggleChart('chart2')">Supplier APY</button>
-                <button class="chart-button" id="chart3Btn" onclick="toggleChart('chart3')">Total APY</button>
+                <button class="chart-button" id="chart1Btn">Staking APY</button>
+                <button class="chart-button" id="chart2Btn">Supplier APY</button>
+                <button class="chart-button" id="chart3Btn">Total APY</button>
             </div>
+              
             
             <div id="chart"></div>
         </section>
@@ -204,38 +205,23 @@
                         <h1 class="stats-h1 bold" id="total-interest-earnings">1,208.66 XRD</h1>
                     </div>
                 </div>
-
-                <!-- <div class="dashboard-category">
-                    <h1 class="stats-h1">
-                        LSU Amount
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="lsu-amount"></pre></div>
-                </div>
-                <div class="dashboard-category">
-                    <h1 class="stats-h1">
-                        XRD Stake
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="xrd-stake"></pre></div>
-                </div>
-                <div class="dashboard-category">
-                    <h1 class="stats-h1">
-                        XRD Staking Rewards
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="stake-rewards"></pre></div>
-                </div>
-                <div class="dashboard-category">
-                    <h1 class="stats-h1">
-                        XRD Interest Earnings
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="interest-earnings"></pre></div>
-                </div>
-                <div class="dashboard-category">
-                    <h1 class="stats-h1">
-                        Total XRD
-                    </h1>
-                    <div class="stats-placeholder"><pre class="show-stats" id="total-xrd"></pre></div>
-                </div> -->
             </div>
+        </section>
+
+        <section class="chart-section">
+            <h1 id="h1">
+                Earning Charts
+            </h1>
+            <p>
+                The charts below display the development of your earnings on Sundae Liquidity Protocol.
+            </p>
+            <div id="button">
+                <button class="chart-button" id="chart4Btn">Staking rewards</button>
+                <button class="chart-button" id="chart5Btn">Interest earnings</button>
+                <button class="chart-button" id="chart6Btn">Total earnings</button>
+            </div>
+            
+            <div id="chart2"></div>
         </section>
 
         <hr>
@@ -279,14 +265,13 @@
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
         <script src="java/information.js"></script>
-        <script src="java/postgreSQL.js"></script>
         <!-- <script type="module" src="java/bundle.js"></script> -->
         <script type="module" src="java/radixToolkit.js"></script>
         <script type="module" src="java/dashboard.js"></script>
         <script type="module" src="java/dashboardGeneric.js"></script>
+        <script type="module" src="java/charts.js" type="text/javascript"></script>
 
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script src="java/charts.js" type="text/javascript"></script>
 
     </body>
 </html>
