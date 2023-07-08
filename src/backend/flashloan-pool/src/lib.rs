@@ -18,7 +18,7 @@ struct LiquiditySupplier {
 
 
 #[blueprint]
-mod flashloan {
+mod flashloanpool {
 
     enable_method_auth! { 
         roles { 
@@ -38,7 +38,7 @@ mod flashloan {
         }
     }
 
-    struct Flashloan {
+    struct Flashloanpool {
         admin_badge_address: ResourceAddress,
 
         liquidity_admin: Decimal,
@@ -57,9 +57,9 @@ mod flashloan {
         transient_token: ResourceManager,
     }
 
-    impl Flashloan {
+    impl Flashloanpool {
 
-        pub fn instantiate_lender() -> (Bucket, Global<Flashloan>) {
+        pub fn instantiate_flashloan_pool() -> (Bucket, Global<Flashloanpool>) {
 
             let (address_reservation, component_address) =
                 Runtime::allocate_component_address(Runtime::blueprint_id()); 
@@ -68,23 +68,23 @@ mod flashloan {
             // to support (co-)ownership
             // mintable and burnable by anyone that owns a admin's badge
             let admin_badge: Bucket = ResourceBuilder::new_fungible(OwnerRole::None)
-                .divisibility(DIVISIBILITY_NONE)
-                .metadata(metadata! { 
-                    init {
-                        "name" => "Admin Badge", locked;
-                        "symbol" => "SAB", locked;
-                        "description" => "Sundae admin badge", locked;
-                    }
-                })
-                .mint_roles(mint_roles! {
-                    minter => rule!(require(global_caller(component_address))); 
-                    minter_updater => rule!(deny_all);
-                  })
-                .burn_roles(burn_roles! {
-                    burner => rule!(require(global_caller(component_address)));
-                    burner_updater => rule!(deny_all);
-                  })
-                .mint_initial_supply(1);
+                    .divisibility(DIVISIBILITY_NONE)
+                    .metadata(metadata! { 
+                        init {
+                            "name" => "Admin Badge", locked;
+                            "symbol" => "SAB", locked;
+                            "description" => "Sundae admin badge", locked;
+                        }
+                    })
+                    .mint_roles(mint_roles! {
+                        minter => rule!(require(global_caller(component_address))); 
+                        minter_updater => rule!(deny_all);
+                    })
+                    .burn_roles(burn_roles! {
+                        burner => rule!(require(global_caller(component_address)));
+                        burner_updater => rule!(deny_all);
+                    })
+                    .mint_initial_supply(1);
 
             // provision transient non-fungible resource
             // to enforce flashloan repayment
@@ -142,7 +142,7 @@ mod flashloan {
                   })
                 .create_with_no_initial_supply();      
 
-            let flashloan_component: Global<Flashloan> = Self {
+            let flashloan_component: Global<Flashloanpool> = Self {
 
                 admin_badge_address: admin_badge.resource_address(),
 
@@ -227,7 +227,7 @@ mod flashloan {
             
             let transient_token: Bucket = 
                 transient_token_resource_manager.mint_ruid_non_fungible(
-                     AmountDue {amount: amount, interest_rate: self.interest_rate}
+                    AmountDue {amount: amount, interest_rate: self.interest_rate}
                 );
 
             debug!("Transient token data: {:?}", transient_token.as_non_fungible().non_fungible::<AmountDue>().data());      
@@ -376,7 +376,8 @@ mod flashloan {
             // mint nft containing deposited vector<lsu amount, epoch>
             let lsu_nft_resource_manager = self.lsu_nft;
 
-            let lsu_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
+            let lsu_nft: Bucket = 
+                lsu_nft_resource_manager.mint_non_fungible(
                     &NonFungibleLocalId::Integer(self.lsu_nft_nr.into()),
                     LiquiditySupplier {
                         lsu_amount: lsu_tokens.amount(),
@@ -542,7 +543,8 @@ mod flashloan {
             
             let admin_badge_resource_manager: ResourceManager = self.admin_badge_address.into();
             
-            let admin_badge: Bucket = admin_badge_resource_manager.mint(1);
+            let admin_badge:Bucket = 
+                    admin_badge_resource_manager.mint(1);
 
             return admin_badge
         }
