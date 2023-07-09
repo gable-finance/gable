@@ -383,6 +383,7 @@ div.dashboard div.dashboard-div {
     section.chart-section #chart2 {
         max-width: 100%; 
         height: 300px;
+        margin-bottom: 100px;
     }
 
     /* DASHBOARD */

@@ -234,7 +234,7 @@ async function drawCharts(chartId) {
       title: 'Year',
     },
     backgroundColor: 'transparent',
-    colors: ['#cbe7c9'],
+    colors: ['#90a7ac'],
     chartArea: {
       width: '80%',
       height: '70%',
@@ -417,8 +417,9 @@ async function drawCharts2(chartId) {
       },
     },
     backgroundColor: 'transparent',
-    colors: ['#cbe7c9'],
+    colors: ['#afc7cd'],
     chartArea: {
+      width: '80%',
       height: '70%',
     },
     legend: {
