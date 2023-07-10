@@ -214,24 +214,115 @@ google.charts.setOnLoadCallback(function () {
 });
 
 
+// fetch apy data from the API
+export async function fetchApyData() {
+  // Define the API URL
+  const apiUrl = 'http://127.0.0.1:5000/api/apy_data';
+
+  try {
+    // Make the API call
+    const response = await fetch(apiUrl);
+
+    console.log(response);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch APY data');
+    }
+
+    const data = await response.json();
+
+    // Process the API response data
+    console.log(data);
+
+    const processedData = [];
+
+    for (const entry of data) {
+      const timestamp = entry.timestamp;
+      const interest_earnings_apy = entry.interest_earnings_apy * 100;
+      const staking_rewards_apy = entry.staking_rewards_apy * 100;
+      const total_earnings_apy = entry.total_earnings_apy * 100;
+
+      const result = {
+        timestamp,
+        interest_earnings_apy,
+        staking_rewards_apy,
+        total_earnings_apy
+      };
+
+      processedData.push(result);
+    }
+
+    console.log("Processed data:");
+    console.log(processedData);
+
+    return processedData;
+
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+  }
+}
+
+// Function to process the table data into three separate DataTables
+async function processApyData() {
+  const dataArray = await fetchApyData();
+
+  console.log("dataArray APY data:");
+  console.log(dataArray);
+
+  const dataTable1 = new google.visualization.DataTable();
+  dataTable1.addColumn('date', 'Date');
+  dataTable1.addColumn('number', '%');
+
+  const dataTable2 = new google.visualization.DataTable();
+  dataTable2.addColumn('date', 'Date');
+  dataTable2.addColumn('number', '%');
+
+  const dataTable3 = new google.visualization.DataTable();
+  dataTable3.addColumn('date', 'Date');
+  dataTable3.addColumn('number', '%');
+
+  for (const [key, entry] of Object.entries(dataArray)) {
+    const timestamp = entry.timestamp;
+    const date = new Date(timestamp);
+    const formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  
+    const interest_earnings_apy = entry.interest_earnings_apy;
+    const staking_rewards_apy = entry.staking_rewards_apy;
+    const total_earnings_apy = entry.total_earnings_apy;
+  
+    dataTable1.addRow([formattedDate, staking_rewards_apy]);
+    dataTable2.addRow([formattedDate, interest_earnings_apy]);
+    dataTable3.addRow([formattedDate, total_earnings_apy]);
+  }
+  
+
+  console.log("dataTable1:");
+  console.log(dataTable1);
+
+  return [dataTable1, dataTable2, dataTable3];
+}
+
 async function drawCharts(chartId) {
+
+  const [dataTable1, dataTable2, dataTable3] = await processApyData();
+
   const options = {
     vAxis: {
-      title: 'Percentage',
-      minValue: 0,
-      maxValue: 10,
-      format: "#'%'",
+      title: '%',
       minorGridlines: {
         count: 0,
       },
       gridlines: {
         color: 'lightgray',
         opacity: 0.0,
-        count: 5,
       },
     },
-    hAxis: {
-      title: 'Year',
+    hAxis:{
+      title: 'Date',
+      gridlines: {
+        color: 'transparent',
+      },
     },
     backgroundColor: 'transparent',
     colors: ['#90a7ac'],
@@ -244,42 +335,26 @@ async function drawCharts(chartId) {
     },
   };
 
+  console.log("distinct dates");
+  console.log(dataTable1.getDistinctValues(0));
+
   let chart;
-  let dataTable;
 
   if (chartId === 'chart1') {
-    dataTable = google.visualization.arrayToDataTable([
-      ['Year', '%'],
-      ['2013', 5],
-      ['2014', 6],
-      ['2015', 4],
-      ['2016', 6],
-    ]);
+    chart = new google.visualization.AreaChart(document.getElementById('chart'));
+    chart.draw(dataTable1, options);
   } else if (chartId === 'chart2') {
-    dataTable = google.visualization.arrayToDataTable([
-      ['Year', '%'],
-      ['2013', 8],
-      ['2014', 7],
-      ['2015', 6],
-      ['2016', 5],
-    ]);
+    chart = new google.visualization.AreaChart(document.getElementById('chart'));
+    chart.draw(dataTable2, options);
   } else if (chartId === 'chart3') {
-    dataTable = google.visualization.arrayToDataTable([
-      ['Year', '%'],
-      ['2013', 3],
-      ['2014', 4],
-      ['2015', 5],
-      ['2016', 6],
-    ]);
+    chart = new google.visualization.AreaChart(document.getElementById('chart'));
+    chart.draw(dataTable3, options);
   }
-
-  chart = new google.visualization.AreaChart(document.getElementById('chart'));
-  chart.draw(dataTable, options);
 
   // Redraw the chart whenever the window is resized
   window.addEventListener('resize', function () {
     chart = new google.visualization.AreaChart(document.getElementById('chart'));
-    chart.draw(dataTable, options);
+    chart.draw(dataTable1, options);
   });
 }
 

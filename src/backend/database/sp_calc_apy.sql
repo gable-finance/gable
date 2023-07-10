@@ -30,15 +30,16 @@ BEGIN
         total_earnings_apy
     )
     SELECT
+
         epoch,
         recent_timestamp AS timestamp,
         ((recent_staking_rewards_relative - latest_staking_rewards_relative) / latest_staking_rewards_relative)
             * (365 / EXTRACT(DAY FROM (recent_timestamp - latest_timestamp))) 
                 AS staking_rewards_apy,
 
-        ((recent_interest_earnings_relative - latest_interest_earnings_relative) / latest_interest_earnings_relative)
-            * (365 / EXTRACT(DAY FROM (recent_timestamp - latest_timestamp))) 
-                AS interest_earnings_apy, 
+        ( POWER(1 + ((recent_interest_earnings_relative - latest_interest_earnings_relative)/ latest_interest_earnings_relative), 
+            (365 / EXTRACT(DAY FROM (recent_timestamp - latest_timestamp))) - 1) - 1
+                ) AS interest_earnings_ap,
                 
         ( 1 + ((recent_staking_rewards_relative - latest_staking_rewards_relative) / latest_staking_rewards_relative)
                 * (365 / EXTRACT(DAY FROM (recent_timestamp - latest_timestamp))))      
@@ -87,3 +88,22 @@ BEGIN
     ) AS apy;
 END;
 $$;
+
+----------
+
+-- * DUMMY DATA *
+-- Insert script for the apy_data table
+INSERT INTO apy_data (epoch, timestamp, staking_rewards_apy, interest_earnings_apy, total_earnings_apy)
+VALUES 
+  (12046, '2023-07-12 12:56:41.831'::timestamp, 0.196872, 0.049700, ((1 + 0.196872) * (1 + 0.256357) - 1) * 1.01),
+  (12047, '2023-07-15 12:56:41.831'::timestamp, 0.20284, 0.051161, ((1 + 0.20284) * (1 + 0.263706) - 1) * 1.02),
+  (12048, '2023-07-18 12:56:41.831'::timestamp, 0.208875, 0.052664, ((1 + 0.208875) * (1 + 0.271217) - 1) * 1.03),
+  (12049, '2023-07-21 12:56:41.831'::timestamp, 0.215, 0.054215, ((1 + 0.215) * (1 + 0.054215) - 1) * 1.04),
+  (12050, '2023-07-24 12:56:41.831'::timestamp, 0.221215, 0.055819, ((1 + 0.221215) * (1 + 0.055819) - 1) * 1.05),
+  (12051, '2023-07-27 12:56:41.831'::timestamp, 0.227524, 0.057478, ((1 + 0.227524) * (1 + 0.057478) - 1) * 1.06),
+  (12052, '2023-07-30 12:56:41.831'::timestamp, 0.233928, 0.059194, ((1 + 0.233928) * (1 + 0.059194) - 1) * 1.07),
+  (12053, '2023-08-02 12:56:41.831'::timestamp, 0.240431, 0.060970, ((1 + 0.240431) * (1 + 0.060970) - 1) * 1.08),
+  (12054, '2023-08-05 12:56:41.831'::timestamp, 0.247036, 0.062808, ((1 + 0.247036) * (1 + 0.062808) - 1) * 1.09),
+  (12055, '2023-08-08 12:56:41.831'::timestamp, 0.253745, 0.064709, ((1 + 0.253745) * (1 + 0.064709) - 1) * 1.10);
+
+(1 + StakingAPY) * ( 1 + InterestAPY) - 1
