@@ -13,6 +13,6 @@
 
 ### Build locally
 
-1. Create a new account using 'resim new-account'
+1. Create a new account using `resim new-account`
 
 ### Build on test net
