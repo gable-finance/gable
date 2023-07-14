@@ -60,11 +60,23 @@ hr {
     background-color: var(--body2);
     margin: 0;
     padding: 0 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   
   footer.footer-mobile div.copyright p {
     margin: 0;
     padding: 10px 50px;
+  }
+
+  footer.footer-mobile div.copyright a {
+    height: 25px;
+    margin-right: 50px;
+  }
+
+  footer.footer-mobile div.copyright a img {
+    max-height: 100%;
   }
   
   @media only screen and (max-width: 768px) {
@@ -88,6 +100,11 @@ hr {
   
     footer.footer-mobile div.social-links a {
       margin-right: 10px;
+    }
+
+    footer.footer-mobile div.copyright a {
+      height: 20px;
+      margin-right: 50px;
     }
   }
   

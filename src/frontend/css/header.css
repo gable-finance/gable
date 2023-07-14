@@ -62,8 +62,8 @@ header nav div div.logo a {
   
   #banner-div {
     height: auto;
-    background-color: rgb(190, 190, 225);
-    color: black;
+    background-color: #414248;
+    /* color: var(--boxcolor) !important; */
     position: fixed;
     top: 0;
     margin: 0;
@@ -78,7 +78,7 @@ header nav div div.logo a {
   
   #banner-p {
     height: auto;
-    color: black;
+    color: var(--boxcolor);
     margin: 0;
     padding: 10px 0 10px 30px;
     width: 100%;
@@ -94,6 +94,7 @@ header nav div div.logo a {
     touch-action: manipulation;
     margin-right: 10px;
     justify-self: flex-end;
+    color: var(--boxcolor);
   }
   
   /* HEADER */

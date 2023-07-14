@@ -1,229 +1,295 @@
+use manifests::*;
 use scrypto::prelude::*;
 use scrypto_unit::*;
 use transaction::builder::ManifestBuilder;
-use transaction::prelude::NewManifestBucket;
+
+mod manifests;
 
 #[test]
-fn test_flashloan_pool_instantiation() {
+fn test_instantiater() {
     // Setup the environment
     let mut test_runner = TestRunner::builder().build();
 
     // Create an account
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-    // Publish package
-    let package_address = test_runner.compile_and_publish(this_package!());
+    let (_owner_badge, _component_address, _admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+}
 
-    //----------------------------------------------------------------------------------------------\\
+#[test]
+fn test_update_interest_rate() {
+    // Setup the environment
+    let mut test_runner = TestRunner::builder().build();
 
-    //**** TEST INSTANTIATER ****\\
+    // Create an account
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-    let manifest = ManifestBuilder::new()
-        // Test the instantiate_lender (succes)
-        // Deposit batch to distribute haning batch
-        // Simple instantiation that should result in a succesful commitment
-        .call_function(package_address, "Flashloanpool", "instantiate_flashloan_pool", manifest_args!())
-        .deposit_batch(account_component)
-        .build();
+    let (owner_badge, component_address, admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
 
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    let mut ir = dec!("0.05");
+
+    // Execute update_interest_rate method test (success)
+    let receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        admin_badge, 
+        ir
     );
 
-    let component = receipt.expect_commit(true).new_component_addresses()[0];
-    let admin_badge = receipt.expect_commit(true).new_resource_addresses()[0];
-    let transient = receipt.expect_commit(true).new_resource_addresses()[1];
-    let nft = receipt.expect_commit(true).new_resource_addresses()[2];
-
-    println!("{:?}\n", admin_badge);
-
-    //----------------------------------------------------------------------------------------------\\
-
-    //**** TEST UPDATE_INTEREST_RATE ****\\
-
-    let manifest = ManifestBuilder::new()
-        // Test the "update_interest_rate" method (fail)
-        // Update without admin badge proof should fail
-        .call_method(component, "update_interest_rate", manifest_args!(dec!("0.05")))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
     println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
 
-    let manifest = ManifestBuilder::new()
-        // Test the "update_interest_rate" method (true)
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1") )
-        .call_method(component, "update_interest_rate", manifest_args!(dec!("0.05")))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
     receipt.expect_commit(true);
 
-
-    // //----------------------------------------------------------------------------------------------\\
-
-    //**** TEST ADMIN_DEPOSIT_LIQUIDITY ****\\
-
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_deposit_liquidity` method (fail)
-        // No proof passed, so transaction will be rejected
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("100"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    // Execute update_interest_rate method test (success)
+    let receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        ir
     );
+
     println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
 
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_deposit_liquidity` method (fail)
-        // Provided amount should be a non-negative numeber
-        // Transaction should therefore fail
-
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("-100"))
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
-
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_deposit_liquidity` method (succes)
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("100"))
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
-    receipt.expect_commit(true);
-    
-    //----------------------------------------------------------------------------------------------\\
-
-    //**** TEST ADMIN_WITHDRAW_LIQUIDITY ****\\
-
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_withdraw_liquidity` method (succes)
-        // Proof passed and correct amount provided
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("50")))
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-    
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
     receipt.expect_commit(true);
 
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_withdraw_liquidity` method (fail)
-        // Proof passed but incorrect amount provided
-        .create_proof_from_account_of_amount(account_component, RADIX_TOKEN, dec!("1"))
-        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("51")))
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
+    // Execute update_interest_rate method test (fail - wrong badge)
+    let badge = create_fungible(
+        &mut test_runner, 
+        account_component, 
+        public_key
+    );
+
+    let receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        badge, 
+        ir
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Execute update_interest_rate method test (fail - neg amount)
+    ir = dec!("-0.05");
+
+    let receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        ir
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+}
+
+#[test]
+fn test_owner_deposit_liquidity() {
+    // Setup the environment
+    let mut test_runner = TestRunner::builder().build();
+
+    // Create an account
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (owner_badge, component_address, _admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let mut amount: Decimal = dec!("100");
+
+    // Test the `admin_deposit_liquidity` method (fail - wrong proof)
+    let badge = create_fungible(
+        &mut test_runner, 
+        account_component,
+        public_key
+    );
+
+    let receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        badge, 
+        amount);
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `admin_deposit_liquidity` method (fail - negative amount)
+    amount = dec!("-100");
+    let receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `admin_deposit_liquidity` method (success)
+    amount = dec!("100");
+
+    let receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+}
+
+#[test]
+fn test_owner_withdraw_liquidity() {
+    // Setup the environment
+    let mut test_runner = TestRunner::builder().build();
+
+    // Create an account
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (owner_badge, component_address, _admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    // put 100 XRD in the pool
+    let mut amount: Decimal = dec!("100");
+
+    let receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key,
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+
+    // Test the `owner_withdraw_liquidity` method (fail - negative amount)
+    amount = dec!("-100");
+
+    let receipt = owner_withdraw_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `owner_withdraw_liquidity` method (fail - wrong badge)
+    amount = dec!("100");
+
+    let badge = create_fungible(
+        &mut test_runner, 
+        account_component, 
+        public_key
+    );
+
+    let receipt = owner_withdraw_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `owner_withdraw_liquidity` method (success)
+    amount = dec!("100");
+
+    let receipt = owner_withdraw_liquidity(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+}
+
+#[test]
+fn test_get_flashloan() {
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (owner_badge, component_address, _admin_badge, transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    // Put 100 XRD in the vault for testing
+    let amount: Decimal = dec!("100");
+
+    let _receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key,
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    // Test the `owner_withdraw_liquidity` method (fail - transient token)
+    //  The stand-alone get_flashloan function is bound to fail as the transient token
+    //  is not allowed to be deposited.
+    //  this function should always be used in conjuntion with the repay_flashloan function
+    //  that will burn the transient token - enabling the transaction to complete.
+    let receipt = get_flashloan(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        amount
+    );
     
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
     println!("{:?}\n", receipt);
+
     receipt.expect_commit(false);
 
-    let manifest = ManifestBuilder::new()
-        // Test the `admin_withdraw_liquidity` method (fail)
-        // Correct amount provided but wrong proof
-        .create_proof_from_account_of_amount(account_component, RADIX_TOKEN, dec!("1"))
-        .call_method(component, "admin_withdraw_liquidity", manifest_args!(dec!("50")))
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-    
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
-
-    //----------------------------------------------------------------------------------------------\\
-
-    //**** TEST GET_FLASHLOAN ****\\
-
-    let manifest = ManifestBuilder::new()
-        // Test the `get_flashloan` method (fail)
-        // Transient token should not be allowed to be deposited
-        // Transaction should therefore fail
-
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("100"))
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(component, "get_flashloan", manifest_args![dec!("100")])
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-    println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
-
+    // The following transaction uses the get_flashloan function in conjunction with other methods
     let manifest = ManifestBuilder::new()
         // Test the `get_flashloan` method (success)
-        // First set up dependencies:
-        //  Withdraw XRD for liquidity
-        //  Proof retrieved
-        //  Deposit liquidity
-        // Call the get_loan function
-        // Call the repay_loan to burn transient token
-        // Thereafter deposit batch
-
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("100"))
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(component, "get_flashloan", manifest_args![dec!("100")])
+        //  Call the get_loan function
+        //  Call the repay_loan to burn transient token
+        //  Thereafter deposit batch
+        .call_method(component_address, "get_flashloan", manifest_args![dec!("100")])
         .withdraw_from_account(account_component, RADIX_TOKEN, dec!("110"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket2")
-        .take_all_from_worktop(transient, "bucket3")
+        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("bucket2"), lookup.bucket("bucket3")))
+            builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
@@ -232,37 +298,82 @@ fn test_flashloan_pool_instantiation() {
         manifest,
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
     );
+
     println!("{:?}\n", receipt);
+
     receipt.expect_commit(true);
+}
 
-    //----------------------------------------------------------------------------------------------\\
 
-    //**** TEST REPAY_FLASHLOAN ****\\
+#[test]
+fn test_repay_flashloan() {
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
+    let (owner_badge, component_address, _admin_badge, transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let transient_replica: ResourceAddress = create_non_fungible(
+        &mut test_runner, 
+        account_component, 
+        public_key
+    );
+
+    // Set up dependencies
+
+    // (1) update interest rate
+    let ir = dec!("0.05");
+
+    let _receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        ir
+    );
+
+    // (2) put 100 XRD in the vault for testing
+    let amount: Decimal = dec!("100");
+
+    let _receipt = owner_deposit_liquidity(
+        &mut test_runner, 
+        public_key,
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    // test repay flash loan method
+    // this method is bound to fail as long as it is not used in conjunction with the 'get_flashloan' method
+    let receipt = repay_flashloan(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        transient_replica,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan' 
     let manifest = ManifestBuilder::new()
         // Test the `repay_flashloan` method (fail)
-        // Repayed amount is 0.000000001 smaller than loan amount - should therefore fail
-        // First set up dependencies:
-        //  (1) Withdraw XRD for liquidity
-        //  (2) Proof retrieved
-        //  (3) Deposit liquidity
-        // Call the get_loan function
-        // Call the repay_loan to burn transient token
-        // Thereafter deposit batch
+        //  Repayed amount is 0.000000001 smaller than loan amount - should therefore fail
+        //  Call the get_loan function
+        //  Call the repay_loan to burn transient token
+        //  Thereafter deposit batch
 
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("100"))
-        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
+        .call_method(component_address, "get_flashloan", manifest_args![amount])
+        .withdraw_from_account(account_component, RADIX_TOKEN, amount*ir-dec!("0.00000001"))
+        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "admin_deposit_liquidity", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(component, "update_interest_rate", manifest_args!(dec!("0.05")))
-        .call_method(component, "get_flashloan", manifest_args![dec!("100")])
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("4.999999999999999999"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket2")
-        .take_all_from_worktop(transient, "bucket3")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("bucket2"), lookup.bucket("bucket3")))
+            builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
@@ -271,21 +382,24 @@ fn test_flashloan_pool_instantiation() {
         manifest,
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
     );
+
     println!("{:?}\n", receipt);
     receipt.expect_commit(false);
 
-    //----------------------------------------------------------------------------------------------\\
-
-    //**** TEST staker_deposit_lsu ****\\
-
+    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan' 
     let manifest = ManifestBuilder::new()
-        // Test the `staker_deposit_lsu` method (succes)
-        // provide valid lsu amount, and address.
+        // Test the `repay_flashloan` method (succes)
+        //  Repayed loan plus interest amount
+        //  Call the get_loan function
+        //  Call the repay_loan to burn transient token
+        //  Thereafter deposit batch
 
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("10"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
+        .call_method(component_address, "get_flashloan", manifest_args![amount])
+        .withdraw_from_account(account_component, RADIX_TOKEN, amount*ir)
+        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_deposit_lsu", manifest_args!(lookup.bucket("bucket1")))
+            builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
@@ -294,6 +408,93 @@ fn test_flashloan_pool_instantiation() {
         manifest,
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
     );
+
+    println!("{:?}\n", receipt);
+    receipt.expect_commit(true);
+}
+
+#[test]
+fn test_staker_deposit_lsu() {
+
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (_owner_badge, component_address, admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let mut amount: Decimal = dec!("100");
+
+    // Test the `staker_deposit_lsu` method (succes)
+    // provide valid lsu amount, and address.
+    let receipt = staker_deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    // Test the `staker_deposit_lsu` method (fail - neg LSU)
+    amount = dec!("-100");
+
+    let receipt = staker_deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+
+    // Test the `staker_deposit_lsu` method (fail - wrong lsu_address)
+    amount = dec!("1");
+
+    let receipt = staker_deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        admin_badge,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+}
+
+
+#[test]
+fn test_staker_withdraw_lsu() {
+
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (_owner_badge, component_address, _admin_badge, _transient, nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let amount: Decimal = dec!("100");
+
+    // Set dependencies
+
+    // (1) deposit lsu
+    let receipt = staker_deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
     println!("{:?}\n", receipt);
 
     // register the balance changes of the "staker_deposit_lsu" transaction
@@ -303,8 +504,8 @@ fn test_flashloan_pool_instantiation() {
     let mut non_fungible_id = &BTreeSet::from([NonFungibleLocalId::integer(1)]);
     let mut mut_balance_change;
 
-    // Retrieve the fourth balance change (assuming there is at least one)
-    // which is the non fungible token that is returned to the user
+    // (2) retrieve the fourth balance change (assuming there is at least one)
+    //  which is the non fungible token that is returned to the user
     if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
         // Apply the `added_non_fungibles` function to the first balance change
         if let Some((_, balance_change)) = inner_map.iter().next() {
@@ -313,86 +514,93 @@ fn test_flashloan_pool_instantiation() {
         }
     }
 
-    let manifest = ManifestBuilder::new()
-        // Test the `staker_deposit_lsu` method (fail)
-        // provide wrong lsu amount.
+    // Test the `staker_withdraw_lsu` method (fail)
+    // provide invalid nft local id.
 
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("-10"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_deposit_lsu", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
+    let non_fungible_id_replica = &BTreeSet::from([NonFungibleLocalId::integer(2)]);
 
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    let receipt = staker_withdraw_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        nft,
+        non_fungible_id_replica
     );
+
     println!("{:?}\n", receipt);
+    
     receipt.expect_commit(false);
 
-
-    let manifest = ManifestBuilder::new()
-        // Test the `staker_deposit_lsu` method (fail)
-        // provide wrong lsu address.
-
-        .withdraw_from_account(account_component, admin_badge, dec!("10"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_deposit_lsu", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    // Test the `staker_withdraw_lsu` method (succes)
+    // provide valid lsu amount, and address.
+    let receipt = staker_withdraw_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        nft,
+        non_fungible_id
     );
+
     println!("{:?}\n", receipt);
-    receipt.expect_commit(false);
 
-    //----------------------------------------------------------------------------------------------\\
+    receipt.expect_commit(true);
+    
+}
 
-    //**** TEST staker_withdraw_lsu ****\\
+#[test]
+fn test_update_supplier_info() {
 
-    let manifest = ManifestBuilder::new()
-        // Test the `staker_withdraw_lsu` method (succes)
-        // provide valid lsu amount, and address.
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-        .withdraw_non_fungibles_from_account(account_component, nft, non_fungible_id)
-        .take_all_from_worktop(nft, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_withdraw_lsu", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
+    let (owner_badge, component_address, admin_badge, _transient, _nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
 
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    // Test the `update_supplier_info` method (succes - admin badge)
+    let receipt = update_supplier_info(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        admin_badge
     );
+
     println!("{:?}\n", receipt);
+
     receipt.expect_commit(true);
 
-
-    let manifest = ManifestBuilder::new()
-        // Test the `staker_withdraw_lsu` method (fail)
-        // provide invalid nft local id.
-
-        .withdraw_non_fungibles_from_account(account_component, nft, &BTreeSet::from([NonFungibleLocalId::integer(1)]))
-        .take_all_from_worktop(nft, "bucket1")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_withdraw_lsu", manifest_args!(lookup.bucket("bucket1")))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    // Test the `update_supplier_info` method (succes - owner badge)
+    let receipt = update_supplier_info(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge
     );
+
     println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+
+    // Test the `update_supplier_info` method (fail - wrong badge)
+
+    let badge = create_fungible(
+        &mut test_runner, 
+        account_component, 
+        public_key
+    );
+
+    let receipt = update_supplier_info(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        badge
+    );
+
+    println!("{:?}\n", receipt);
+
     receipt.expect_commit(false);
-    
 }

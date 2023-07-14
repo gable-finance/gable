@@ -178,6 +178,49 @@ section.slogan {
   #button-width {
     flex-grow: 0;
   }
+
+  /* RUNSONRADIX */
+  
+  section.runsonradix {
+    margin-top: 100px;
+    padding: 50px 0 50px 0;
+    margin-bottom: 150px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* background-color: var(--boxcolor); */
+    background: linear-gradient(to right, var(--boxcolor) 45%, var(--thirdtheme));
+    display: flex;
+    flex-direction: row;
+  }
+
+  section.runsonradix div.runsonradix-div {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #runsonradix-h1 {
+    font-size: 250%;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-align: center;
+    /* background-color: yellowgreen; */
+  }
+
+  section.runsonradix p.runsonradix-p {
+    margin-bottom: 50px;
+    height: auto;
+    padding: 0 100px;
+    text-align: center;
+    font-size: 120%; /* Increased font size for more impact */
+  }
+
+  section.runsonradix img {
+    width: 30%;
+    margin-bottom: 20px;
+    margin-right: 50px;
+  }
   
   /* ROADMAP */
   
@@ -360,6 +403,44 @@ section.slogan {
     section.borrower div.button {
       margin-left: 20px;
     }
+
+    /* RUNSONRADIX */
+  
+    section.runsonradix {
+      margin-top: 100px;
+      padding: 0;
+      margin-bottom: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(to bottom, var(--boxcolor) 60%, var(--thirdtheme));
+    }
+
+    section.runsonradix div.runsonradix-div {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #runsonradix-h1 {
+      font-size: 150%;
+      font-weight: 500;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    section.runsonradix p.runsonradix-p {
+      margin-bottom: 50px;
+      height: auto;
+      padding: 0 20px;
+      text-align: center;
+      font-size: 90%; /* Increased font size for more impact */
+    }
+
+    section.runsonradix img {
+      width: 50%;
+      margin: 0 0 30px 0;
+    }
+  
   
     /* ROADMAP */
     section.roadmap-box {
