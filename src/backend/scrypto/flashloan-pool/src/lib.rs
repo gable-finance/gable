@@ -22,12 +22,12 @@ mod flashloanpool {
         methods {
             get_flashloan => PUBLIC;
             repay_flashloan => PUBLIC;
-            owner_deposit_liquidity => restrict_to: [OWNER];
-            owner_withdraw_liquidity => restrict_to: [OWNER];
-            staker_deposit_lsu => PUBLIC;
+            protected_deposit_xrd => restrict_to: [OWNER];
+            protected_withdraw_xrd => restrict_to: [OWNER];
+            deposit_lsu => PUBLIC;
+            withdraw_lsu => PUBLIC;
             deposit_batch => PUBLIC;
-            staker_withdraw_lsu => PUBLIC;
-            update_supplier_info => restrict_to: [admin, OWNER, component];
+            update_supplier_hashmap => restrict_to: [admin, OWNER, component];
             update_interest_rate => restrict_to: [admin, OWNER];
             // mint_admin_badge => restrict_to: [admin];
         }
@@ -36,13 +36,13 @@ mod flashloanpool {
     struct Flashloanpool {
         owner_badge_address:ResourceAddress,
         admin_badge_address: ResourceAddress,
-        liquidity_admin: Decimal,
+        liquidity_owner: Decimal,
         liquidity_interest: Decimal,
         liquidity_emissions: Decimal,
         liquidity_pool_vault: Vault,
         supplier_hashmap: HashMap<NonFungibleLocalId, Vec<Decimal>>,
         lsu_vault: Vault,
-        lsu_nft: ResourceManager,
+        pool_nft: ResourceManager,
         lsu_nft_nr: u64,
         interest_rate: Decimal,
         transient_token: ResourceManager,
@@ -81,9 +81,9 @@ mod flashloanpool {
                 ResourceBuilder::new_ruid_non_fungible::<AmountDue>(OwnerRole::None)
                     .metadata(metadata! {
                         roles {
-                            metadata_setter => rule!(require(admin_badge.resource_address()));
+                            metadata_setter => rule!(require(owner_badge.resource_address()));
                             metadata_setter_updater => rule!(deny_all);
-                            metadata_locker => rule!(require(admin_badge.resource_address()));
+                            metadata_locker => rule!(require(owner_badge.resource_address()));
                             metadata_locker_updater => rule!(deny_all);
                         },
                         init {
@@ -107,8 +107,8 @@ mod flashloanpool {
                     .create_with_no_initial_supply();
 
             // Provision non-fungible resource
-            // serves as proof of lsu deposit
-            let lsu_nft: ResourceManager =
+            // serves as proof of supply
+            let pool_nft: ResourceManager =
                 ResourceBuilder::new_integer_non_fungible::<LiquiditySupplier>(
                     OwnerRole::None,
                 )
@@ -122,7 +122,7 @@ mod flashloanpool {
                     init {
                         "name" => "Sundae Proof of Supply", locked;
                         "symbol" => "SPS", locked;
-                        "description" => "NFT that represents a user's proof of supply", locked;
+                        "description" => "Pool NFT that represents the proof of supply", locked;
                     }
                 })
                 .mint_roles(mint_roles! {
@@ -138,15 +138,15 @@ mod flashloanpool {
             let flashloan_component: Global<Flashloanpool> = Self {
                 owner_badge_address: owner_badge.resource_address(),
                 admin_badge_address: admin_badge.resource_address(),
-                liquidity_admin: dec!("0"),
-                liquidity_interest: dec!("0"),
-                liquidity_emissions: dec!("0"),
+                liquidity_owner: Decimal::ZERO,
+                liquidity_interest: Decimal::ZERO,
+                liquidity_emissions: Decimal::ZERO,
                 liquidity_pool_vault: Vault::new(RADIX_TOKEN),
                 supplier_hashmap: HashMap::new(),
                 lsu_vault: Vault::new(RADIX_TOKEN),
-                lsu_nft: lsu_nft,
+                pool_nft: pool_nft,
                 lsu_nft_nr: 0,
-                interest_rate: dec!("0"),
+                interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
             }
             .instantiate()
@@ -163,7 +163,7 @@ mod flashloanpool {
                     metadata_locker_updater => rule!(deny_all);
                 },
                 init {
-                    "name" => "Sundae: Flash loan pool", locked;
+                    "name" => "Sundae: Flash Loan Pool", locked;
                     "description" => 
                         "Official Sundae 'XRD flash loan pool' component that
                         (1) offers a liquidity pool that collects XRD from staking rewards,
@@ -196,12 +196,12 @@ mod flashloanpool {
                 init {
                     get_flashloan => Xrd(1.into()), locked;
                     repay_flashloan => Xrd(1.into()), locked;
-                    owner_deposit_liquidity => Xrd(1.into()), locked; 
-                    owner_withdraw_liquidity => Xrd(1.into()), locked;
-                    staker_deposit_lsu => Xrd(1.into()), locked;
+                    protected_deposit_xrd => Xrd(1.into()), locked; 
+                    protected_withdraw_xrd => Xrd(1.into()), locked;
+                    deposit_lsu => Xrd(1.into()), locked;
                     deposit_batch => Free, locked;
-                    staker_withdraw_lsu => Xrd(1.into()), locked; 
-                    update_supplier_info => Xrd(1.into()), locked;
+                    withdraw_lsu => Xrd(1.into()), locked; 
+                    update_supplier_hashmap => Xrd(1.into()), locked;
                     update_interest_rate => Xrd(1.into()), locked;
                 }
             })
@@ -216,7 +216,7 @@ mod flashloanpool {
         pub fn get_flashloan(&mut self, amount: Decimal) -> (Bucket, Bucket) {
             // Ensure requested amount is positive
             // and is less than the total available amount
-            assert!(amount > dec!("0"), "Please provide an amount larger than 0");
+            assert!(amount > Decimal::ZERO, "Please provide an amount larger than 0");
             assert!(
                 amount <= self.liquidity_pool_vault.amount(),
                 "Please request a loan amount smaller than {}",
@@ -248,7 +248,7 @@ mod flashloanpool {
             return (transient_token, loan);
         }
         
-        pub fn repay_flashloan(&mut self, mut repayment: Bucket, transient_token: Bucket) -> Bucket {
+        pub fn repay_flashloan(&mut self, mut repayment: Bucket, transient_token: Bucket) -> Option<Bucket> {
             // Ensure transient token is original
             assert_eq!(
                 self.transient_token.address(),
@@ -286,7 +286,7 @@ mod flashloanpool {
         
             // Allocate the liquidity earnings
             self.liquidity_interest += interest_amount / dec!("2");
-            self.liquidity_admin += interest_amount / dec!("2");
+            self.liquidity_owner += interest_amount / dec!("2");
         
             // Log
             info!("Repayment amount required: {} XRD", &loan_amount);
@@ -303,16 +303,23 @@ mod flashloanpool {
         
             // Burn transient token
             transient_token.burn();
+
+            // Return residual if any
+            if repayment.amount() > Decimal::ZERO {
+                Some(repayment)
+            } else {
+                None
+            }
         
-            // Return residual
-            return repayment;
+            // // Return residual
+            // return repayment;
         }
         
-        pub fn owner_deposit_liquidity(&mut self, deposit: Bucket) {
+        pub fn protected_deposit_xrd(&mut self, deposit: Bucket) {
             // Ensure requested amount is positive
             // and is less than the total available amount
             assert!(
-                deposit.amount() > dec!("0"),
+                deposit.amount() > Decimal::ZERO,
                 "Please deposit an amount larger than 0"
             );
         
@@ -323,49 +330,49 @@ mod flashloanpool {
             );
         
             // Log
-            info!("Admin liquidity before deposit: {} XRD", self.liquidity_admin);
-            info!("Admin liquidity provided: {} XRD", deposit.amount());
+            info!("Owner liquidity before deposit: {} XRD", self.liquidity_owner);
+            info!("Owner liquidity provided: {} XRD", deposit.amount());
         
-            // Administer liquidity amount provided by admin
-            self.liquidity_admin += deposit.amount();
+            // Administer liquidity amount provided by owner
+            self.liquidity_owner += deposit.amount();
         
-            // Deposit admin liquidity
+            // Deposit owner liquidity
             self.liquidity_pool_vault.put(deposit);
         
             // Log
-            info!("Admin liquidity after deposit: {} XRD", self.liquidity_admin);
+            info!("Owner liquidity after deposit: {} XRD", self.liquidity_owner);
         }
         
-        pub fn owner_withdraw_liquidity(&mut self, amount: Decimal) -> Bucket {
+        pub fn protected_withdraw_xrd(&mut self, amount: Decimal) -> Bucket {
             // Ensure amount is positive
             assert!(
-                amount > dec!("0"),
+                amount > Decimal::ZERO,
                 "Please withdraw an amount larger than 0"
             );
         
-            // Ensure amount is less or equal to liquidity provided by admin
+            // Ensure amount is less or equal to liquidity provided by owner
             assert!(
                 amount <= self.liquidity_pool_vault.amount(),
                 "Please withdraw an amount smaller than or equal to {}",
-                self.liquidity_admin
+                self.liquidity_owner
             );
         
             // Log
-            info!("Admin liquidity before withdrawal: {} XRD", self.liquidity_admin);
-            info!("Admin liquidity withdrawn: {} XRD", amount);
+            info!("Owner liquidity before withdrawal: {} XRD", self.liquidity_owner);
+            info!("Owner liquidity withdrawn: {} XRD", amount);
         
             debug!("{:?}", self.supplier_hashmap);
         
             // Update the suppliers hashmap before returning earnings
-            self.update_supplier_info();
+            self.update_supplier_hashmap();
         
             debug!("{:?}", self.supplier_hashmap);
         
-            // Subtract withdrawn amount from admin liquidity
-            self.liquidity_admin -= amount;
+            // Subtract withdrawn amount from owner liquidity
+            self.liquidity_owner -= amount;
         
             // Log
-            info!("Admin liquidity after withdrawal: {} XRD", self.liquidity_admin);
+            info!("Owner liquidity after withdrawal: {} XRD", self.liquidity_owner);
         
             // Withdraw amount
             let withdraw: Bucket = self.liquidity_pool_vault.take(amount);
@@ -380,7 +387,7 @@ mod flashloanpool {
             self.liquidity_pool_vault.put(bucket);
         }
 
-        pub fn staker_deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
+        pub fn deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
             // Ensure LSU tokens are provided
             assert_eq!(
                 lsu_tokens.resource_address(),
@@ -390,7 +397,7 @@ mod flashloanpool {
 
             // Ensure LSU's provided is greater than zero
             assert!(
-                lsu_tokens.amount() > dec!("0"),
+                lsu_tokens.amount() > Decimal::ZERO,
                 "Please provide an amount of liquids staking units (LSU's) greater than zero"
             );
 
@@ -399,7 +406,7 @@ mod flashloanpool {
 
             // Update the suppliers hashmap (distribute earnings) before adding the current deposit to the hashmap
             debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_info();
+            self.update_supplier_hashmap();
             debug!("{:?}", self.supplier_hashmap);
 
             // Increase the LSU local id by 1
@@ -409,8 +416,8 @@ mod flashloanpool {
             let epoch: Epoch = Runtime::current_epoch();
 
             // Mint an NFT containing the deposited vector <lsu amount, epoch>
-            let lsu_nft_resource_manager = self.lsu_nft;
-            let lsu_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
+            let lsu_nft_resource_manager = self.pool_nft;
+            let pool_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
                 &NonFungibleLocalId::Integer(self.lsu_nft_nr.into()),
                 LiquiditySupplier {
                     lsu_amount: lsu_tokens.amount(),
@@ -420,8 +427,8 @@ mod flashloanpool {
 
             // Determine variables for the vector in the supplier hashmap
             let lsu_amount: Decimal = lsu_tokens.amount() as Decimal;
-            let staking_rewards: Decimal = dec!("0");
-            let interest_earnings: Decimal = dec!("0");
+            let staking_rewards: Decimal = Decimal::ZERO;
+            let interest_earnings: Decimal = Decimal::ZERO;
 
             // Insert variables into the vector
             let lsu_nft_data: Vec<Decimal> = vec![lsu_amount, staking_rewards, interest_earnings];
@@ -436,19 +443,19 @@ mod flashloanpool {
             debug!("{:?}", self.supplier_hashmap);
 
             // Return NFT as proof of LSU deposit to the user
-            return lsu_nft;
+            return pool_nft;
         }
 
-        pub fn staker_withdraw_lsu(&mut self, lsu_nft: Bucket) -> (Bucket, Bucket) {
+        pub fn withdraw_lsu(&mut self, pool_nft: Bucket) -> (Bucket, Bucket) {
             // Ensure LSU NFT is provided
             assert_eq!(
-                lsu_nft.resource_address(),
-                self.lsu_nft.address(),
+                pool_nft.resource_address(),
+                self.pool_nft.address(),
                 "Please provide the proof of supply (LSU NFT) generated by the Sundae validator node"
             );
 
             assert_eq!(
-                lsu_nft.amount(),
+                pool_nft.amount(),
                 dec!("1"),
                 "Please provide only one NFT"
             );
@@ -456,11 +463,11 @@ mod flashloanpool {
             // Update the suppliers hashmap (distribute earnings) before returning LSU's and XRD earnings to the user
             // This ensures that the supplier receives the correct amount of resources they are entitled to
             debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_info();
+            self.update_supplier_hashmap();
             debug!("{:?}", self.supplier_hashmap);
 
             // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
-            let lsu_nft_nr = lsu_nft
+            let lsu_nft_nr = pool_nft
                 .as_non_fungible()
                 .non_fungible_local_id();
 
@@ -486,31 +493,38 @@ mod flashloanpool {
             debug!("{:?}", self.supplier_hashmap);
 
             // Burn the provided NFT
-            lsu_nft.burn();
+            pool_nft.burn();
 
             // Return LSU's and rewards to the user
             return (lsu_bucket, earnings_bucket);
         }
 
-        pub fn update_supplier_info(&mut self) {
-            // Log pool liquidity, admin liquidity, and supplier hashmap
+        pub fn update_supplier_hashmap(&mut self) {
+            // Log pool liquidity, owner liquidity, and supplier hashmap
             info!("Pool liquidity: {} XRD", self.liquidity_pool_vault.amount());
-            info!("Admin liquidity: {} XRD", self.liquidity_admin);
+            info!("Owner liquidity: {} XRD", self.liquidity_owner);
             debug!("{:?}", self.supplier_hashmap);
 
-            // Calculate the undistributed supplier earnings (staking rewards) that have to be distributed:
-            // total liquidity = admin liquidity (seed liquidity + interest earnings)
-            //                   + supplier distributed earnings (staking rewards + interest earnings)
-            //                   + supplier undistributed earnings (staking rewards + interest earnings)
-            // supplier undistributed earnings = total liquidity - admin liquidity - supplier distributed earnings
+            /*
+            To update the supplier's hashmap, the undistributed XRD earnings need to be calculated.
+            This can be accomplished by following these steps:
+            1. Use the formula to calculate the pool's total liquidity:
+            total liquidity = owner liquidity
+                                + supplier distributed earnings (staking rewards + interest earnings)
+                                + supplier undistributed earnings (staking rewards + interest earnings)
+            2. Deduce the formula for supplier undistributed earnings from the total liquidity formula.
+            This yields the following formula:
+            supplier undistributed earnings = total liquidity - owner liquidity - supplier distributed earnings
+            */
 
             // Determine 'total liquidity'
             let total_liquidity: Decimal = self.liquidity_pool_vault.amount();
 
-            // Determine 'admin liquidity'
-            let admin_liquidity: Decimal = self.liquidity_admin;
+            // Determine 'owner liquidity'
+            let owner_liquidity: Decimal = self.liquidity_owner;
 
-            // Determine 'supplier distributed earnings' by summing the rewards in the hashmap
+            // Determine 'supplier distributed earnings'
+            // by summing the rewards in the hashmap
             let supplier_distributed_rewards: Decimal = self
                 .supplier_hashmap
                 .values()
@@ -538,15 +552,15 @@ mod flashloanpool {
 
             info!("Supplier undistributed interest: {} XRD", supplier_undistributed_interest);
 
-            // Calculate the suppliers (undistributed) earnings
+            // Determine the 'suppliers undistributed earnings'
             let supplier_undistributed_rewards: Decimal = total_liquidity
-                - admin_liquidity
+                - owner_liquidity
                 - supplier_distributed_earnings
                 - supplier_undistributed_interest;
 
             info!("Supplier undistributed rewards: {} XRD", supplier_undistributed_rewards);
 
-            // Loop over all entries in the hashmap to update information
+            // Loop over all entries in the hashmap to update the information
             for i in self.supplier_hashmap.values_mut() {
                 // Determine supplier's LSU stake
                 let supplier_lsu = i[0];
@@ -556,7 +570,7 @@ mod flashloanpool {
                 // Determine supplier's LSU stake relative to the pool's total LSU
                 let supplier_relative_lsu_stake = supplier_lsu / self.lsu_vault.amount();
 
-                let supplier_relative_xrd_stake = if supplier_distributed_interest != dec!("0") {
+                let supplier_relative_xrd_stake = if supplier_distributed_interest != Decimal::ZERO {
                     // Determine supplier's XRD stake relative to the distributed earnings
                     supplier_xrd / supplier_distributed_earnings
                 } else {
@@ -572,7 +586,7 @@ mod flashloanpool {
                 i[2] += supplier_undistributed_interest * supplier_relative_xrd_stake;
             }
 
-            self.liquidity_interest = dec!("0");
+            self.liquidity_interest = Decimal::ZERO;
 
             debug!("{:?}", self.supplier_hashmap);
         }
@@ -580,7 +594,7 @@ mod flashloanpool {
         pub fn update_interest_rate(&mut self, interest_rate: Decimal) {
             // Ensure interest rate is larger than 0
             assert!(
-                interest_rate >= dec!("0"),
+                interest_rate >= Decimal::ZERO,
                 "Please provide an interest rate larger than 0"
             );
 
@@ -592,9 +606,9 @@ mod flashloanpool {
     }
 }
 
-// pub fn mint_admin_badge(&mut self) -> Bucket {
-//     // Mint an admin badge
-//     let admin_badge_resource_manager: ResourceManager = self.admin_badge_address.into();
-//     let admin_badge: Bucket = admin_badge_resource_manager.mint(1);
-//     return admin_badge;
+// pub fn mint_owner_badge(&mut self) -> Bucket {
+//     // Mint an owner badge
+//     let owner_badge_resource_manager: ResourceManager = self.owner_badge_address.into();
+//     let owner_badge: Bucket = owner_badge_resource_manager.mint(1);
+//     return owner_badge;
 // }

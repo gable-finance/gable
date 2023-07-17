@@ -133,7 +133,7 @@ pub fn update_interest_rate(
     receipt
 }
 
-pub fn owner_deposit_liquidity(
+pub fn protected_deposit_xrd(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -149,7 +149,7 @@ pub fn owner_deposit_liquidity(
         .with_name_lookup(|builder, lookup| {
             builder.call_method(
                 component,
-                "owner_deposit_liquidity",
+                "protected_deposit_xrd",
                 manifest_args!(lookup.bucket("bucket1")),
             )
         })
@@ -164,7 +164,7 @@ pub fn owner_deposit_liquidity(
     receipt
 }
 
-pub fn owner_withdraw_liquidity(
+pub fn protected_withdraw_xrd(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -175,7 +175,7 @@ pub fn owner_withdraw_liquidity(
     // Create the manifest for owner withdrawing liquidity
     let manifest = ManifestBuilder::new()
         .create_proof_from_account_of_amount(account_component, owner_badge, dec!("1"))
-        .call_method(component, "owner_withdraw_liquidity", manifest_args!(amount))
+        .call_method(component, "protected_withdraw_xrd", manifest_args!(amount))
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
 
@@ -238,7 +238,7 @@ pub fn repay_flashloan(
     receipt
 }
 
-pub fn staker_deposit_lsu(
+pub fn deposit_lsu(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -251,7 +251,7 @@ pub fn staker_deposit_lsu(
         .withdraw_from_account(account_component, lsu_address, amount)
         .take_all_from_worktop(lsu_address, "lsu_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_deposit_lsu", manifest_args!(lookup.bucket("lsu_bucket")))
+            builder.call_method(component, "deposit_lsu", manifest_args!(lookup.bucket("lsu_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
@@ -264,7 +264,7 @@ pub fn staker_deposit_lsu(
     receipt
 }
 
-pub fn staker_withdraw_lsu(
+pub fn withdraw_lsu(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -274,12 +274,12 @@ pub fn staker_withdraw_lsu(
 ) -> TransactionReceipt {
 
     let manifest = ManifestBuilder::new()
-        // Test the `staker_withdraw_lsu` method (succes)
+        // Test the `withdraw_lsu` method (succes)
 
         .withdraw_non_fungibles_from_account(account_component, nft, non_fungible_id)
         .take_all_from_worktop(nft, "nft_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "staker_withdraw_lsu", manifest_args!(lookup.bucket("nft_bucket")))
+            builder.call_method(component, "withdraw_lsu", manifest_args!(lookup.bucket("nft_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
@@ -293,7 +293,7 @@ pub fn staker_withdraw_lsu(
 
 }
 
-pub fn update_supplier_info(
+pub fn update_supplier_hashmap(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -303,7 +303,7 @@ pub fn update_supplier_info(
 
     let manifest = ManifestBuilder::new()
     .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-    .call_method(component, "update_supplier_info", manifest_args!())
+    .call_method(component, "update_supplier_hashmap", manifest_args!())
     .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(

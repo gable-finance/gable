@@ -115,7 +115,7 @@ fn test_owner_deposit_liquidity() {
         public_key
     );
 
-    let receipt = owner_deposit_liquidity(
+    let receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -129,7 +129,7 @@ fn test_owner_deposit_liquidity() {
 
     // Test the `admin_deposit_liquidity` method (fail - negative amount)
     amount = dec!("-100");
-    let receipt = owner_deposit_liquidity(
+    let receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -145,7 +145,7 @@ fn test_owner_deposit_liquidity() {
     // Test the `admin_deposit_liquidity` method (success)
     amount = dec!("100");
 
-    let receipt = owner_deposit_liquidity(
+    let receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -173,7 +173,7 @@ fn test_owner_withdraw_liquidity() {
     // put 100 XRD in the pool
     let mut amount: Decimal = dec!("100");
 
-    let receipt = owner_deposit_liquidity(
+    let receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -186,10 +186,10 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(true);
 
-    // Test the `owner_withdraw_liquidity` method (fail - negative amount)
+    // Test the `protected_withdraw_xrd` method (fail - negative amount)
     amount = dec!("-100");
 
-    let receipt = owner_withdraw_liquidity(
+    let receipt = protected_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -202,7 +202,7 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-    // Test the `owner_withdraw_liquidity` method (fail - wrong badge)
+    // Test the `protected_withdraw_xrd` method (fail - wrong badge)
     amount = dec!("100");
 
     let badge = create_fungible(
@@ -211,7 +211,7 @@ fn test_owner_withdraw_liquidity() {
         public_key
     );
 
-    let receipt = owner_withdraw_liquidity(
+    let receipt = protected_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -224,10 +224,10 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-    // Test the `owner_withdraw_liquidity` method (success)
+    // Test the `protected_withdraw_xrd` method (success)
     amount = dec!("100");
 
-    let receipt = owner_withdraw_liquidity(
+    let receipt = protected_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -252,7 +252,7 @@ fn test_get_flashloan() {
     // Put 100 XRD in the vault for testing
     let amount: Decimal = dec!("100");
 
-    let _receipt = owner_deposit_liquidity(
+    let _receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -261,7 +261,7 @@ fn test_get_flashloan() {
         amount
     );
 
-    // Test the `owner_withdraw_liquidity` method (fail - transient token)
+    // Test the `protected_withdraw_xrd` method (fail - transient token)
     //  The stand-alone get_flashloan function is bound to fail as the transient token
     //  is not allowed to be deposited.
     //  this function should always be used in conjuntion with the repay_flashloan function
@@ -336,7 +336,7 @@ fn test_repay_flashloan() {
     // (2) put 100 XRD in the vault for testing
     let amount: Decimal = dec!("100");
 
-    let _receipt = owner_deposit_liquidity(
+    let _receipt = protected_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -424,9 +424,9 @@ fn test_staker_deposit_lsu() {
 
     let mut amount: Decimal = dec!("100");
 
-    // Test the `staker_deposit_lsu` method (succes)
+    // Test the `deposit_lsu` method (succes)
     // provide valid lsu amount, and address.
-    let receipt = staker_deposit_lsu(
+    let receipt = deposit_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -437,10 +437,10 @@ fn test_staker_deposit_lsu() {
 
     println!("{:?}\n", receipt);
 
-    // Test the `staker_deposit_lsu` method (fail - neg LSU)
+    // Test the `deposit_lsu` method (fail - neg LSU)
     amount = dec!("-100");
 
-    let receipt = staker_deposit_lsu(
+    let receipt = deposit_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -454,10 +454,10 @@ fn test_staker_deposit_lsu() {
     receipt.expect_commit(false);
 
 
-    // Test the `staker_deposit_lsu` method (fail - wrong lsu_address)
+    // Test the `deposit_lsu` method (fail - wrong lsu_address)
     amount = dec!("1");
 
-    let receipt = staker_deposit_lsu(
+    let receipt = deposit_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -486,7 +486,7 @@ fn test_staker_withdraw_lsu() {
     // Set dependencies
 
     // (1) deposit lsu
-    let receipt = staker_deposit_lsu(
+    let receipt = deposit_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -497,7 +497,7 @@ fn test_staker_withdraw_lsu() {
 
     println!("{:?}\n", receipt);
 
-    // register the balance changes of the "staker_deposit_lsu" transaction
+    // register the balance changes of the "deposit_lsu" transaction
     let balance_changes = receipt.expect_commit(true).balance_changes();
 
     // declare variables to get them in scope
@@ -514,12 +514,12 @@ fn test_staker_withdraw_lsu() {
         }
     }
 
-    // Test the `staker_withdraw_lsu` method (fail)
+    // Test the `withdraw_lsu` method (fail)
     // provide invalid nft local id.
 
     let non_fungible_id_replica = &BTreeSet::from([NonFungibleLocalId::integer(2)]);
 
-    let receipt = staker_withdraw_lsu(
+    let receipt = withdraw_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -532,9 +532,9 @@ fn test_staker_withdraw_lsu() {
     
     receipt.expect_commit(false);
 
-    // Test the `staker_withdraw_lsu` method (succes)
+    // Test the `withdraw_lsu` method (succes)
     // provide valid lsu amount, and address.
-    let receipt = staker_withdraw_lsu(
+    let receipt = withdraw_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -558,8 +558,8 @@ fn test_update_supplier_info() {
     let (owner_badge, component_address, admin_badge, _transient, _nft) =
         create_flashloanpool(&mut test_runner, account_component, public_key);
 
-    // Test the `update_supplier_info` method (succes - admin badge)
-    let receipt = update_supplier_info(
+    // Test the `update_supplier_hashmap` method (succes - admin badge)
+    let receipt = update_supplier_hashmap(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -571,8 +571,8 @@ fn test_update_supplier_info() {
 
     receipt.expect_commit(true);
 
-    // Test the `update_supplier_info` method (succes - owner badge)
-    let receipt = update_supplier_info(
+    // Test the `update_supplier_hashmap` method (succes - owner badge)
+    let receipt = update_supplier_hashmap(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -584,7 +584,7 @@ fn test_update_supplier_info() {
 
     receipt.expect_commit(true);
 
-    // Test the `update_supplier_info` method (fail - wrong badge)
+    // Test the `update_supplier_hashmap` method (fail - wrong badge)
 
     let badge = create_fungible(
         &mut test_runner, 
@@ -592,7 +592,7 @@ fn test_update_supplier_info() {
         public_key
     );
 
-    let receipt = update_supplier_info(
+    let receipt = update_supplier_hashmap(
         &mut test_runner, 
         public_key, 
         account_component, 
