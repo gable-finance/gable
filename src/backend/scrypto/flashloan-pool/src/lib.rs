@@ -1,4 +1,7 @@
 use scrypto::prelude::*;
+use events::*;
+
+mod events;
 
 #[derive(Debug, NonFungibleData, ScryptoSbor)]
 struct AmountDue {
@@ -38,12 +41,12 @@ mod flashloanpool {
         admin_badge_address: ResourceAddress,
         liquidity_owner: Decimal,
         liquidity_interest: Decimal,
-        liquidity_emissions: Decimal,
+        // liquidity_emissions: Decimal,
         liquidity_pool_vault: Vault,
         supplier_hashmap: HashMap<NonFungibleLocalId, Vec<Decimal>>,
         lsu_vault: Vault,
         pool_nft: ResourceManager,
-        lsu_nft_nr: u64,
+        pool_nft_nr: u64,
         interest_rate: Decimal,
         transient_token: ResourceManager,
     }
@@ -140,12 +143,12 @@ mod flashloanpool {
                 admin_badge_address: admin_badge.resource_address(),
                 liquidity_owner: Decimal::ZERO,
                 liquidity_interest: Decimal::ZERO,
-                liquidity_emissions: Decimal::ZERO,
+                // liquidity_emissions: Decimal::ZERO,
                 liquidity_pool_vault: Vault::new(RADIX_TOKEN),
                 supplier_hashmap: HashMap::new(),
                 lsu_vault: Vault::new(RADIX_TOKEN),
                 pool_nft: pool_nft,
-                lsu_nft_nr: 0,
+                pool_nft_nr: 0,
                 interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
             }
@@ -180,8 +183,7 @@ mod flashloanpool {
                         "Interest",
                         "Liquidity",
                         "Liquidity_pool"
-                    ],
-                    locked;
+                    ], locked;
                 }
             })
             .enable_component_royalties(component_royalties! {
@@ -410,7 +412,7 @@ mod flashloanpool {
             debug!("{:?}", self.supplier_hashmap);
 
             // Increase the LSU local id by 1
-            self.lsu_nft_nr += 1;
+            self.pool_nft_nr += 1;
 
             // Get the current epoch
             let epoch: Epoch = Runtime::current_epoch();
@@ -418,7 +420,7 @@ mod flashloanpool {
             // Mint an NFT containing the deposited vector <lsu amount, epoch>
             let lsu_nft_resource_manager = self.pool_nft;
             let pool_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
-                &NonFungibleLocalId::Integer(self.lsu_nft_nr.into()),
+                &NonFungibleLocalId::Integer(self.pool_nft_nr.into()),
                 LiquiditySupplier {
                     lsu_amount: lsu_tokens.amount(),
                     entry_epoch: epoch,
@@ -433,14 +435,23 @@ mod flashloanpool {
             // Insert variables into the vector
             let lsu_nft_data: Vec<Decimal> = vec![lsu_amount, staking_rewards, interest_earnings];
 
+            let lsu_nft_id: NonFungibleLocalId = NonFungibleLocalId::Integer(self.pool_nft_nr.into());
+
             // Insert NFT local id as key and vector as value into the supplier hashmap
             self.supplier_hashmap
-                .insert(NonFungibleLocalId::Integer(self.lsu_nft_nr.into()), lsu_nft_data);
+                .insert(lsu_nft_id.clone(), lsu_nft_data);
 
             // Put provided LSU tokens in the LSU vault
             self.lsu_vault.put(lsu_tokens);
 
             debug!("{:?}", self.supplier_hashmap);
+
+            Runtime::emit_event(
+                DepositEvent {
+                    lsu_amount_deposited: lsu_amount,
+                    nft_id_minted: lsu_nft_id,
+                },
+            );
 
             // Return NFT as proof of LSU deposit to the user
             return pool_nft;
@@ -467,17 +478,19 @@ mod flashloanpool {
             debug!("{:?}", self.supplier_hashmap);
 
             // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
-            let lsu_nft_nr = pool_nft
+            let pool_nft_nr = pool_nft
                 .as_non_fungible()
                 .non_fungible_local_id();
 
-            debug!("{:?}", lsu_nft_nr);
+            debug!("{:?}", pool_nft_nr);
 
-            debug!("{:?}", self.supplier_hashmap[&lsu_nft_nr]);
+            debug!("{:?}", self.supplier_hashmap[&pool_nft_nr]);
 
             // Withdraw entitled LSU's and earnings from vaults and return as a bucket
-            let lsu_bucket: Bucket = self.lsu_vault.take(self.supplier_hashmap[&lsu_nft_nr][0]);
-            let earnings: Decimal = self.supplier_hashmap[&lsu_nft_nr][1] + self.supplier_hashmap[&lsu_nft_nr][2];
+            let lsu_bucket: Bucket = self.lsu_vault.take(self.supplier_hashmap[&pool_nft_nr][0]);
+            let staking_rewards: Decimal = self.supplier_hashmap[&pool_nft_nr][1];
+            let interest_earnings: Decimal = self.supplier_hashmap[&pool_nft_nr][2];
+            let earnings: Decimal = staking_rewards + interest_earnings;
             let earnings_bucket: Bucket = self.liquidity_pool_vault.take(earnings);
 
             // Log the LSU's and earnings returned to the supplier
@@ -488,12 +501,20 @@ mod flashloanpool {
             );
 
             // Remove the supplier's entry from the supplier hashmap
-            self.supplier_hashmap.remove(&lsu_nft_nr);
+            self.supplier_hashmap.remove(&pool_nft_nr);
 
             debug!("{:?}", self.supplier_hashmap);
 
             // Burn the provided NFT
             pool_nft.burn();
+
+            Runtime::emit_event(
+                WithdrawEvent {
+                    lsu_amount_withdrawn: lsu_bucket.amount(),
+                    staking_rewards_withdrawn: staking_rewards,
+                    interest_earnings_withdrawn: interest_earnings
+                }
+            );
 
             // Return LSU's and rewards to the user
             return (lsu_bucket, earnings_bucket);
@@ -589,6 +610,14 @@ mod flashloanpool {
             self.liquidity_interest = Decimal::ZERO;
 
             debug!("{:?}", self.supplier_hashmap);
+
+            let epoch: Epoch = Runtime::current_epoch();
+
+            Runtime::emit_event(
+                UpdateHashmapEvent {
+                    epoch: epoch,
+                }
+            );
         }
 
         pub fn update_interest_rate(&mut self, interest_rate: Decimal) {
@@ -600,8 +629,16 @@ mod flashloanpool {
 
             // Log the interest rate before and after change
             info!("Interest rate before change: {}", self.interest_rate);
+
             self.interest_rate = interest_rate;
+
             info!("Interest rate after change: {}", self.interest_rate);
+
+            Runtime::emit_event(
+                UpdateInterestRateEvent {
+                    ir: interest_rate,
+                }
+            );
         }
     }
 }
