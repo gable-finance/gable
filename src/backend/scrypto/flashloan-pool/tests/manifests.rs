@@ -264,22 +264,88 @@ pub fn deposit_lsu(
     receipt
 }
 
+pub fn deposit_lsu_merge(
+    test_runner: &mut TestRunner,
+    public_key: Secp256k1PublicKey,
+    account_component: ComponentAddress,
+    component: ComponentAddress,
+    lsu_address: ResourceAddress,
+    amount: Decimal,
+    pool_nft: ResourceAddress,
+    pool_nft_id: &BTreeSet<NonFungibleLocalId>
+) -> TransactionReceipt {
+
+    let manifest = ManifestBuilder::new()
+        .withdraw_from_account(account_component, lsu_address, amount)
+        .create_proof_from_account_of_non_fungibles(
+            account_component,
+            pool_nft,
+            pool_nft_id
+        )
+        .take_all_from_worktop(lsu_address, "lsu_bucket")
+        .pop_from_auth_zone("nft_proof")
+        .with_name_lookup(|builder, lookup| {
+            builder.call_method(component, "deposit_lsu_merge", manifest_args!(lookup.proof("nft_proof"), lookup.bucket("lsu_bucket")))
+        })
+        .build();
+    
+    let receipt = test_runner.execute_manifest_ignoring_fee(
+        manifest,
+        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    );
+
+    receipt
+}
+
 pub fn withdraw_lsu(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
-    nft: ResourceAddress,
-    non_fungible_id: &BTreeSet<NonFungibleLocalId>,
+    pool_nft: ResourceAddress,
+    pool_nft_non_fungible_id: &BTreeSet<NonFungibleLocalId>,
 ) -> TransactionReceipt {
 
     let manifest = ManifestBuilder::new()
         // Test the `withdraw_lsu` method (succes)
 
-        .withdraw_non_fungibles_from_account(account_component, nft, non_fungible_id)
-        .take_all_from_worktop(nft, "nft_bucket")
+        .withdraw_non_fungibles_from_account(account_component, pool_nft, pool_nft_non_fungible_id)
+        .take_all_from_worktop(pool_nft, "nft_bucket")
         .with_name_lookup(|builder, lookup| {
             builder.call_method(component, "withdraw_lsu", manifest_args!(lookup.bucket("nft_bucket")))
+        })
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .build();
+
+    let receipt = test_runner.execute_manifest_ignoring_fee(
+        manifest,
+        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    );
+
+    receipt
+
+}
+
+pub fn withdraw_lsu_amount(
+    test_runner: &mut TestRunner,
+    public_key: Secp256k1PublicKey,
+    account_component: ComponentAddress,
+    component: ComponentAddress,
+    pool_nft: ResourceAddress,
+    pool_nft_non_fungible_id: &BTreeSet<NonFungibleLocalId>,
+    amount: Decimal
+) -> TransactionReceipt {
+
+    let manifest = ManifestBuilder::new()
+        // Test the `withdraw_lsu` method (succes)
+        .create_proof_from_account_of_non_fungibles(
+            account_component,
+            pool_nft,
+            pool_nft_non_fungible_id
+        )
+        .pop_from_auth_zone("nft_proof")
+        .with_name_lookup(|builder, lookup| {
+            builder.call_method(component, "withdraw_lsu_amount", manifest_args!(lookup.proof("nft_proof"), amount))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();

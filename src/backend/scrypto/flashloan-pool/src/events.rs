@@ -1,4 +1,5 @@
 use scrypto::prelude::*;
+use radix_engine_common::{ScryptoEvent, ScryptoSbor};
 
 #[derive(ScryptoSbor, ScryptoEvent)]
 pub struct DepositEvent {

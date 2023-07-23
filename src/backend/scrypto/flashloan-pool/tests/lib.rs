@@ -401,7 +401,7 @@ fn test_repay_flashloan() {
         .with_name_lookup(|builder, lookup| {
             builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        //.call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -464,6 +464,118 @@ fn test_staker_deposit_lsu() {
         component_address, 
         admin_badge,
         amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `deposit_lsu` method (succes)
+    amount = dec!("1");
+
+    let receipt = deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+}
+
+#[test]
+fn test_staker_deposit_lsu_merge() {
+
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (_owner_badge, component_address, _admin_badge, transient, nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let mut amount: Decimal = dec!("100");
+
+    // Test the `deposit_lsu` method (succes)
+    // provide valid lsu amount, and address.
+    let receipt = deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    // register the balance changes of the "deposit_lsu" transaction
+    let balance_changes = receipt.expect_commit(true).balance_changes();
+
+    // declare variables to get them in scope
+    let mut non_fungible_id = &BTreeSet::from([NonFungibleLocalId::integer(1)]);
+    let mut mut_balance_change;
+
+    // (2) retrieve the fourth balance change (assuming there is at least one)
+    //  which is the non fungible token that is returned to the user
+    if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
+        // Apply the `added_non_fungibles` function to the first balance change
+        if let Some((_, balance_change)) = inner_map.iter().next() {
+            mut_balance_change = balance_change.clone();
+            non_fungible_id = mut_balance_change.added_non_fungibles();
+        }
+    }
+
+    // Test the `deposit_lsu` method (success)
+    amount = dec!("10");
+
+    let receipt = deposit_lsu_merge(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount,
+        nft,
+        non_fungible_id
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+
+    // Test the `deposit_lsu` method (fail - wrong pool nft)
+
+    let receipt = deposit_lsu_merge(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount,
+        transient,
+        non_fungible_id
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `deposit_lsu` method (fail - wrong pool nft local id)
+
+    let non_fungible_id_replica: &BTreeSet<NonFungibleLocalId> = &btreeset!(NonFungibleLocalId::integer(2));
+
+    let receipt = deposit_lsu_merge(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount,
+        nft,
+        non_fungible_id_replica
     );
 
     println!("{:?}\n", receipt);
@@ -547,6 +659,104 @@ fn test_staker_withdraw_lsu() {
 
     receipt.expect_commit(true);
     
+}
+
+#[test]
+fn test_staker_withdraw_lsu_amount() {
+
+    let mut test_runner = TestRunner::builder().build();
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (_owner_badge, component_address, _admin_badge, _transient, nft) =
+        create_flashloanpool(&mut test_runner, account_component, public_key);
+
+    let mut amount: Decimal = dec!("100");
+
+    // Set dependencies
+
+    // (1) deposit lsu
+    let receipt = deposit_lsu(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        RADIX_TOKEN,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    // register the balance changes of the "deposit_lsu" transaction
+    let balance_changes = receipt.expect_commit(true).balance_changes();
+
+    // declare variables to get them in scope
+    let mut non_fungible_id = &BTreeSet::from([NonFungibleLocalId::integer(1)]);
+    let mut mut_balance_change;
+
+    // (2) retrieve the fourth balance change (assuming there is at least one)
+    //  which is the non fungible token that is returned to the user
+    if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
+        // Apply the `added_non_fungibles` function to the first balance change
+        if let Some((_, balance_change)) = inner_map.iter().next() {
+            mut_balance_change = balance_change.clone();
+            non_fungible_id = mut_balance_change.added_non_fungibles();
+        }
+    }
+
+    // Test the `withdraw_lsu_amount` method (succes)
+
+    amount = dec!("10");
+
+    let receipt = withdraw_lsu_amount(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        nft,
+        non_fungible_id,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+    
+    receipt.expect_commit(true);   
+    
+    // Test the `withdraw_lsu` method (fail - negative amount)
+
+    amount = dec!("-10");
+
+    let receipt = withdraw_lsu_amount(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        nft,
+        non_fungible_id,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+    
+    receipt.expect_commit(false);  
+
+    // Test the `withdraw_lsu_amount` method (fail - amount equal to total lsu's)
+    // recommended to use 'withdraw_lsu' method to withdraw full all resources
+
+    amount = dec!("90");
+
+    let receipt = withdraw_lsu_amount(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        nft,
+        non_fungible_id,
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+    
+    receipt.expect_commit(false);  
 }
 
 #[test]
