@@ -6,6 +6,25 @@ use transaction::builder::ManifestBuilder;
 mod manifests;
 
 #[test]
+fn test_create_validator() {
+    // Setup the environment
+    let mut test_runner = TestRunner::builder().build();
+
+    // Create an account
+    let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
+
+    let (receipt, _nft_address, _nft_id) = create_validator(
+        &mut test_runner, 
+        account_component, 
+        public_key,
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+}
+
+#[test]
 fn test_instantiater() {
     // Setup the environment
     let mut test_runner = TestRunner::builder().build();
@@ -115,7 +134,7 @@ fn test_owner_deposit_liquidity() {
         public_key
     );
 
-    let receipt = protected_deposit_xrd(
+    let receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -129,7 +148,7 @@ fn test_owner_deposit_liquidity() {
 
     // Test the `admin_deposit_liquidity` method (fail - negative amount)
     amount = dec!("-100");
-    let receipt = protected_deposit_xrd(
+    let receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -145,7 +164,7 @@ fn test_owner_deposit_liquidity() {
     // Test the `admin_deposit_liquidity` method (success)
     amount = dec!("100");
 
-    let receipt = protected_deposit_xrd(
+    let receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -173,7 +192,7 @@ fn test_owner_withdraw_liquidity() {
     // put 100 XRD in the pool
     let mut amount: Decimal = dec!("100");
 
-    let receipt = protected_deposit_xrd(
+    let receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -186,10 +205,10 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(true);
 
-    // Test the `protected_withdraw_xrd` method (fail - negative amount)
+    // Test the `owner_withdraw_xrd` method (fail - negative amount)
     amount = dec!("-100");
 
-    let receipt = protected_withdraw_xrd(
+    let receipt = owner_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -202,7 +221,7 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-    // Test the `protected_withdraw_xrd` method (fail - wrong badge)
+    // Test the `owner_withdraw_xrd` method (fail - wrong badge)
     amount = dec!("100");
 
     let badge = create_fungible(
@@ -211,7 +230,7 @@ fn test_owner_withdraw_liquidity() {
         public_key
     );
 
-    let receipt = protected_withdraw_xrd(
+    let receipt = owner_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -224,10 +243,10 @@ fn test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-    // Test the `protected_withdraw_xrd` method (success)
+    // Test the `owner_withdraw_xrd` method (success)
     amount = dec!("100");
 
-    let receipt = protected_withdraw_xrd(
+    let receipt = owner_withdraw_xrd(
         &mut test_runner, 
         public_key, 
         account_component, 
@@ -252,7 +271,7 @@ fn test_get_flashloan() {
     // Put 100 XRD in the vault for testing
     let amount: Decimal = dec!("100");
 
-    let _receipt = protected_deposit_xrd(
+    let _receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -261,7 +280,7 @@ fn test_get_flashloan() {
         amount
     );
 
-    // Test the `protected_withdraw_xrd` method (fail - transient token)
+    // Test the `owner_withdraw_xrd` method (fail - transient token)
     //  The stand-alone get_flashloan function is bound to fail as the transient token
     //  is not allowed to be deposited.
     //  this function should always be used in conjuntion with the repay_flashloan function
@@ -336,7 +355,7 @@ fn test_repay_flashloan() {
     // (2) put 100 XRD in the vault for testing
     let amount: Decimal = dec!("100");
 
-    let _receipt = protected_deposit_xrd(
+    let _receipt = owner_deposit_xrd(
         &mut test_runner, 
         public_key,
         account_component, 
@@ -401,7 +420,7 @@ fn test_repay_flashloan() {
         .with_name_lookup(|builder, lookup| {
             builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
-        //.call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(

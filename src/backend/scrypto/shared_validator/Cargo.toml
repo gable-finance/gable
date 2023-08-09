@@ -1,5 +1,5 @@
 [package]
-name = "sundae"
+name = "shared_validator"
 version = "0.1.0"
 edition = "2021"
 

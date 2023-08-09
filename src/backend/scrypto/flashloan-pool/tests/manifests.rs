@@ -64,6 +64,85 @@ pub fn create_non_fungible(
     non_fungible
 }
 
+pub fn create_validator(
+    test_runner: &mut TestRunner,
+    account_component: ComponentAddress,
+    public_key: Secp256k1PublicKey,
+) -> ( 
+    TransactionReceipt,
+    ResourceAddress,
+    BTreeSet<NonFungibleLocalId> 
+){
+    // Publish package
+    let package_address = test_runner.compile_and_publish(this_package!());
+
+    let key = Secp256k1PublicKey([0; 33]);
+
+    let fee_factor = dec!("1");
+
+    // Create the manifest for flashloan pool instantiation
+    let manifest = ManifestBuilder::new()
+        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("1200"))
+        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .with_name_lookup(|builder, lookup| {
+            builder.create_validator(
+                key,
+                fee_factor,
+                lookup.bucket("xrd_bucket"),
+            )
+        })
+        .deposit_batch(account_component)
+        .build();
+
+    // Execute the manifest for flashloan pool instantiation
+    let receipt = test_runner.execute_manifest_ignoring_fee(
+        manifest,
+        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    );
+
+    // register the balance changes of the "create_validator" transaction
+    let balance_changes = receipt.expect_commit(true).balance_changes();
+
+    // Placeholders:
+
+    // (1) non fungible resource address
+    // as the 'resource_address' has to be inititiated
+    // but will be overwritten with the validator node owner non fungible address thereafter
+    let mut nft_resource_address: ResourceAddress = create_non_fungible(
+        test_runner, 
+        account_component, 
+        public_key
+    );
+
+    // (2) non fungible local id
+    // as the 'local id' has to be inititiated
+    // but will be overwritten with the validator node owner non fungible local id thereafter
+    let mut nft_local_id = BTreeSet::from([NonFungibleLocalId::ruid([0x11; 32])]);
+
+    // declare variables to get them in scope
+    let mut mut_balance_change;
+
+    // retrieve the inner map from the third key-value pair (assuming there is at least one)
+    // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
+    if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
+
+        // retrieve the resource address and balance change from the second key-value pair
+        // from format Indexmap<ResourceAddress, Balancechange>
+        // which are the resource address and local if of the nft token returned to the caller
+        if let Some((address, balance_change)) = inner_map.iter().nth(1) {
+            // clone balance change to get remove reference
+            mut_balance_change = balance_change.clone();
+            // get the nft local id
+            nft_local_id = mut_balance_change.added_non_fungibles().clone();
+            // get the nft resource address
+            nft_resource_address = address.clone();
+        }
+    }
+
+    return(receipt, nft_resource_address, nft_local_id)
+
+}
+
 pub fn create_flashloanpool(
     test_runner: &mut TestRunner,
     account_component: ComponentAddress,
@@ -81,16 +160,24 @@ pub fn create_flashloanpool(
     // Create the owner badge
     let owner_badge: ResourceAddress = create_fungible(test_runner, account_component, public_key);
 
+    let (_validator_receipt, validator_owner_address, validator_owner_local_id) = create_validator(
+        test_runner, 
+        account_component, 
+        public_key,
+    );
+
     // Create the manifest for flashloan pool instantiation
     let manifest = ManifestBuilder::new()
         .withdraw_from_account(account_component, owner_badge, dec!("1"))
+        .withdraw_non_fungibles_from_account(account_component, validator_owner_address, &validator_owner_local_id)
         .take_all_from_worktop(owner_badge, "owner_bucket")
+        .take_all_from_worktop(validator_owner_address, "validator_bucket")
         .with_name_lookup(|builder, lookup| {
             builder.call_function(
                 package_address,
                 "Flashloanpool",
                 "instantiate_flashloan_pool",
-                manifest_args!(lookup.bucket("owner_bucket")),
+                manifest_args!(lookup.bucket("owner_bucket"), lookup.bucket("validator_bucket")),
             )
         })
         .deposit_batch(account_component)
@@ -133,7 +220,7 @@ pub fn update_interest_rate(
     receipt
 }
 
-pub fn protected_deposit_xrd(
+pub fn owner_deposit_xrd(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -149,7 +236,7 @@ pub fn protected_deposit_xrd(
         .with_name_lookup(|builder, lookup| {
             builder.call_method(
                 component,
-                "protected_deposit_xrd",
+                "owner_deposit_xrd",
                 manifest_args!(lookup.bucket("bucket1")),
             )
         })
@@ -164,7 +251,7 @@ pub fn protected_deposit_xrd(
     receipt
 }
 
-pub fn protected_withdraw_xrd(
+pub fn owner_withdraw_xrd(
     test_runner: &mut TestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
@@ -175,7 +262,7 @@ pub fn protected_withdraw_xrd(
     // Create the manifest for owner withdrawing liquidity
     let manifest = ManifestBuilder::new()
         .create_proof_from_account_of_amount(account_component, owner_badge, dec!("1"))
-        .call_method(component, "protected_withdraw_xrd", manifest_args!(amount))
+        .call_method(component, "owner_withdraw_xrd", manifest_args!(amount))
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
         .build();
 
@@ -368,9 +455,9 @@ pub fn update_supplier_hashmap(
 ) -> TransactionReceipt {
 
     let manifest = ManifestBuilder::new()
-    .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-    .call_method(component, "update_supplier_hashmap", manifest_args!())
-    .build();
+        .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
+        .call_method(component, "update_supplier_hashmap", manifest_args!())
+        .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
         manifest,
