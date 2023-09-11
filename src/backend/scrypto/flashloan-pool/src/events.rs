@@ -15,7 +15,7 @@ pub struct WithdrawEvent {
 }
 
 #[derive(ScryptoSbor, ScryptoEvent)]
-pub struct UpdateHashmapEvent {
+pub struct UpdateIndexmapEvent {
     pub epoch: Epoch,
 }
 

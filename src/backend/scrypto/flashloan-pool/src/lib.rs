@@ -11,12 +11,12 @@ struct AmountDue {
 
 #[derive(Debug, NonFungibleData, ScryptoSbor)]
 struct LiquiditySupplier {
+    box_nr: u64,
     lsu_amount: Decimal,
-    entry_epoch: Epoch,
 }
 
 #[blueprint]
-#[events(DepositEvent, WithdrawEvent, UpdateHashmapEvent, UpdateInterestRateEvent)]
+#[events(DepositEvent, WithdrawEvent, UpdateIndexmapEvent, UpdateInterestRateEvent)]
 mod flashloanpool {
 
     enable_method_auth! {
@@ -30,16 +30,16 @@ mod flashloanpool {
             owner_deposit_xrd => restrict_to: [OWNER];
             owner_withdraw_xrd => restrict_to: [OWNER];
             deposit_lsu => PUBLIC;
-            deposit_lsu_merge => PUBLIC;
+            // deposit_lsu_merge => PUBLIC;
             withdraw_lsu => PUBLIC;
-            withdraw_lsu_amount => PUBLIC;
+            // withdraw_lsu_amount => PUBLIC;
             deposit_batch => PUBLIC;
-            update_supplier_hashmap => restrict_to: [admin, OWNER, component];
+            update_supplier_kvs => restrict_to: [admin, OWNER, component];
             update_interest_rate => restrict_to: [admin, OWNER];
             // validator_component => restrict_to: [component];
-            provide_validator_owner => restrict_to: [OWNER];
-            return_validator_owner => restrict_to: [OWNER];
-            start_unlock_owner_stake_units => restrict_to: [admin, OWNER];
+            deposit_validator_owner => restrict_to: [OWNER];
+            withdraw_validator_owner => restrict_to: [OWNER];
+            // start_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             // finish_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             // unstake => restrict_to: [admin, OWNER];
             // claim_xrd => restrict_to: [admin, OWNER];
@@ -68,8 +68,10 @@ mod flashloanpool {
         owner_liquidity: Decimal,
         // reference to the admin badge
         admin_badge_address: ResourceAddress,
-        // hashmap registering suppliers
-        supplier_hashmap: HashMap<NonFungibleLocalId, Vec<Decimal>>,
+        // indexmap registering partitions
+        supplier_aggregate_im: IndexMap<u64, Vec<Decimal>>,
+        // key value store registering suppliers
+        supplier_partitioned_kvs: KeyValueStore<u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>>,
         // reference to 'proof of supply nft'
         pool_nft: ResourceManager,
         // nft local id number
@@ -91,14 +93,14 @@ mod flashloanpool {
     }
 
     impl Flashloanpool {
-        pub fn instantiate_flashloan_pool(owner_badge: Bucket, validator_owner: Bucket) -> (Bucket, Bucket, Global<Flashloanpool>) {
+        pub fn instantiate_flashloan_pool(owner_badge: Bucket, validator_owner: Bucket) -> (Bucket, FungibleBucket, Global<Flashloanpool>) {
             let (address_reservation, component_address) =
-                Runtime::allocate_component_address(Runtime::blueprint_id());
+                Runtime::allocate_component_address(Flashloanpool::blueprint_id());
 
             // Provision fungible resource and generate admin's badge
             // to support (co-)ownership
             // Mintable and burnable by anyone who owns an admin's badge
-            let admin_badge: Bucket = ResourceBuilder::new_fungible(OwnerRole::None)
+            let admin_badge: FungibleBucket = ResourceBuilder::new_fungible(OwnerRole::None)
                 .divisibility(DIVISIBILITY_NONE)
                 .metadata(metadata! {
                     init {
@@ -178,19 +180,20 @@ mod flashloanpool {
                 .create_with_no_initial_supply();
 
             let flashloan_component: Global<Flashloanpool> = Self {
-                liquidity_pool_vault: Vault::new(RADIX_TOKEN),
+                liquidity_pool_vault: Vault::new(XRD),
                 validator_owner_vault: Vault::with_bucket(validator_owner),
                 owner_badge_address: owner_badge.resource_address(),
                 admin_badge_address: admin_badge.resource_address(),
                 owner_liquidity: Decimal::ZERO,
-                supplier_hashmap: HashMap::new(),
+                supplier_aggregate_im: IndexMap::new(),
+                supplier_partitioned_kvs: KeyValueStore::new(),
                 pool_nft: pool_nft,
                 pool_nft_nr: 0,
-                lsu_vault: Vault::new(RADIX_TOKEN),
+                lsu_vault: Vault::new(XRD),
                 rewards_liquidity: Decimal::ZERO,
                 // interest_liquidity: Decimal::ZERO,
-                unstaking_lsu_vault: Vault::new(RADIX_TOKEN),
-                unstaking_nft_vault: Vault::new(RADIX_TOKEN),
+                unstaking_lsu_vault: Vault::new(XRD),
+                unstaking_nft_vault: Vault::new(XRD),
                 interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
             }
@@ -243,16 +246,16 @@ mod flashloanpool {
                     owner_deposit_xrd => Xrd(1.into()), locked; 
                     owner_withdraw_xrd => Xrd(1.into()), locked;
                     deposit_lsu => Xrd(1.into()), locked;
-                    deposit_lsu_merge =>  Xrd(1.into()), locked;
+                    // deposit_lsu_merge =>  Xrd(1.into()), locked;
                     deposit_batch => Free, locked;
                     withdraw_lsu => Xrd(1.into()), locked; 
-                    withdraw_lsu_amount => Xrd(1.into()), locked; 
-                    update_supplier_hashmap => Xrd(1.into()), locked;
+                    // withdraw_lsu_amount => Xrd(1.into()), locked; 
+                    update_supplier_kvs => Xrd(1.into()), locked;
                     update_interest_rate => Xrd(1.into()), locked;
                     // validator_component => Free, locked;
-                    provide_validator_owner => Free, locked;
-                    return_validator_owner => Free, locked;
-                    start_unlock_owner_stake_units => Free, locked;
+                    deposit_validator_owner => Free, locked;
+                    withdraw_validator_owner => Free, locked;
+                    // start_unlock_owner_stake_units => Free, locked;
                     // finish_unlock_owner_stake_units => Free, locked;
                     // unstake => Free, locked;
                     // claim_xrd => Free, locked;
@@ -266,7 +269,7 @@ mod flashloanpool {
             return (owner_badge, admin_badge, flashloan_component);
         }
 
-        pub fn provide_validator_owner (&mut self, validator_owner: Bucket) {
+        pub fn deposit_validator_owner (&mut self, validator_owner: Bucket) {
 
             assert_eq!(validator_owner.resource_address(), self.validator_owner_vault.resource_address(),
                         "Please provide a validator node ownership token");
@@ -274,26 +277,26 @@ mod flashloanpool {
             self.validator_owner_vault.put(validator_owner);
         }
 
-        pub fn return_validator_owner (&mut self) -> Bucket {
+        pub fn withdraw_validator_owner (&mut self) -> Bucket {
 
             let validator_owner = self.validator_owner_vault.take_all();
 
             validator_owner
         }
 
-        pub fn start_unlock_owner_stake_units(
-            &mut self, 
-            requested_stake_unit_amount: Decimal,
-            mut validator: Global<Validator>,
-            non_fungible_local_id: NonFungibleLocalId
-        ) {
+        // pub fn start_unlock_owner_stake_units(
+        //     &mut self, 
+        //     requested_stake_unit_amount: Decimal,
+        //     mut validator: Global<Validator>,
+        //     non_fungible_local_id: NonFungibleLocalId
+        // ) {
 
-            self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
-                &btreeset!(non_fungible_local_id),
-                || {
-                validator.start_unlock_owner_stake_units(requested_stake_unit_amount);
-                })
-        }
+        //     self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
+        //         &btreeset!(non_fungible_local_id),
+        //         || {
+        //             validator.start_unlock_owner_stake_units(requested_stake_unit_amount);
+        //         })
+        // }
 
         // pub fn validator_component(&mut self, validator: Global<validator>) -> Global<ValidatorBlueprint> {
 
@@ -414,7 +417,7 @@ mod flashloanpool {
         
             // Ensure repayment is done in XRD
             assert!(
-                repayment.resource_address() == RADIX_TOKEN,
+                repayment.resource_address() == XRD,
                 "Please provide XRD as repayment"
             );
         
@@ -468,7 +471,7 @@ mod flashloanpool {
         
             assert_eq!(
                 deposit.resource_address(),
-                RADIX_TOKEN,
+                XRD,
                 "Please deposit XRD"
             );
         
@@ -504,12 +507,12 @@ mod flashloanpool {
             info!("Owner liquidity before withdrawal: {} XRD", self.owner_liquidity);
             info!("Owner liquidity withdrawn: {} XRD", amount);
         
-            debug!("{:?}", self.supplier_hashmap);
+            debug!("{:?}", self.supplier_aggregate_im);
         
             // Update the suppliers hashmap before returning earnings
-            self.update_supplier_hashmap();
+            self.update_aggregate_im();
         
-            debug!("{:?}", self.supplier_hashmap);
+            debug!("{:?}", self.supplier_aggregate_im);
         
             // Subtract withdrawn amount from owner liquidity
             self.owner_liquidity -= amount;
@@ -526,6 +529,8 @@ mod flashloanpool {
 
         // Temporary: Replicating validator node's staking rewards collection
         pub fn deposit_batch(&mut self, bucket: Bucket) {
+            // Add bucket amount to rewards liquidity counter
+            self.rewards_liquidity += bucket.amount();
             // Deposit batch into the liquidity pool vault
             self.liquidity_pool_vault.put(bucket);
         }
@@ -548,28 +553,10 @@ mod flashloanpool {
             // Log the number of LSU's provided
             info!("{} LSU's are provided", lsu_tokens.amount());
 
-            // Update the suppliers hashmap (distribute earnings) before adding the current deposit to the hashmap
-            debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_hashmap();
-            debug!("{:?}", self.supplier_hashmap);
-
             // Increase the LSU local id by 1
             self.pool_nft_nr += 1;
 
-            // Get the current epoch
-            let epoch: Epoch = Runtime::current_epoch();
-
-            // Mint an NFT containing the deposited vector <lsu amount, epoch>
-            let lsu_nft_resource_manager = self.pool_nft;
-            let pool_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
-                &NonFungibleLocalId::Integer(self.pool_nft_nr.into()),
-                LiquiditySupplier {
-                    lsu_amount: lsu_tokens.amount(),
-                    entry_epoch: epoch,
-                },
-            );
-
-            // Determine variables for the vector in the supplier hashmap
+            // Determine variables for the vector in the supplier indexmap
             let lsu_amount: Decimal = lsu_tokens.amount() as Decimal;
             let staking_rewards: Decimal = Decimal::ZERO;
             let interest_earnings: Decimal = Decimal::ZERO;
@@ -579,14 +566,92 @@ mod flashloanpool {
 
             let lsu_nft_id: NonFungibleLocalId = NonFungibleLocalId::Integer(self.pool_nft_nr.into());
 
-            // Insert NFT local id as key and vector as value into the supplier hashmap
-            self.supplier_hashmap
-                .insert(lsu_nft_id.clone(), lsu_nft_data);
+            // Determine the condition that needs to be satisfied
+            let threshold_decimal: Decimal = dec!("10"); // Replace with your specific threshold value
+            
+            let mut box_nr: u64 = 1;
+
+            // Initialize a boolean flag to track whether the condition has been satisfied
+            let mut condition_satisfied = false;
+
+            // Iterate through the HashMap's key-value pairs
+            for (key, values) in &self.supplier_aggregate_im {
+                // Check if the Vec is not empty and satisfies your condition
+                if let Some(first_value) = values.first() {
+                    if *first_value < threshold_decimal {
+
+                        // update box number
+                        box_nr = *key;
+
+                        // update existing supplier's info before adding a new supplier
+                        self.update_supplier_kvs(box_nr);
+
+                        // Set the flag to true to indicate that the condition has been satisfied
+                        condition_satisfied = true;
+
+                        break;
+                    }
+                }
+            }
+
+            // Check if the condition was satisfied for any iteration
+            if condition_satisfied {
+
+                // Add new supplier to the key value store and index map
+
+                // Increase the box's number of suppliers by 1 new supplier
+                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[0] += 1;
+                // Increase the box's lsu amount by the supplied amount
+                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[1] += lsu_tokens.amount();
+                // Add new supplier to the box
+                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+
+            } else {
+
+                // In case that all boxes are full, a new box has to be inserted
+
+                // Increment the new_key by one for the new key-value pair
+                let box_nr: u64 = self.supplier_aggregate_im.keys().max().unwrap_or(&0) + 1;
+
+                self.update_aggregate_im();
+
+                let new_vec: Vec<Decimal> = vec![
+                    dec!("1"), 
+                    lsu_tokens.amount(), 
+                    Decimal::ZERO, 
+                    Decimal::ZERO,
+                    Decimal::ZERO,
+                    Decimal::ZERO
+                ];
+                
+                self.supplier_aggregate_im.insert(box_nr, new_vec);
+
+                let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
+
+                indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+
+                // If none of the key-value pairs satisfy the condition, create a new key-value pair
+                self.supplier_partitioned_kvs.insert(box_nr, indexmap);
+
+                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+            }
+
+            // Mint an NFT containing the deposited vector <box number, lsu amount>
+            let lsu_nft_resource_manager = self.pool_nft;
+
+            let pool_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
+                &NonFungibleLocalId::Integer(self.pool_nft_nr.into()),
+                LiquiditySupplier {
+                    box_nr: box_nr,
+                    lsu_amount: lsu_tokens.amount(),
+                },
+            );
 
             // Put provided LSU tokens in the LSU vault
             self.lsu_vault.put(lsu_tokens);
 
-            debug!("{:?}", self.supplier_hashmap);
+            debug!("{:?}", self.supplier_aggregate_im);
+            debug!("{:?}", self.supplier_partitioned_kvs.get(&box_nr).unwrap().get(&lsu_nft_id));
 
             Runtime::emit_event(
                 DepositEvent {
@@ -599,49 +664,49 @@ mod flashloanpool {
             return pool_nft;
         }
 
-        // add lsu to an existing pool nft
-        pub fn deposit_lsu_merge(&mut self,  pool_nft_proof: Proof, lsu_tokens: Bucket) {
+        // // add lsu to an existing pool nft
+        // pub fn deposit_lsu_merge(&mut self,  pool_nft_proof: Proof, lsu_tokens: Bucket) {
 
-            // Make sure the provided proof is of the right resource address
-            let checked_pool_nft_proof = pool_nft_proof.check(self.pool_nft.address());
+        //     // Make sure the provided proof is of the right resource address
+        //     let checked_pool_nft_proof = pool_nft_proof.check(self.pool_nft.address());
 
-            // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
-            let pool_nft_nr = checked_pool_nft_proof
-                .as_non_fungible()
-                .non_fungible_local_id();
+        //     // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
+        //     let pool_nft_nr = checked_pool_nft_proof
+        //         .as_non_fungible()
+        //         .non_fungible_local_id();
 
-            // Ensure LSU tokens are provided
-            assert_eq!(
-                lsu_tokens.resource_address(),
-                self.lsu_vault.resource_address(),
-                "Please provide liquids staking units (LSU's) generated by the Sundae validator node"
-            );
+        //     // Ensure LSU tokens are provided
+        //     assert_eq!(
+        //         lsu_tokens.resource_address(),
+        //         self.lsu_vault.resource_address(),
+        //         "Please provide liquids staking units (LSU's) generated by the Sundae validator node"
+        //     );
 
-            let lsu_amount: Decimal = lsu_tokens.amount();
+        //     let lsu_amount: Decimal = lsu_tokens.amount();
 
-            // Ensure LSU's provided is greater than zero
-            assert!(
-                lsu_amount > Decimal::ZERO,
-                "Please provide an amount of liquids staking units (LSU's) greater than zero"
-            );
+        //     // Ensure LSU's provided is greater than zero
+        //     assert!(
+        //         lsu_amount > Decimal::ZERO,
+        //         "Please provide an amount of liquids staking units (LSU's) greater than zero"
+        //     );
 
-            // Log the number of LSU's provided
-            info!("{} LSU's are provided", lsu_amount);
+        //     // Log the number of LSU's provided
+        //     info!("{} LSU's are provided", lsu_amount);
 
-            // Update the suppliers hashmap (distribute earnings) before adding the current deposit to the hashmap
-            debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_hashmap();
-            debug!("{:?}", self.supplier_hashmap);
+        //     // Update the suppliers hashmap (distribute earnings) before adding the current deposit to the hashmap
+        //     debug!("{:?}", self.supplier_hashmap);
+        //     self.update_supplier_hashmap();
+        //     debug!("{:?}", self.supplier_hashmap);
 
-            // Put provided LSU tokens in the LSU vault
-            self.lsu_vault.put(lsu_tokens);
+        //     // Put provided LSU tokens in the LSU vault
+        //     self.lsu_vault.put(lsu_tokens);
 
-            self.supplier_hashmap.get_mut(&pool_nft_nr).map(|values| {
-                values[0] += lsu_amount;
-            });
+        //     self.supplier_hashmap.get_mut(&pool_nft_nr).map(|values| {
+        //         values[0] += lsu_amount;
+        //     });
 
-            debug!("{:?}", self.supplier_hashmap);
-        }
+        //     debug!("{:?}", self.supplier_hashmap);
+        // }
 
         pub fn withdraw_lsu(&mut self, pool_nft: Bucket) -> (Bucket, Bucket) {
             // Ensure LSU NFT is provided
@@ -657,25 +722,33 @@ mod flashloanpool {
                 "Please provide only one NFT"
             );
 
-            // Update the suppliers hashmap (distribute earnings) before returning LSU's and XRD earnings to the user
-            // This ensures that the supplier receives the correct amount of resources they are entitled to
-            debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_hashmap();
-            debug!("{:?}", self.supplier_hashmap);
-
-            // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
+            // Get the local id of the provided NFT, which resembles the key in the supplier indexmap
             let pool_nft_nr = pool_nft
                 .as_non_fungible()
                 .non_fungible_local_id();
 
+            // Extract loan terms from transient token data
+            let pool_nft_data: LiquiditySupplier = pool_nft
+                .as_non_fungible()
+                .non_fungible()
+                .data();
+            
+            let pool_nft_box_nr: u64 = pool_nft_data.box_nr;
+
             debug!("{:?}", pool_nft_nr);
 
-            debug!("{:?}", self.supplier_hashmap[&pool_nft_nr]);
+            self.update_supplier_kvs(pool_nft_box_nr);
+
+            debug!("{:?}", self.supplier_partitioned_kvs.get(&pool_nft_box_nr).unwrap().get(&pool_nft_nr));
+
+            // debug!("{:?}", self.supplier_indexmap[&pool_nft_nr]);
+
+            let key_value_pair: Vec<Decimal> = self.supplier_partitioned_kvs.get(&pool_nft_box_nr).unwrap().get(&pool_nft_nr).unwrap().to_vec();
 
             // Withdraw entitled LSU's and earnings from vaults and return as a bucket
-            let lsu_bucket: Bucket = self.lsu_vault.take(self.supplier_hashmap[&pool_nft_nr][0]);
-            let staking_rewards: Decimal = self.supplier_hashmap[&pool_nft_nr][1];
-            let interest_earnings: Decimal = self.supplier_hashmap[&pool_nft_nr][2];
+            let lsu_bucket: Bucket = self.lsu_vault.take(key_value_pair[0]);
+            let staking_rewards: Decimal = key_value_pair[1];
+            let interest_earnings: Decimal = key_value_pair[2];
             let earnings: Decimal = staking_rewards + interest_earnings;
             let earnings_bucket: Bucket = self.liquidity_pool_vault.take(earnings);
 
@@ -686,10 +759,27 @@ mod flashloanpool {
                 earnings
             );
 
-            // Remove the supplier's entry from the supplier hashmap
-            self.supplier_hashmap.remove(&pool_nft_nr);
+            // Remove the supplier's entry from the supplier indexmap
+            self.supplier_partitioned_kvs.get_mut(&pool_nft_box_nr).unwrap().remove(&pool_nft_nr);
 
-            debug!("{:?}", self.supplier_hashmap);
+            if let Some(value) = self.supplier_partitioned_kvs.get(&pool_nft_box_nr).unwrap().get(&pool_nft_nr) {
+                debug!("{:?}", value)
+            } else {
+                debug!("None found")
+            }
+            
+            let im_value = self.supplier_aggregate_im.get_mut(&pool_nft_box_nr).unwrap();
+            
+            // Check if im_value[0] is equal to one 
+            if im_value[0] == Decimal::ONE {
+                // If im_value[0] is equal to one, remove the key-value pair
+                self.supplier_aggregate_im.remove(&pool_nft_box_nr);
+            } else {
+                im_value[0] -= Decimal::ONE;
+                im_value[1] -= lsu_bucket.amount();
+                im_value[2] -= staking_rewards;
+                im_value[4] -= interest_earnings;
+            }
 
             // Burn the provided NFT
             pool_nft.burn();
@@ -706,81 +796,167 @@ mod flashloanpool {
             return (lsu_bucket, earnings_bucket);
         }
 
-        // withdraw lsu and earnings partially
-        pub fn withdraw_lsu_amount(&mut self, pool_nft_proof: Proof, lsu_amount: Decimal) -> (Bucket, Bucket) {
+        // // withdraw lsu and earnings partially
+        // pub fn withdraw_lsu_amount(&mut self, pool_nft_proof: Proof, lsu_amount: Decimal) -> (Bucket, Bucket) {
             
-            // Make sure the provided proof is of the right resource address
-            let checked_pool_nft_proof = pool_nft_proof.check(self.pool_nft.address());
+        //     // Make sure the provided proof is of the right resource address
+        //     let checked_pool_nft_proof = pool_nft_proof.check(self.pool_nft.address());
 
-            // check if lsu amount is larger than 0
-            assert!(lsu_amount > Decimal::ZERO);
+        //     // check if lsu amount is larger than 0
+        //     assert!(lsu_amount > Decimal::ZERO);
 
-            // Update the suppliers hashmap (distribute earnings) before returning LSU's and XRD earnings to the user
-            // This ensures that the supplier receives the correct amount of resources they are entitled to
-            debug!("{:?}", self.supplier_hashmap);
-            self.update_supplier_hashmap();
-            debug!("{:?}", self.supplier_hashmap);
+        //     // Update the suppliers hashmap (distribute earnings) before returning LSU's and XRD earnings to the user
+        //     // This ensures that the supplier receives the correct amount of resources they are entitled to
+        //     debug!("{:?}", self.supplier_hashmap);
+        //     self.update_supplier_hashmap();
+        //     debug!("{:?}", self.supplier_hashmap);
 
-            // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
-            let pool_nft_nr = checked_pool_nft_proof
-                .as_non_fungible()
-                .non_fungible_local_id();
+        //     // Get the local id of the provided NFT, which resembles the key in the supplier hashmap
+        //     let pool_nft_nr = checked_pool_nft_proof
+        //         .as_non_fungible()
+        //         .non_fungible_local_id();
 
-            let lsu_amount_total: Decimal = self.supplier_hashmap[&pool_nft_nr][0];
+        //     let lsu_amount_total: Decimal = self.supplier_hashmap[&pool_nft_nr][0];
 
-            // check if lsu amount provided is smaller or equal than the entitled lsu amount
-            assert!(lsu_amount < lsu_amount_total,
-                "Please provide an amount smaller than {}. 
-                    In case you want to withdraw all your lsu's, please make use of the 'withdraw_lsu' method", 
-                self.supplier_hashmap[&pool_nft_nr][0], 
-            );
+        //     // check if lsu amount provided is smaller or equal than the entitled lsu amount
+        //     assert!(lsu_amount < lsu_amount_total,
+        //         "Please provide an amount smaller than {}. 
+        //             In case you want to withdraw all your lsu's, please make use of the 'withdraw_lsu' method", 
+        //         self.supplier_hashmap[&pool_nft_nr][0], 
+        //     );
 
-            debug!("{:?}", pool_nft_nr);
-            debug!("{:?}", self.supplier_hashmap[&pool_nft_nr]);
+        //     debug!("{:?}", pool_nft_nr);
+        //     debug!("{:?}", self.supplier_hashmap[&pool_nft_nr]);
 
-            let lsu_amount_relative = lsu_amount / lsu_amount_total;
+        //     let lsu_amount_relative = lsu_amount / lsu_amount_total;
 
-            // If lsu_amount is Some, use the provided value to withdraw LSU's and earnings
-            let lsu_bucket: Bucket = self.lsu_vault.take(lsu_amount);
-            let staking_rewards: Decimal = self.supplier_hashmap[&pool_nft_nr][1] * lsu_amount_relative;
-            let interest_earnings: Decimal = self.supplier_hashmap[&pool_nft_nr][2] * lsu_amount_relative;
-            let earnings: Decimal = staking_rewards + interest_earnings;
-            let earnings_bucket: Bucket = self.liquidity_pool_vault.take(earnings);
+        //     // If lsu_amount is Some, use the provided value to withdraw LSU's and earnings
+        //     let lsu_bucket: Bucket = self.lsu_vault.take(lsu_amount);
+        //     let staking_rewards: Decimal = self.supplier_hashmap[&pool_nft_nr][1] * lsu_amount_relative;
+        //     let interest_earnings: Decimal = self.supplier_hashmap[&pool_nft_nr][2] * lsu_amount_relative;
+        //     let earnings: Decimal = staking_rewards + interest_earnings;
+        //     let earnings_bucket: Bucket = self.liquidity_pool_vault.take(earnings);
 
-            // Log the LSU's and earnings returned to the supplier
-            info!(
-                "{} LSU's and {} XRD is returned to the supplier",
-                lsu_bucket.amount(),
-                earnings
-            );
+        //     // Log the LSU's and earnings returned to the supplier
+        //     info!(
+        //         "{} LSU's and {} XRD is returned to the supplier",
+        //         lsu_bucket.amount(),
+        //         earnings
+        //     );
 
-            self.supplier_hashmap.get_mut(&pool_nft_nr).map(|values| {
-                values[0] -= lsu_amount;
-                values[1] -= staking_rewards;
-                values[2] -= interest_earnings;
-            });
+        //     self.supplier_hashmap.get_mut(&pool_nft_nr).map(|values| {
+        //         values[0] -= lsu_amount;
+        //         values[1] -= staking_rewards;
+        //         values[2] -= interest_earnings;
+        //     });
 
-            Runtime::emit_event(
-                WithdrawEvent {
-                    lsu_amount_withdrawn: lsu_bucket.amount(),
-                    staking_rewards_withdrawn: staking_rewards,
-                    interest_earnings_withdrawn: interest_earnings
-                }
-            );
+        //     Runtime::emit_event(
+        //         WithdrawEvent {
+        //             lsu_amount_withdrawn: lsu_bucket.amount(),
+        //             staking_rewards_withdrawn: staking_rewards,
+        //             interest_earnings_withdrawn: interest_earnings
+        //         }
+        //     );
 
-            // Return LSU's and rewards to the user
-            return (lsu_bucket, earnings_bucket);
+        //     // Return LSU's and rewards to the user
+        //     return (lsu_bucket, earnings_bucket);
         
+        // }
+
+        fn update_aggregate_im(&mut self) {
+
+            let total_pool: Decimal = self.liquidity_pool_vault.amount();
+
+            info!("total_pool: {}", total_pool);
+
+            let total_lsu = self.lsu_vault.amount();
+
+            info!("total_lsu: {}", total_lsu);
+
+            let owner_liquidity: Decimal = self.owner_liquidity;
+
+            info!("owner_liquidity: {}", owner_liquidity);
+
+            let undistributed_rewards = self.rewards_liquidity;
+
+            info!("undistributed_rewards: {} XRD", undistributed_rewards);
+
+            // Determine 'supplier distributed earnings'
+            // by summing the rewards in the indexmap
+            let (rewards_aggregated, interest_aggregated): (Decimal, Decimal) = 
+                self.supplier_aggregate_im
+                    .values()
+                    .map(|i| {
+                        let rewards = i[2] + i[3];
+                        let interest = i[4] + i[5];
+                        (rewards, interest)
+                    })
+                    .fold(
+                        (Decimal::ZERO, Decimal::ZERO), 
+                        |(supplier_acc, interest_acc), (supplier_item, interest_item)| {
+                            (supplier_acc + supplier_item, interest_acc + interest_item)
+                        }
+                    );
+
+            info!("rewards_aggregated: {}", rewards_aggregated);
+            info!("interest_aggregated: {}", interest_aggregated);
+
+            // divide interest earnings by 2
+            // to assign equal portion to owner and supplier
+            let undistributed_interest: Decimal =
+                (total_pool - rewards_aggregated - interest_aggregated - owner_liquidity - undistributed_rewards) / dec!("2");
+
+            info!("undistributed_interest: {}", undistributed_interest);
+
+            // add 1/2 of the earned interest to the owner's liquidity
+            self.owner_liquidity += undistributed_interest;
+
+            // Loop over all entries in the indexmap to update the information
+            for i in self.supplier_aggregate_im.values_mut() {
+                // Determine box total LSU
+                let box_lsu = i[1];
+                // Determine box rewards
+                let box_rewards = i[2];
+
+                info!("box_lsu: {}", box_lsu);
+                info!("box_rewards: {}", box_rewards);
+
+                // Determine supplier's LSU stake relative to the pool's total LSU
+                let box_relative_lsu_stake: Decimal = box_lsu / total_lsu;
+
+                info!("box_relative_lsu_stake: {}", box_relative_lsu_stake);
+
+                let box_relative_xrd_stake: Decimal = if rewards_aggregated != Decimal::ZERO {
+                    // Determine supplier's XRD stake relative to the distributed earnings
+                    box_rewards / rewards_aggregated
+                } else {
+                    // Handle the case where `supplier_distributed_interest` is zero
+                    // Assign a default value (`supplier_relative_lsu_stake`)
+                    box_relative_lsu_stake
+                };
+
+                info!("box_relative_xrd_stake: {}", box_relative_xrd_stake);
+
+                i[3] += box_relative_lsu_stake * undistributed_rewards;
+
+                info!("i[3]: {}", i[3]);
+
+                i[5] += box_relative_xrd_stake * undistributed_interest;
+
+                info!("i[5]: {}", i[5]);
+            }
+
+            self.rewards_liquidity = Decimal::ZERO;
         }
 
-        pub fn update_supplier_hashmap(&mut self) {
-            // Log pool liquidity, owner liquidity, and supplier hashmap
+        pub fn update_supplier_kvs(&mut self, box_nr: u64) {
+            // Log pool liquidity, owner liquidity, and supplier indexmap
             info!("Pool liquidity: {} XRD", self.liquidity_pool_vault.amount());
             info!("Owner liquidity: {} XRD", self.owner_liquidity);
-            debug!("{:?}", self.supplier_hashmap);
+            // debug!("{:?}", self.supplier_indexmap);
 
             /*
-            To update the supplier's hashmap, the undistributed XRD earnings need to be calculated.
+            To update the supplier's indexmap, the undistributed XRD earnings need to be calculated.
             This can be accomplished by following these steps:
 
             1. Use the formula to calculate the pool's total liquidity:
@@ -795,82 +971,62 @@ mod flashloanpool {
                 supplier undistributed earnings = total liquidity - owner liquidity - supplier distributed earnings
             */
 
+            // Update the suppliers indexmap before returning earnings
+            self.update_aggregate_im();
+
             // Determine 'total liquidity'
             let total_liquidity: Decimal = self.liquidity_pool_vault.amount();
+
+            info!("Total pool liquidity: {} XRD", total_liquidity);
 
             // Determine 'owner liquidity'
             let owner_liquidity: Decimal = self.owner_liquidity;
 
-            // Determine 'supplier distributed earnings'
-            // by summing the rewards in the hashmap
-            let supplier_distributed_rewards: Decimal = self
-                .supplier_hashmap
-                .values()
-                .filter_map(|i| i.get(1))
-                .copied()
-                .sum();
+            info!("Total owner's liquidity: {} XRD", owner_liquidity);
 
-            info!("Supplier distributed rewards: {} XRD", supplier_distributed_rewards);
+            // Determine various values and log them in one go
+            let (
+                box_lsu,
+                box_distributed_rewards,
+                box_undistributed_rewards,
+                box_distributed_interest,
+                box_undistributed_interest,
+            ): (
+                Decimal,
+                Decimal,
+                Decimal,
+                Decimal,
+                Decimal,
+            ) = {
+                let supplier_aggregate = self.supplier_aggregate_im.get(&box_nr).unwrap();
+                (
+                    supplier_aggregate[1],
+                    supplier_aggregate[2],
+                    supplier_aggregate[3],
+                    supplier_aggregate[4],
+                    supplier_aggregate[5],
+                )
+            };
 
-            let supplier_distributed_interest: Decimal = self
-                .supplier_hashmap
-                .values()
-                .filter_map(|i| i.get(2))
-                .copied()
-                .sum();
-
-            info!("Supplier distributed interest: {} XRD", supplier_distributed_interest);
-
-            let supplier_distributed_earnings: Decimal =
-                supplier_distributed_rewards + supplier_distributed_interest;
-
-            info!("Supplier distributed earnings: {} XRD", supplier_distributed_earnings);
-
-            // let supplier_undistributed_interest: Decimal = self.interest_liquidity;
-
-            // info!("Supplier undistributed interest: {} XRD", supplier_undistributed_interest);
-
-            let supplier_undistributed_rewards: Decimal = self.rewards_liquidity;
-
-            info!("Supplier undistributed rewards: {} XRD", supplier_undistributed_rewards);
-
-            // // Determine the 'suppliers undistributed earnings'
-            // let supplier_undistributed_rewards: Decimal = total_liquidity
-            //     - owner_liquidity
-            //     - supplier_distributed_earnings
-            //     - supplier_undistributed_interest;
-
-            // info!("Supplier undistributed rewards: {} XRD", supplier_undistributed_rewards);
-
-            // Determine the 'undistributed interest'
-            let undistributed_interest: Decimal = total_liquidity
-                - owner_liquidity
-                - supplier_distributed_earnings
-                - supplier_undistributed_rewards;
-
-            info!("Undistributed interst: {} XRD", undistributed_interest);
-
-            // divide interest earnings by 2
-            // to assign equal portion to owner and supplier
-            let equal_undistributed_interest: Decimal = undistributed_interest / dec!("2");
-
-            self.owner_liquidity += equal_undistributed_interest;
-
-            let supplier_undistributed_interest: Decimal = equal_undistributed_interest;
-
-            // Loop over all entries in the hashmap to update the information
-            for i in self.supplier_hashmap.values_mut() {
+            info!("Box LSU: {} XRD", box_lsu);
+            info!("Box distributed rewards: {} XRD", box_distributed_rewards);
+            info!("Box undistributed rewards: {} XRD", box_undistributed_rewards);
+            info!("Box distributed interest: {} XRD", box_distributed_interest);
+            info!("Box undistributed interest: {} XRD", box_undistributed_interest);
+            
+            // Loop over all entries in the indexmap to update the information
+            for i in self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().values_mut() {
                 // Determine supplier's LSU stake
                 let supplier_lsu = i[0];
                 // Determine supplier's XRD stake
-                let supplier_xrd = i[1] + i[2];
+                let supplier_rewards = i[1] + i[2];
 
                 // Determine supplier's LSU stake relative to the pool's total LSU
-                let supplier_relative_lsu_stake = supplier_lsu / self.lsu_vault.amount();
+                let supplier_relative_lsu_stake = supplier_lsu / box_lsu;
 
-                let supplier_relative_xrd_stake = if supplier_distributed_interest != Decimal::ZERO {
+                let supplier_relative_xrd_stake = if box_distributed_interest != Decimal::ZERO {
                     // Determine supplier's XRD stake relative to the distributed earnings
-                    supplier_xrd / supplier_distributed_earnings
+                    supplier_rewards / box_distributed_rewards
                 } else {
                     // Handle the case where `supplier_distributed_interest` is zero
                     // Assign a default value (`supplier_relative_lsu_stake`)
@@ -878,22 +1034,25 @@ mod flashloanpool {
                 };
 
                 // Distribute the new staking rewards based on the staker's LSU relative to the pool's total LSU
-                i[1] += supplier_undistributed_rewards * supplier_relative_lsu_stake;
+                i[1] += box_undistributed_rewards * supplier_relative_lsu_stake;
 
                 // Distribute the new interest earnings based on the staker's XRD relative to the pool's total XRD
-                i[2] += supplier_undistributed_interest * supplier_relative_xrd_stake;
+                i[2] += box_undistributed_interest * supplier_relative_xrd_stake;
             }
 
-            // self.interest_liquidity = Decimal::ZERO;
+            let entry = self.supplier_aggregate_im.get_mut(&box_nr).unwrap();
 
-            self.rewards_liquidity = Decimal::ZERO;
+            entry[2] += box_undistributed_rewards;
+            entry[3] = Decimal::ZERO;
+            entry[4] += box_undistributed_interest;
+            entry[5] = Decimal::ZERO;
 
-            debug!("{:?}", self.supplier_hashmap);
+            debug!("Aggregate IndexMap: {:?}", self.supplier_aggregate_im);
 
             let epoch: Epoch = Runtime::current_epoch();
 
             Runtime::emit_event(
-                UpdateHashmapEvent {
+                UpdateIndexmapEvent {
                     epoch: epoch,
                 }
             );
