@@ -1,6 +1,5 @@
 import { StateApi } from '@radixdlt/babylon-gateway-api-sdk';
 import { componentAddress, xrdAddress } from './global-states.js';
-// import { accountAddress } from './accountAddress.js'
 
 // Instantiate Gateway SDK
 const stateApi = new StateApi();
@@ -24,7 +23,7 @@ export async function getState() {
 
   if (response.items[0].details === undefined) return;
 
-  let state = response.items[0].details.state.data_json;
+  let state = response.items[0].details.state.programmatic_json;
 
   console.log(response);
 
@@ -35,16 +34,16 @@ export async function getState() {
 async function getValues() {
   let state = await getState();
 
-  let last_epoch = state.fields[7].value;
-  let interest_rate = state.fields[11].value;
+  // let last_epoch = state.fields[7].value;
+  let interest_rate = state.fields[13].value;
+
+  // console.log("Last epoch: ", last_epoch);
+  console.log("Interest rate: ", interest_rate);
 
   let interest_rate_percentage = interest_rate * 100;
 
   document.getElementById('interest-rate').innerText = interest_rate_percentage + '%';
-
-  console.log(state);
-  console.log(last_epoch);
-  console.log(interest_rate);
+  
 }
 
 // get the amount of liquidity in the pool from state

@@ -1,7 +1,7 @@
 use scrypto::prelude::*;
 
 #[blueprint]
-mod validator_shared {
+mod validator_owner {
     enable_method_auth! {
         // roles {
         // },
@@ -11,19 +11,19 @@ mod validator_shared {
         }
     }
 
-    struct Validator {
-        owner_badge_vault: NonFungibleVault
+    struct ValidatorOwner {
+        validator_owner_vault: NonFungibleVault
     }
 
-    impl Validator {
+    impl ValidatorOwner {
         pub fn instantiate_validator(validator_owner: NonFungibleBucket, validator_shared_owner: ResourceAddress) -> (Global<Flashloanpool>) {
 
             let (address_reservation, component_address) =
                 Runtime::allocate_component_address(Runtime::blueprint_id());
 
 
-            let validator_component: Global<Flashloanpool> = Self {
-                owner_badge_vault: Vault::with_bucket(validator_owner)
+            let validator_component: Global<ValidatorOwner> = Self {
+                validator_owner_vault: Vault::with_bucket(validator_owner)
             }
 
             .instantiate()
@@ -78,7 +78,7 @@ mod validator_shared {
         }
 
         pub fn get_validator_owner_proof() -> Proof {
-
+            
         }
 
         pub fn retrieve_validator_owner_badge() -> NonFungibleBucket {

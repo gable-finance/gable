@@ -1,0 +1,24 @@
+CALL_METHOD
+    Address("account_sim1cyd08zuxt0kmuddmwlagas6g8g4x65w2sd4dfncfp7dha8augly08k")
+    "lock_fee"
+    Decimal("10");
+
+# Generate proof of owner badge
+CALL_METHOD
+    Address("account_sim1cyd08zuxt0kmuddmwlagas6g8g4x65w2sd4dfncfp7dha8augly08k")
+    "create_proof_of_non_fungibles"
+    Address("resource_sim1nfxxxxxxxxxxvdrwnrxxxxxxxxx004365253834xxxxxxxxxjxu0rl")
+    Array<NonFungibleLocalId>(
+        NonFungibleLocalId("[8365aff5ca0fa207218689e7704ceeeb64de1b0b309326f9b095154e3acd]")
+    );
+    
+# Register your validator, so that it can be part of the validator set
+CALL_METHOD
+    Address("validator_sim1sdj6law2p73qwgvx38nhqn8wadjduxctxzfjd7dsj525uwkdxw2n60")
+    "register";
+
+# Set your validator to accept stake from non-owners
+CALL_METHOD
+    Address("validator_sim1sdj6law2p73qwgvx38nhqn8wadjduxctxzfjd7dsj525uwkdxw2n60")
+    "update_accept_delegated_stake"
+    true;

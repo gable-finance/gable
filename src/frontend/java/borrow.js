@@ -1,7 +1,9 @@
-import { ManifestBuilder, Decimal, Bucket, Expression, Address } from '@radixdlt/radix-dapp-toolkit'
 import { TransactionApi } from "@radixdlt/babylon-gateway-api-sdk";
-import { accountAddress } from './accountAddress.js'
-import { componentAddress, xrdAddress, transient_address} from './global-states.js';
+import { 
+  componentAddress, 
+  xrdAddress, 
+  transientAddress
+} from './global-states.js';
 import { rdt } from './radixToolkit.js'
 
 // Instantiate Gateway SDK
@@ -14,22 +16,67 @@ const transactionApi = new TransactionApi()
 document.getElementById('buildflashloan').onclick = async function () {
 
   let xrd_amount = document.getElementById("buildamount").value;
-  let interest = xrd_amount * 0.05; // temp
+  let interest = 0.05;
+  let repayment = xrd_amount * (1 + interest);
 
-  let yourComponentAddress = "component_tdx_someaddress";
+  // let manifest = new ManifestBuilder()
+  //   .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
+  //   .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
+  //   .takeFromWorktop(xrdAddress, "xrd_bucket")
+  //   .callMethod(yourComponentAddress, "your_bucket", ["xrd_bucket", "your_arguments"])
+  //   .takeFromWorktop(xrdAddress, "xrd_bucket2")
+  //   .takeFromWorktop(transient_address, "transient_bucket")
+  //   .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket2"), Bucket("transient_bucket")])
+  //   .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
+  //   .build()
+  //   .toString();
+  // console.log('Build flashloan manifest: ', manifest)
 
-  let manifest = new ManifestBuilder()
-    .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
-    .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
-    .takeFromWorktop(xrdAddress, "xrd_bucket")
-    .callMethod(yourComponentAddress, "your_bucket", ["xrd_bucket", "your_arguments"])
-    .takeFromWorktop(xrdAddress, "xrd_bucket2")
-    .takeFromWorktop(transient_address, "transient_bucket")
-    .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket2"), Bucket("transient_bucket")])
-    .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-    .build()
-    .toString();
-  console.log('Build flashloan manifest: ', manifest)
+  let accountAddress = rdt.walletApi.getWalletData().accounts[0].address;
+
+  console.log('account address 3: ', accountAddress);
+
+  const manifest = 
+  `
+  # 1. GET FLASH LOAN
+  #   Which returns:
+  #     - ${xrd_amount} XRD
+  #     - transient token
+  CALL_METHOD
+    Address("${componentAddress}")
+    "get_flashloan"
+    Decimal("${xrd_amount}");
+
+  # 2. USE FLASH LOAN
+  #   Take the XRD from worktop and execute personal strategy with it
+  TAKE_ALL_FROM_WORKTOP
+    Address("${xrdAddress}")
+    Bucket("xrd_bucket");
+  
+  # ...
+  
+  # 3. REPAY FLASHLOAN
+  #   By taking:
+  #     1. ${xrd_amount} * ${1 + interest} = ${repayment} XRD
+  #     2. transient token
+  TAKE_ALL_FROM_WORKTOP
+    Address("${xrdAddress}")
+    Bucket("xrd_bucket");
+  TAKE_ALL_FROM_WORKTOP
+    Address("${transientAddress}")
+    Bucket("transient_bucket");
+  CALL_METHOD
+    Address("${componentAddress}")
+    "repay_flashloan"
+    Bucket("xrd_bucket")
+    Bucket("transient_bucket");
+
+  # 4. RETURN PROFIT
+  #   Returns residual XRD to your wallet, a.k.a. your profit
+  CALL_METHOD
+    Address("${accountAddress}")
+    "deposit_batch"
+    Expression("ENTIRE_WORKTOP");`;
 
   // Show the receipt on the DOM
   document.getElementById("receipt-container").style.display = "block";
@@ -44,20 +91,49 @@ document.getElementById('callflashloan').onclick = async function () {
   let xrd_amount = document.getElementById("xrdamount").value;
   let interest = xrd_amount * 0.1; // temp
 
-  let manifest = new ManifestBuilder()
-    .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
-    .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
-    .takeFromWorktop(xrdAddress, "xrd_bucket")
-    .takeFromWorktop(transient_address, "transient_bucket")
-    .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket"), Bucket("transient_bucket")])
-    .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-    .build()
-    .toString();
-  console.log('call flashloan manifest: ', manifest)
+  // let manifest = new ManifestBuilder()
+  //   .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
+  //   .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
+  //   .takeFromWorktop(xrdAddress, "xrd_bucket")
+  //   .takeFromWorktop(transient_address, "transient_bucket")
+  //   .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket"), Bucket("transient_bucket")])
+  //   .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
+  //   .build()
+  //   .toString();
+  // console.log('call flashloan manifest: ', manifest)
+
+  let accountAddress = rdt.walletApi.getWalletData().accounts[0].address
+
+  console.log('account address 3: ', accountAddress)
+
+  const manifest = 
+  `CALL_METHOD
+      Address("${componentAddress}")
+      "get_flashloan"
+      Decimal("${xrd_amount}");
+    CALL_METHOD
+      Address("${accountAddress}")
+      "withdraw"
+      Address("${xrdAddress}")
+      Decimal("${interest}");
+    TAKE_ALL_FROM_WORKTOP
+      Address("${xrdAddress}")
+      Bucket("xrd_bucket");
+    TAKE_ALL_FROM_WORKTOP
+      Address("${transientAddress}")
+      Bucket("transient_bucket");
+    CALL_METHOD
+      Address("${componentAddress}")
+      "repay_flashloan"
+      Bucket("xrd_bucket")
+      Bucket("transient_bucket");
+    CALL_METHOD
+      Address("${accountAddress}")
+      "deposit_batch"
+      Expression("ENTIRE_WORKTOP");`;
 
   // Send manifest to extension for signing
-  const result = await rdt
-    .sendTransaction({
+  const result = await rdt.walletApi.sendTransaction({
       transactionManifest: manifest,
       version: 1,
     })

@@ -275,11 +275,15 @@
 
         <!-- TEMP  -->
 
-         <section  style="display: none;">
+         <section> <!--</section>  style="display: none;"> -->
 
             <div class="instantiate"> 
                 <h2>Instantiate lender component - TEMP</h2>
                 <input type="text" placeholder="Package address" id="packageAddress" />
+                <input type="text" placeholder="Owner badge" id="ownerBadge" />
+                <input type="text" placeholder="Owner badge id" id="ownerBadgeId" />
+                <input type="text" placeholder="Validator owner badge" id="validatorOwnerBadge" />
+                <input type="text" placeholder="Validator owner badge id" id="validatorOwnerBadgeId" />
                 <p><button id="instantiateComponent">Instantiate component</button></p>
                 <div class="container">
                 <p>Component Address: <span id="componentAddress"></span></p>
@@ -291,7 +295,6 @@
             </div>
 
             <!-- TEMP  -->
-
 
             <div class="rewardsliquidity" id="nr1">
                 <div class="rewardsliquidity-title">
@@ -359,6 +362,22 @@
                 </p>
             </div>
 
+            <!-- TEMP -->
+
+            <div class="owner" id="nr1">
+                <div class="owner-title">
+                    <h2 class="owner-h2">Create owner badge</h2>
+                </div>
+                <button id="owner" class="learn-more interest-button">Send</button>
+            </div>
+
+            <div id="owner-receipt-container" style="display: none;">
+                <p>
+                    Receipt:<br>
+                    <pre id="owner-receipt"></pre>
+                </p>
+            </div>
+
         </section>
 
         <!-- TEMP -->
@@ -409,7 +428,7 @@
         <script src="java/disable_scroll.js"></script>
         <script src="java/smooth_scroll.js"></script>
 
-        <script type="module" src="java/radixToolkit.js"></script>
+        <!-- <script type="module" src="java/radixToolkit.js"></script> -->
         <script type="module" src="java/supply.js"></script>
 
 
