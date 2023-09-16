@@ -2,16 +2,19 @@ use scrypto::prelude::*;
 use radix_engine_common::{ScryptoEvent, ScryptoSbor};
 
 #[derive(ScryptoSbor, ScryptoEvent)]
-pub struct DepositEvent {
-    pub lsu_amount_deposited: Decimal,
-    pub nft_id_minted: NonFungibleLocalId,
+pub struct LsuDepositEvent {
+    pub box_nr: u64,
+    pub nft_id: NonFungibleLocalId,
+    pub lsu_amount: Decimal,
 }
 
 #[derive(ScryptoSbor, ScryptoEvent)]
-pub struct WithdrawEvent {
-    pub lsu_amount_withdrawn: Decimal,
-    pub staking_rewards_withdrawn: Decimal,
-    pub interest_earnings_withdrawn: Decimal,
+pub struct LsuWithdrawEvent {
+    pub box_nr: u64,
+    pub nft_id: NonFungibleLocalId,
+    pub lsu_amount: Decimal,
+    pub staking_rewards: Decimal,
+    pub interest_earnings: Decimal,
 }
 
 #[derive(ScryptoSbor, ScryptoEvent)]

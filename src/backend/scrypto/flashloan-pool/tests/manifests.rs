@@ -5,7 +5,7 @@ use transaction::builder::ManifestBuilder;
 use radix_engine::transaction::TransactionReceipt;
 
 pub fn create_fungible(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     account_component: ComponentAddress,
     public_key: Secp256k1PublicKey,
 ) -> ResourceAddress {
@@ -34,7 +34,7 @@ pub fn create_fungible(
 }
 
 pub fn create_non_fungible(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     account_component: ComponentAddress,
     public_key: Secp256k1PublicKey,
 ) -> ResourceAddress {
@@ -65,7 +65,7 @@ pub fn create_non_fungible(
 }
 
 pub fn create_validator(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     account_component: ComponentAddress,
     public_key: Secp256k1PublicKey,
 ) -> ( 
@@ -82,8 +82,8 @@ pub fn create_validator(
 
     // Create the manifest for flashloan pool instantiation
     let manifest = ManifestBuilder::new()
-        .withdraw_from_account(account_component, RADIX_TOKEN, dec!("1200"))
-        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .withdraw_from_account(account_component, XRD, dec!("5000"))
+        .take_all_from_worktop(XRD, "xrd_bucket")
         .with_name_lookup(|builder, lookup| {
             builder.create_validator(
                 key,
@@ -101,7 +101,7 @@ pub fn create_validator(
     );
 
     // register the balance changes of the "create_validator" transaction
-    let balance_changes = receipt.expect_commit(true).balance_changes();
+    let balance_changes = receipt.expect_commit(true).vault_balance_changes();
 
     // Placeholders:
 
@@ -122,21 +122,32 @@ pub fn create_validator(
     // declare variables to get them in scope
     let mut mut_balance_change;
 
+    // // retrieve the inner map from the third key-value pair (assuming there is at least one)
+    // // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
+    // if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
+
+    //     // retrieve the resource address and balance change from the second key-value pair
+    //     // from format Indexmap<ResourceAddress, Balancechange>
+    //     // which are the resource address and local id of the nft token returned to the caller
+    //     if let Some((address, balance_change)) = inner_map.iter().nth(1) {
+    //         // clone balance change to get remove reference
+    //         mut_balance_change = balance_change.clone();
+    //         // get the nft local id
+    //         nft_local_id = mut_balance_change.added_non_fungibles().clone();
+    //         // get the nft resource address
+    //         nft_resource_address = address.clone();
+    //     }
+    // }
+
     // retrieve the inner map from the third key-value pair (assuming there is at least one)
     // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
-    if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
-
-        // retrieve the resource address and balance change from the second key-value pair
-        // from format Indexmap<ResourceAddress, Balancechange>
-        // which are the resource address and local if of the nft token returned to the caller
-        if let Some((address, balance_change)) = inner_map.iter().nth(1) {
+    if let Some((_, (resource_address, balance_change))) = balance_changes.iter().nth(2) {
             // clone balance change to get remove reference
             mut_balance_change = balance_change.clone();
             // get the nft local id
             nft_local_id = mut_balance_change.added_non_fungibles().clone();
             // get the nft resource address
-            nft_resource_address = address.clone();
-        }
+            nft_resource_address = resource_address.clone();
     }
 
     return(receipt, nft_resource_address, nft_local_id)
@@ -144,7 +155,7 @@ pub fn create_validator(
 }
 
 pub fn create_flashloanpool(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     account_component: ComponentAddress,
     public_key: Secp256k1PublicKey,
 ) -> (
@@ -169,7 +180,7 @@ pub fn create_flashloanpool(
     // Create the manifest for flashloan pool instantiation
     let manifest = ManifestBuilder::new()
         .withdraw_from_account(account_component, owner_badge, dec!("1"))
-        .withdraw_non_fungibles_from_account(account_component, validator_owner_address, &validator_owner_local_id)
+        .withdraw_non_fungibles_from_account(account_component, validator_owner_address, validator_owner_local_id)
         .take_all_from_worktop(owner_badge, "owner_bucket")
         .take_all_from_worktop(validator_owner_address, "validator_bucket")
         .with_name_lookup(|builder, lookup| {
@@ -198,7 +209,7 @@ pub fn create_flashloanpool(
 }
 
 pub fn update_interest_rate(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -221,7 +232,7 @@ pub fn update_interest_rate(
 }
 
 pub fn owner_deposit_xrd(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -230,9 +241,9 @@ pub fn owner_deposit_xrd(
 ) -> TransactionReceipt {
     // Create the manifest for owner depositing liquidity
     let manifest = ManifestBuilder::new()
-        .withdraw_from_account(account_component, RADIX_TOKEN, amount)
+        .withdraw_from_account(account_component, XRD, amount)
         .create_proof_from_account_of_amount(account_component, owner_badge, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "bucket1")
+        .take_all_from_worktop(XRD, "bucket1")
         .with_name_lookup(|builder, lookup| {
             builder.call_method(
                 component,
@@ -252,7 +263,7 @@ pub fn owner_deposit_xrd(
 }
 
 pub fn owner_withdraw_xrd(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -276,7 +287,7 @@ pub fn owner_withdraw_xrd(
 }
 
 pub fn get_flashloan(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -297,7 +308,7 @@ pub fn get_flashloan(
 }
 
 pub fn repay_flashloan(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -307,9 +318,9 @@ pub fn repay_flashloan(
     
     // Create the manifest for calling the flash loan
     let manifest = ManifestBuilder::new()
-        .withdraw_from_account(account_component, RADIX_TOKEN, amount)
+        .withdraw_from_account(account_component, XRD, amount)
         .withdraw_from_account(account_component, transient, dec!("1"))
-        .take_all_from_worktop(RADIX_TOKEN, "xrd_bucket")
+        .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
             builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
@@ -326,7 +337,7 @@ pub fn repay_flashloan(
 }
 
 pub fn deposit_lsu(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
@@ -351,46 +362,13 @@ pub fn deposit_lsu(
     receipt
 }
 
-pub fn deposit_lsu_merge(
-    test_runner: &mut TestRunner,
-    public_key: Secp256k1PublicKey,
-    account_component: ComponentAddress,
-    component: ComponentAddress,
-    lsu_address: ResourceAddress,
-    amount: Decimal,
-    pool_nft: ResourceAddress,
-    pool_nft_id: &BTreeSet<NonFungibleLocalId>
-) -> TransactionReceipt {
-
-    let manifest = ManifestBuilder::new()
-        .withdraw_from_account(account_component, lsu_address, amount)
-        .create_proof_from_account_of_non_fungibles(
-            account_component,
-            pool_nft,
-            pool_nft_id
-        )
-        .take_all_from_worktop(lsu_address, "lsu_bucket")
-        .pop_from_auth_zone("nft_proof")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "deposit_lsu_merge", manifest_args!(lookup.proof("nft_proof"), lookup.bucket("lsu_bucket")))
-        })
-        .build();
-    
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-
-    receipt
-}
-
 pub fn withdraw_lsu(
-    test_runner: &mut TestRunner,
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
     pool_nft: ResourceAddress,
-    pool_nft_non_fungible_id: &BTreeSet<NonFungibleLocalId>,
+    pool_nft_non_fungible_id: BTreeSet<NonFungibleLocalId>,
 ) -> TransactionReceipt {
 
     let manifest = ManifestBuilder::new()
@@ -413,50 +391,19 @@ pub fn withdraw_lsu(
 
 }
 
-pub fn withdraw_lsu_amount(
-    test_runner: &mut TestRunner,
-    public_key: Secp256k1PublicKey,
-    account_component: ComponentAddress,
-    component: ComponentAddress,
-    pool_nft: ResourceAddress,
-    pool_nft_non_fungible_id: &BTreeSet<NonFungibleLocalId>,
-    amount: Decimal
-) -> TransactionReceipt {
-
-    let manifest = ManifestBuilder::new()
-        // Test the `withdraw_lsu` method (succes)
-        .create_proof_from_account_of_non_fungibles(
-            account_component,
-            pool_nft,
-            pool_nft_non_fungible_id
-        )
-        .pop_from_auth_zone("nft_proof")
-        .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "withdraw_lsu_amount", manifest_args!(lookup.proof("nft_proof"), amount))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-        .build();
-
-    let receipt = test_runner.execute_manifest_ignoring_fee(
-        manifest,
-        vec![NonFungibleGlobalId::from_public_key(&public_key)],
-    );
-
-    receipt
-
-}
-
-pub fn update_supplier_hashmap(
-    test_runner: &mut TestRunner,
+pub fn update_supplier_kvs(
+    test_runner: &mut DefaultTestRunner,
     public_key: Secp256k1PublicKey,
     account_component: ComponentAddress,
     component: ComponentAddress,
     admin_badge: ResourceAddress,
 ) -> TransactionReceipt {
 
+    let box_nr: u64 = 1;
+
     let manifest = ManifestBuilder::new()
         .create_proof_from_account_of_amount(account_component, admin_badge, dec!("1"))
-        .call_method(component, "update_supplier_hashmap", manifest_args!())
+        .call_method(component, "update_supplier_kvs", manifest_args!(box_nr))
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
