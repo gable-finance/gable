@@ -345,7 +345,7 @@ mod manifests;
 
 //     // Set map size at 2 indexes for testing purposes
 //     // This entails that after two entries, a new 'box' is created to store new suppliers' info
-//     env.with_auth_module_disabled(|env| flashloanpool.update_map_size(2, env))?;
+//     env.with_auth_module_disabled(|env| flashloanpool.update_box_size(2, env))?;
 
 //     // Define the values for LSU (XRD) buckets to be minted and deposited
 //     let bucket_values = [

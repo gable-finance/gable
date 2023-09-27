@@ -12,8 +12,8 @@
             Built on Radix DLT, the protocol offers transparency, security, and innovative solutions for traders and investors.
             This allows users to enjoy fast and efficient transaction processing, low fees, and transparent terms.">
         <meta name="keywords" content="DeFi, Radix, Lending, Liquidity, Flashloan, Staking, Loan, Pool">
-        <title>Sundae Liquidity Protocol</title>
-        <link rel="icon" href="pictures/Sundae-logo-no-corner.png">
+        <title>Gable Liquidity Protocol</title>
+        <link rel="icon" href="pictures/Gable_Logo_Favicon.ico">
         <link rel="stylesheet" href="css/generics.css">
         <link rel="stylesheet" href="css/styles_borrow.css">
         <link rel="stylesheet" href="css/header.css">
@@ -31,18 +31,17 @@
                 <div class="wrapper">
                     <div class="logo">
                         <a href="./">
-                            <img src="pictures/Sundae-logo-no-gradient.png" alt="logo" class="logo">
+                            <img src="pictures/Gable_Logo_Blue_Black.png" alt="logo" class="logo">
                         </a>
                         
                         <a href="./">
-                            <img src="pictures/Sundae-logo-no-background.png" alt="logo" class="logo-transparant">
+                            <img src="pictures/Gable_Logo_White.png" alt="logo" class="logo-transparant">
                         </a>
                     </div>
 
                     <div class="navigation-div">
                         <ul class="navigation">
                             <li><a class="menuItem" href="./">Home</a></li>
-                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -60,7 +59,6 @@
                         
                         <ul id="menu">
                             <li><a class="menuItem" href="./">Home</a></li>
-                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.sundaefinance.net" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -77,8 +75,8 @@
             </nav>
 
             <div id="banner">
-                <h1 id="banner-text">
-                    Liquidity protocol on Radix DLT
+                <h1 id="proxima-bold">
+                    GABLE LIQUIDITY PROTOCOL
                 </h1>
             </div>
 
@@ -93,82 +91,17 @@
         <section class="flashloan">
             <div class="flashloan-intro">
                 <p class="flashloan-p">
-                    Sundae Liquidity Protocol currently offers flash loans as its main feature. 
+                    Gable Liquidity Protocol currently offers flash loans as its main lending feature. 
                     Flash loans are loans that are issued and returned within a single (same) transaction.
                     This page provides a function to build and execute a flash loan.
-                    Before you get started it is advised to read the <a href="https://docs.sundaefinance.net/for-borrowers/flash-loan" target="_blank">documentation</a> for borrowers on Sundae platform.
+                    Before you get started it is advised to read the <a href="https://docs.sundaefinance.net/for-borrowers/flash-loan" target="_blank">documentation</a> for borrowers on Gable platform.
                 </p>
-            </div>
-
-            <div class="flashloan-background">
-                <h2>
-                    Background on flash loans
-                </h2>
-                <p class="flashloan-p">
-                    Flash loans are made possible due to one of Radix's key features: atomic composability. 
-                    Atomic composability in Radix (and crypto in general) is the ability to combine multiple transactions into a single atomic transaction, allowing for complex transactions to be executed in a single step.
-                    This enables flash loans because it allows users to borrow assets and repay the loan in the same transaction, without the need for collateral or credit checks, as the entire transaction is executed atomically.
-                    Read more on atomic composability here.
-                </p>
-            </div>
-
-            <h2 id="borrow-title-h2">
-                Here is how to get started:
-            </h2>
-
-            <div class="flashloan-steps">
-                <h2>
-                    [1] Connect wallet
-                </h2>
-                <p class="flashloan-p">
-                    Connect your wallet to Sundae's dApp.
-                    Install the Radix wallet on your phone and browser extension on desktop, in case you haven't yet.
-                    Thereafter you can connect to Sundae's dApp by using the top right button.
-                    This opens a prompt on the Radix wallet on your phone asking you to accept the connection.
-                </p> 
             </div>
 
             <div class="flashloan-steps">
-                <h2>
-                    [2] Build flash loan
-                </h2>
-
-                <p>
-                    The process of constructing and executing a flash loan can be divided into three steps, outlined as follows:                
-                </p>
-                <h3>
-                    [2.1] Get a flash loan
-                </h3>
-                <p class="flashloan-p">
-                    Call the flash loan function on the smart contract, passing in the amount of funds you want to borrow. 
-                    The smart contract will execute the loan and send the funds to your wallet.
-                </p>
-
-                <h3>
-                    [2.2] Use borrowed funds
-                </h3>
-
-                <p class="flashloan-p">
-                    Use the borrowed funds to execute your desired transaction or strategy. 
-                    Flash loans are typically used to take advantage of arbitrage opportunities or to execute complex trading strategies.
-                </p>
-
-                <h3>
-                    [2.3] Return borrowed funds
-                </h3>
-                <p class="flashloan-p">
-                    Return the borrowed funds including interest rate to the smart contract before the end of the loan period, along with the small interest fee. 
-                    Failure to return the funds and fee will result in the transaction being reverted and the borrower losing the borrowed funds.
-                </p>
-            </div>
-            
-
-            <div class="flashloan-steps">
-
-
-                <h2>
-                    Flash loan on Sundae
-                </h2>
+                <h1>
+                    Flash Loans on Gable
+                </h1>
 
                 <p class="flashloan-p">
                     The following functions are provided:
@@ -182,12 +115,6 @@
                         <span class="highlight">Execute</span> a flash loan by acquiring and repaying the loan, without performing any operations in between.
                     </li>
                 </ul> 
-
-                <p class="flashloan-p">
-                    These functions facilitate the setup of steps 2.1 and 2.3 as mentioned earlier. 
-                    It is your discretion to setup step 2.2, by utilizing the borrowed funds and expanding the transaction according to your specific use case.
-                </p>
-
 
                 <div class="tab-container">
                     <div class="tab-buttons">
@@ -245,7 +172,7 @@
                     </div>
 
             </div>
-
+<!-- 
             <div class="flashloan-interest-rates">
                 <h2>
                     Interest rates
@@ -267,37 +194,25 @@
                 </p>
             </div>
 
-            <!-- <div class="flashloan-tip">
-                <h2>
-                    Tip!
-                </h2>
-                <p class="flashloan-p">
-                    Step 2 to 4 can be automated and executed at once by building a customized transaction manifest. 
-                    The transaction manifest makes it possible to compose multiple actions to be executed atomically within a single transaction.
-                    A demo and example of the automated execution of a flash loan on Sundae's will be provided later.
-                </p>
-            </div> -->
-
             <div class="flashloan-disclaimer">
                 <p class="flashloan-p">
                     <span class="highlight">Note:</span> Flash loans are a powerful tool that can be used to execute complex transactions and strategies. 
                     However, they also come with significant risks and should only be used by experienced traders who understand the risks involved. 
                     Additionally, borrowers should ensure that they fully understand the terms and conditions of the smart contract before executing a flash loan.
                 </p>
-            </div>
+            </div> -->
         </section>
 
         <hr>
         
         <footer class="footer-mobile">
-            <div class="sundae">
+            <div class="gable">
                 <h1>
-                    SUNDAE LIQUIDITY PROTOCOL
+                    GABLE LIQUIDITY PROTOCOL
                 </h1>
             </div>
 
             <div class="menu">
-                <a href="about">ABOUT</a>
                 <a href="http://sundaefinance.medium.com" target="_blank">BLOG</a>
                 <a href="http://docs.sundaefinance.net" target="_blank">DOCS</a>
                 <a href="http://docs.sundaefinance.net/faq" target="_blank">FAQ</a>
@@ -320,7 +235,7 @@
             </div>
             <div class="copyright">
                 <p>
-                    © 2023 Sundae Finance, Inc. All rights reserved
+                    © 2023 Gable Finance, Inc. All rights reserved
                 </p>
                 <a href="https://www.radixdlt.com/full-stack" target="_blank">
                     <img src="pictures/Long-Black-Monochrome-outline (1).png" alt="runsonradix">

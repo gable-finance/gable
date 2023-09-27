@@ -16,11 +16,11 @@ hr {
     padding: 0;
   }
   
-  footer.footer-mobile div.sundae {
+  footer.footer-mobile div.gable {
     padding: 20px 50px;
   }
   
-  footer.footer-mobile div.sundae h1 {
+  footer.footer-mobile div.gable h1 {
     margin: 0;
     padding: 0;
     font-size: 100%;
@@ -86,7 +86,7 @@ hr {
       margin: 0;
     }
   
-    footer.footer-mobile div.sundae {
+    footer.footer-mobile div.gable {
       padding: 10px 50px;
     }
   

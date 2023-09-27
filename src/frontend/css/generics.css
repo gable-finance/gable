@@ -16,14 +16,18 @@
     --body2: #cbdadd;
 
     --secondthemetransparant: #376d7939;
+    --secondthemetransparanthoover: #01293139;
     --secondtheme2: #dbe7da;
     
     --boxcolor:#F6F6F6;
 
     --gradient1: #d1d1d1;
-    --gradient2: #f0f0f0;
-    --gradient3: #cadcc8;
-    --gradient4: #b2d6ae;
+    --gradient2: #dcecda;
+    --gradient3: #d4e1d2;
+    --gradient4: #d0e0e3ff;
+    --gradient5: rgb(178, 206, 211);
+    --gradient6: rgb(189, 209, 212);
+
   }
 
 /* GENERICS */

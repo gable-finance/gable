@@ -34,14 +34,13 @@ mod flashloanpool {
             withdraw_lsu => PUBLIC;
             update_supplier_kvs => restrict_to: [admin, OWNER, component];
             update_interest_rate => restrict_to: [admin, OWNER];
-            // validator_component => restrict_to: [component];
+            update_box_size => restrict_to: [admin, OWNER];
             deposit_validator_owner => restrict_to: [OWNER];
             withdraw_validator_owner => restrict_to: [OWNER];
             start_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             finish_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             unstake => restrict_to: [admin, OWNER];
             claim_xrd => restrict_to: [admin, OWNER];
-            update_map_size => restrict_to: [admin, OWNER];
         }
     }
 
@@ -75,7 +74,7 @@ mod flashloanpool {
         // interest rate
         interest_rate: Decimal,
         // map dize
-        map_size: u64
+        box_size: u64
     }
 
     impl Flashloanpool {
@@ -180,7 +179,7 @@ mod flashloanpool {
                 unstaking_nft_vault: Vault::new(XRD),
                 interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
-                map_size: 250,
+                box_size: 250,
             }
             .instantiate()
             .prepare_to_globalize(OwnerRole::Fixed(rule!(require(owner_badge.resource_address()))))
@@ -242,7 +241,7 @@ mod flashloanpool {
                     finish_unlock_owner_stake_units => Free, locked;
                     unstake => Free, locked;
                     claim_xrd => Free, locked;
-                    update_map_size => Free, locked;
+                    update_box_size => Free, locked;
                 }
             })
             .with_address(address_reservation)
@@ -466,7 +465,7 @@ mod flashloanpool {
             for (key, values) in &self.supplier_aggregate_im {
                 // Check if the Vec is not empty and satisfies your condition
                 if let Some(first_value) = values.first() {
-                    if *first_value < self.map_size.into() {
+                    if *first_value < self.box_size.into() {
 
                         // update box number
                         box_nr = *key;
@@ -901,95 +900,95 @@ mod flashloanpool {
             );
         }
 
-        pub fn update_map_size(&mut self, amount: u64) {
+        pub fn update_box_size(&mut self, amount: u64) {
             assert!(amount > 0, "Please provide a number larger than 0");
             assert!(amount < 250, "Please provide a map size smaller than 250");
 
-            self.map_size = amount;
+            self.box_size = amount;
         }
-    }
 
-    pub fn deposit_validator_owner(&mut self, validator_owner: Bucket) {
+        pub fn deposit_validator_owner(&mut self, validator_owner: Bucket) {
 
-        assert_eq!(validator_owner.resource_address(), self.validator_owner_vault.resource_address(),
-                    "Please provide a validator node ownership token");
+            assert_eq!(validator_owner.resource_address(), self.validator_owner_vault.resource_address(),
+                        "Please provide a validator node ownership token");
 
-        self.validator_owner_vault.put(validator_owner);
-    }
+            self.validator_owner_vault.put(validator_owner);
+        }
 
-    pub fn withdraw_validator_owner(&mut self) -> Bucket {
+        pub fn withdraw_validator_owner(&mut self) -> Bucket {
 
-        let validator_owner = self.validator_owner_vault.take_all();
+            let validator_owner = self.validator_owner_vault.take_all();
 
-        validator_owner
-    }
+            validator_owner
+        }
 
-    pub fn start_unlock_owner_stake_units(
-        &mut self, 
-        requested_stake_unit_amount: Decimal,
-        mut validator: Global<Validator>,
-        non_fungible_local_id: NonFungibleLocalId
-    ) {
-        // Create a mutable IndexSet
-        let mut index_set: IndexSet<NonFungibleLocalId> = IndexSet::new();
+        pub fn start_unlock_owner_stake_units(
+            &mut self, 
+            requested_stake_unit_amount: Decimal,
+            mut validator: Global<Validator>,
+            non_fungible_local_id: NonFungibleLocalId
+        ) {
+            // Create a mutable IndexSet
+            let mut index_set: IndexSet<NonFungibleLocalId> = IndexSet::new();
 
-        index_set.insert(non_fungible_local_id); 
+            index_set.insert(non_fungible_local_id); 
 
-        self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
-            &index_set,
-            || {
-                validator.start_unlock_owner_stake_units(requested_stake_unit_amount);
-            })
-    }
-
-    pub fn finish_unlock_owner_stake_units(
-        &mut self, 
-        mut validator: Global<Validator>,
-        non_fungible_local_id: NonFungibleLocalId
-    ) {
-
-        // Create a mutable IndexSet
-        let mut index_set: IndexSet<NonFungibleLocalId> = IndexSet::new();
-
-        index_set.insert(non_fungible_local_id); 
-
-        let lsu_bucket: Bucket = 
             self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
                 &index_set,
                 || {
-                    let bucket = validator.finish_unlock_owner_stake_units();
+                    validator.start_unlock_owner_stake_units(requested_stake_unit_amount);
+                })
+        }
 
-                    bucket
-                }
-            );
-        
-        self.unstaking_lsu_vault.put(lsu_bucket);     
-    }
+        pub fn finish_unlock_owner_stake_units(
+            &mut self, 
+            mut validator: Global<Validator>,
+            non_fungible_local_id: NonFungibleLocalId
+        ) {
 
-    pub fn unstake(
-        &mut self, 
-        mut validator: Global<Validator>,
-    ) {
-        let stake_unit_bucket: Bucket = self.unstaking_lsu_vault.take_all();
+            // Create a mutable IndexSet
+            let mut index_set: IndexSet<NonFungibleLocalId> = IndexSet::new();
 
-        let nft_bucket: Bucket = validator.unstake(stake_unit_bucket);
+            index_set.insert(non_fungible_local_id); 
 
-        self.unstaking_nft_vault.put(nft_bucket);   
-    }
+            let lsu_bucket: Bucket = 
+                self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
+                    &index_set,
+                    || {
+                        let bucket = validator.finish_unlock_owner_stake_units();
 
-    pub fn claim_xrd(
-        &mut self, 
-        mut validator: Global<Validator>,
-    ) {
-        // NFT vaults work on a 'first in first out' basis
-        // which entails that the unstake activity that is most likely to being finished
-        // can be extracted by simply taking the first nft out of the vault
-        let unstake_nft_bucket: Bucket = self.unstaking_nft_vault.take(dec!("1"));
+                        bucket
+                    }
+                );
+            
+            self.unstaking_lsu_vault.put(lsu_bucket);     
+        }
 
-        let xrd_bucket: Bucket = validator.claim_xrd(unstake_nft_bucket);
+        pub fn unstake(
+            &mut self, 
+            mut validator: Global<Validator>,
+        ) {
+            let stake_unit_bucket: Bucket = self.unstaking_lsu_vault.take_all();
 
-        self.rewards_liquidity += xrd_bucket.amount();
+            let nft_bucket: Bucket = validator.unstake(stake_unit_bucket);
 
-        self.liquidity_pool_vault.put(xrd_bucket);
+            self.unstaking_nft_vault.put(nft_bucket);   
+        }
+
+        pub fn claim_xrd(
+            &mut self, 
+            mut validator: Global<Validator>,
+        ) {
+            // NFT vaults work on a 'first in first out' basis
+            // which entails that the unstake activity that is most likely to being finished
+            // can be extracted by simply taking the first nft out of the vault
+            let unstake_nft_bucket: Bucket = self.unstaking_nft_vault.take(dec!("1"));
+
+            let xrd_bucket: Bucket = validator.claim_xrd(unstake_nft_bucket);
+
+            self.rewards_liquidity += xrd_bucket.amount();
+
+            self.liquidity_pool_vault.put(xrd_bucket);
+        }
     }
 }

@@ -1,10 +1,18 @@
+/* SUPPLIER SECTION */
+
+#borrower-section {
+  background: var(--boxcolor);
+  margin: 50px;
+  padding: 50px 0;
+  border-radius: 5px;
+}
+
 /* SLOGAN */
 
 section.slogan {
     height: auto;
     text-align: center;
     position: relative;
-    margin-top: 100px;
     margin-bottom: 10px;
   }
 
@@ -76,11 +84,11 @@ section.slogan .area-chart td:nth-of-type(3) {
 
 section.provider {
   position: relative;
-  background: white;
+  /* background: white; */
   margin: 0 50px;
   height: auto;
   padding: 20px 40px;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 section.provider div.provider-h2 {
@@ -96,9 +104,7 @@ section.provider div.provider-h2 {
 
 section.provider div.provider-h2 h2{
   margin: 5px !important;
-
 }
-
 
 section.provider div.provider-wrapper {
   overflow-x: auto;
@@ -112,13 +118,11 @@ section.provider div.provider-wrapper {
 
 section.provider div div.provider-container {
   flex: 0 0 auto;
-  /* min-width: 400px;
-  max-width: 500px; */
-  width: 450px;
+  width: 350px;
   height: auto;
   margin: 10px 50px 10px 0;
-  background-color: var(--boxcolor);
-  border-radius: 5px;
+  background: white;
+  border-radius: 8px;
   padding: 20px 30px 30px 30px;
 }
 
@@ -144,6 +148,7 @@ section.provider div div p.provider-content-p {
   margin-left: 30px;
   margin-right: 10px;
 }
+
 
 /* BORROWER */
 
@@ -209,7 +214,7 @@ section.borrower div.borrower-container {
   height: auto;
   margin: 10px 0;
   background-color: var(--boxcolor);
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 section.borrower div p {
@@ -223,21 +228,22 @@ section.borrower div p {
 /* RUNSONRADIX */
 
 section.runsonradix {
-  margin-top: 100px;
-  padding: 50px 0 50px 0;
-  margin-bottom: 150px;
+  margin: 150px 50px;
+  padding: 50px;
   height: auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(to right, var(--boxcolor) 45%, var(--thirdtheme));
-  display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content:space-around;
+  background: linear-gradient(to right, var(--boxcolor) 45%, var(--thirdtheme));
+  border-radius: 8px;
 }
 
 section.runsonradix div.runsonradix-div {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  margin-right: 50px;
 }
 
 #runsonradix-h1 {
@@ -248,27 +254,31 @@ section.runsonradix div.runsonradix-div {
 }
 
 section.runsonradix p.runsonradix-p {
-  margin-bottom: 50px;
+  /* margin-bottom: 50px; */
+  max-width: 700px;
   height: auto;
-  padding: 0 100px;
+  /* margin-right: 50px; */
   text-align: center;
 }
 
 section.runsonradix img {
   width: 30%;
-  margin-bottom: 20px;
+  max-width: 400px;
+  /* margin-bottom: 20px; */
   margin-right: 50px;
 }
 
 /* ROADMAP */
 
 section.roadmap-box {
+  position: relative; 
   background: white;
   display: flex;
   flex-direction: column;
   margin: 0 100px;
   max-width: 100%;
   justify-content: center;
+  align-items: ce;
 }
 
 section.roadmap-box div.title {
@@ -292,7 +302,10 @@ section.roadmap-box div.roadmap-feature {
   height: auto;
   padding: 20px 50px;
   display: inline-block;
-  border-radius: 5px;
+  border-radius: 8px;
+
+  align-self: center; /* Initially center the boxes */
+  transition: transform 2s ease; /* Add a smooth transition for transform property */
 }
 
 section.roadmap-box div.first {
@@ -310,14 +323,6 @@ section.roadmap-box div.rest {
   background-color: var(--boxcolor);
 }
 
-section.roadmap-box div.right {
-  align-self: flex-end;
-}
-
-section.roadmap-box div.left {
-  float: left;
-}
-
 section.roadmap-box li {
   margin-left: 20px;
 }
@@ -325,6 +330,33 @@ section.roadmap-box li {
 .align-left {
   align-self: flex-start;
 }
+
+/* tedstte */
+
+.parent {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+
+.container {
+  width: 100px;
+  height: 100px;
+  background-color: #3498db;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  transition: transform 0.5s ease-in-out;
+}
+
+
+/* tesdtre */
 
 /* GITHUB */
 
@@ -363,6 +395,13 @@ section.github p.github-p {
 
 @media only screen and (max-width: 768px) {
 
+  #borrower-section {
+    background: transparent;
+    margin: 50px 0;
+    padding: 1px 0;
+    border-radius: 0;
+  }
+
   section.slogan {
     margin-top: 70px;
   }
@@ -397,9 +436,10 @@ section.github p.github-p {
   section.provider div div.provider-container {
     width: 300px;
     margin: 0 10px 0 0;
-    border-radius: 5px;
+    border-radius: 8px;
     margin-right: 15px;
     padding: 25px;
+    background-color: var(--boxcolor);
   }
 
   section.provider div div h2.provider-content-h {
@@ -453,9 +493,9 @@ section.github p.github-p {
   /* RUNSONRADIX */
 
   section.runsonradix {
-    margin-top: 100px;
     padding: 0;
-    margin-bottom: 100px;
+    margin: 100px 0;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -463,6 +503,7 @@ section.github p.github-p {
   }
 
   section.runsonradix div.runsonradix-div {
+    margin-right: 0;
     display: flex;
     flex-direction: column;
   }

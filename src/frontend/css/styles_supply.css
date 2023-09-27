@@ -67,6 +67,15 @@ section.supply-title {
     background-color: var(--firsttheme);
     color: white;
   }
+
+  /* INTRO */
+
+  section.supply-intro {
+    margin: 0 50px;
+    background-color: var(--body1);
+    padding: 20px 50px;
+    border-radius: 5px;
+  }
   
   /* TEMP INSTANTIATE COMPONENT */
   
@@ -218,6 +227,13 @@ section.supply-title {
     section.supply-title .supply-title-h1 {
       font-size: 200%;
       font-weight: 600;
+      margin: 50px 30px;
+    }
+
+    /* INTRO */
+    section.supply-intro {
+      margin: 0 20px;
+      padding: 10px 30px;
     }
   
     /* SUPPLY */
