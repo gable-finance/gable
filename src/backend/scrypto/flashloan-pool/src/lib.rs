@@ -17,6 +17,7 @@ struct LiquiditySupplier {
 
 #[blueprint]
 #[events(LsuDepositEvent, LsuWithdrawEvent, UpdateIndexmapEvent, UpdateInterestRateEvent)]
+#[types(u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>, AmountDue, LiquiditySupplier)]
 mod flashloanpool {
 
     enable_method_auth! {
@@ -65,6 +66,8 @@ mod flashloanpool {
         lsu_vault: Vault,
         // liquidity that is supplied by staking rewards
         rewards_liquidity: Decimal,
+        // vault storing the validator owner badge
+        validator_owner_vault: Vault,
         // vault storing the unstaking lsu's
         unstaking_lsu_vault: Vault,
         // vault storing unstaking nft
@@ -78,7 +81,7 @@ mod flashloanpool {
     }
 
     impl Flashloanpool {
-        pub fn instantiate_flashloan_pool(owner_badge: Bucket, validator_owner: Bucket) -> (Bucket, FungibleBucket, Global<Flashloanpool>) {
+        pub fn instantiate_flashloan_pool(owner_badge: Bucket, validator_owner: Bucket, lsu_address: ResourceAddress) -> (Bucket, FungibleBucket, Global<Flashloanpool>) {
             let (address_reservation, component_address) =
                 Runtime::allocate_component_address(Flashloanpool::blueprint_id());
 
@@ -89,9 +92,9 @@ mod flashloanpool {
                 .divisibility(DIVISIBILITY_NONE)
                 .metadata(metadata! {
                     init {
-                        "name" => "Sundae FLP Admin Badge", locked;
+                        "name" => "Gable FLP Admin Badge", locked;
                         "symbol" => "FLP", locked;
-                        "description" => "Sundae flash loan pool admin badge", locked;
+                        "description" => "Gable flash loan pool admin badge", locked;
                     }
                 })
                 .mint_roles(mint_roles! {
@@ -116,7 +119,7 @@ mod flashloanpool {
                             metadata_locker_updater => rule!(deny_all);
                         },
                         init {
-                            "name" => "Sundae Transient Token", locked;
+                            "name" => "Gable Transient Token", locked;
                             "symbol" => "STT", locked;
                             "description" => "Flashloan transient token - amount due must be returned to burn this token", locked;
                         }
@@ -149,7 +152,7 @@ mod flashloanpool {
                         metadata_locker_updater => rule!(deny_all);
                     },
                     init {
-                        "name" => "Sundae Proof of Supply", locked;
+                        "name" => "Gable Proof of Supply", locked;
                         "symbol" => "SPS", locked;
                         "description" => "Pool NFT that represents the proof of supply", locked;
                     }
@@ -170,12 +173,13 @@ mod flashloanpool {
                 admin_badge_address: admin_badge.resource_address(),
                 owner_liquidity: Decimal::ZERO,
                 supplier_aggregate_im: IndexMap::new(),
-                supplier_partitioned_kvs: KeyValueStore::new(),
+                supplier_partitioned_kvs: KeyValueStore::new_with_registered_type(),
                 pool_nft: pool_nft,
                 pool_nft_nr: 0,
-                lsu_vault: Vault::new(XRD),
+                lsu_vault: Vault::new(lsu_address),
                 rewards_liquidity: Decimal::ZERO,
-                unstaking_lsu_vault: Vault::new(XRD),
+                validator_owner_vault: Vault::with_bucket(validator_owner),
+                unstaking_lsu_vault: Vault::new(lsu_address),
                 unstaking_nft_vault: Vault::new(XRD),
                 interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
@@ -195,14 +199,14 @@ mod flashloanpool {
                     metadata_locker_updater => rule!(deny_all);
                 },
                 init {
-                    "name" => "Sundae: Flash Loan Pool", locked;
+                    "name" => "Gable: Flash Loan Pool", locked;
                     "description" => 
-                        "Official Sundae 'XRD flash loan pool' component that
+                        "Official Gable 'XRD flash loan pool' component that
                         (1) offers a liquidity pool that collects XRD from staking rewards,
                         and (2) issues flash loans from the pool."
                         , locked;
                     "tags" => [
-                        "Sundae",
+                        "Gable",
                         "DeFi",
                         "Lend",
                         "Borrow",
@@ -420,17 +424,19 @@ mod flashloanpool {
 
         pub fn deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
 
-            // Ensure LSU tokens are provided
+            // Ensure LSU tokens corresponding to Gable's validator node are provided
             assert_eq!(
                 lsu_tokens.resource_address(),
                 self.lsu_vault.resource_address(),
-                "Please provide liquids staking units (LSU's) generated by the Sundae validator node"
+                "Please provide liquids staking units (LSU's) generated by the Gable validator node"
             );
 
-            // Ensure LSU's provided is greater than zero
+            // Ensure the amount of LSU's provided is greater than 500
+            // A minimum LSU amount is declared to prevent over-population of the
+            // component's substate, generally referred to as a "gas exhaustion attack".
             assert!(
-                lsu_tokens.amount() > Decimal::ZERO,
-                "Please provide an amount of liquids staking units (LSU's) greater than zero"
+                lsu_tokens.amount() > dec!("500"),
+                "Please provide an amount of liquids staking units (LSU's) greater than 500"
             );
 
             // Log the number of LSU's provided
@@ -560,7 +566,7 @@ mod flashloanpool {
             assert_eq!(
                 pool_nft.resource_address(),
                 self.pool_nft.address(),
-                "Please provide the proof of supply (LSU NFT) generated by the Sundae validator node"
+                "Please provide the proof of supply (LSU NFT) generated by the Gable validator node"
             );
 
             // Ensure 1 LSU NFT is provided

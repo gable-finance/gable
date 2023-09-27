@@ -188,7 +188,12 @@ pub fn create_flashloanpool(
                 package_address,
                 "Flashloanpool",
                 "instantiate_flashloan_pool",
-                manifest_args!(lookup.bucket("owner_bucket"), lookup.bucket("validator_bucket")),
+                manifest_args!(
+                    lookup.bucket("owner_bucket"), 
+                    lookup.bucket("validator_bucket"), 
+                    // Provide the XRD address instead of LSU address for testing purposes
+                    XRD
+                ),
             )
         })
         .deposit_batch(account_component)

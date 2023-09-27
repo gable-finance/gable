@@ -1,10 +1,10 @@
-# sundae
+# Gable
 
-Repository of Sundae Liquidity Protocol
+Repository of Gable Finance
 
 # Liquidity Protocol on Radix DLT
 
-Welcome to Sundae's repository! This open-source project aims to provide a decentralized liquidity solution built on the Radix Distributed Ledger Technology (DLT). The protocol facilitates the exchange of digital assets, enabling users to provide liquidity and participate in trading activities.
+Welcome to Gable's repository! This open-source project aims to provide a decentralized liquidity solution built on the Radix Distributed Ledger Technology (DLT). The protocol facilitates the exchange of digital assets, enabling users to provide liquidity and participate in trading activities.
 
 ## Features
 
@@ -16,7 +16,18 @@ Welcome to Sundae's repository! This open-source project aims to provide a decen
 
 ## Getting Started
 
-To get started with the Liquidity Protocol, follow these steps:
+To begin working with our project locally, follow these steps:
+
+Step 1: Navigate to the Flash Loan Pool Module
+Open your terminal or file explorer and locate the Flash Loan Pool module within our project's directory structure:
+
+`gable/src/backend/scrypto/flashloanpool`
+
+This module contains the core functionality for our flash loan pool, where you can start exploring and making contributions to Gable Finance.
+
+Now, you're ready to dive into the details and start building with Gable Finance!
+
+--------------------------------------------------------------------------------------
 
 1. **Prerequisites:** Ensure you have [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com/) installed on your machine.
 
@@ -45,7 +56,7 @@ npm run start
 
 ## Contributing
 
-Contributions are welcome and encouraged! If you'd like to contribute to Sundae Liquidity Protocol, please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+Contributions are welcome and encouraged! If you'd like to contribute to Gable Liquidity Protocol, please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## License
 
@@ -55,6 +66,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 For any questions or inquiries, feel free to reach out to the project maintainers:
 
-- Email: contact@sundae.finance
+- Email: contact@gable.finance
 
 We appreciate your interest and look forward to your contributions!
