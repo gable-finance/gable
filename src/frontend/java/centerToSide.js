@@ -9,12 +9,12 @@ if (window.innerWidth >= 768) { // Adjust the width as needed for your desktop b
             if (index % 2 === 0) {
                 // Even index containers move to the right
                 if (containerTop < viewportHeight - 100) {
-                    container.style.transform = "translateX(calc(50vw - 60%))";
+                    container.style.transform = "translateX(calc(-50vw + 60%))";
                 } 
             } else {
                 // Odd index containers move to the left
                 if (containerTop < viewportHeight - 100) {
-                    container.style.transform = "translateX(calc(-50vw + 55%))";
+                    container.style.transform = "translateX(calc(50vw - 60%))";
                 }
             }
         });

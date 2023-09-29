@@ -112,6 +112,10 @@ header {
   height: 600px;
 }
 
+#non-index {
+  height: 400px !important;
+}
+
 /* ANIMATION */
 @keyframes color {
   0% {
@@ -143,6 +147,7 @@ header {
     justify-content: center;
     z-index: 999;
   }
+
   
   header nav div.wrapper {
     width: 100%;
@@ -344,20 +349,10 @@ header {
   
   @media only screen and (max-width: 768px) {
 
-    /* .banner-index {
-      height: 300px !important;
-    } */
-
-    /* .header-index {
-      background-size: 200% 200%;
-      animation: none;
-      height: 300px;
-    } */
-
     #proxima-bold {
       font-family: 'proxima_nova_rgregular';
       letter-spacing: 5px;
-      font-size: 110%;
+      font-size: 100%;
       font-weight: 500;
       margin-bottom: 50px;
     }
@@ -384,19 +379,13 @@ header {
   
     /* HEADER */
 
-    /* .banner-index {
-      height: 300px !important;
-    } */
-
-    /* .header-index {
-      background-size: 200% 200%;
-      animation: none;
-      height: 300px;
-    } */
-
     header {
       animation: none;
       height: 300px;
+    }
+
+    #non-index {
+      height: 250px !important;
     }
   
     header nav {
@@ -483,7 +472,7 @@ header {
     section.introduction div h1 {
       font-size: 22px;
       margin: 20px 0;
-      padding: 0;
+      padding: 0 20px;
       text-align: center;
     }
   

@@ -33,7 +33,8 @@ fn setup_flashloan_pool() -> Result<(TestEnvironment, Flashloanpool), RuntimeErr
     let (_owner_badge, _admin_badge, flashloanpool) = Flashloanpool::instantiate_flashloan_pool(
         bucket1,
         bucket2,
-        // Provide the XRD address instead of LSU address for testing purposes
+        // Provide the XRD address instead of LSU & unstake NFT address for testing purposes
+        XRD,
         XRD,
         package_address,
         &mut env,

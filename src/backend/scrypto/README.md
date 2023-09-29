@@ -129,4 +129,18 @@ Gable's 'flashloan pool' smart contract is compiled, deployed and tested locally
 
 *Deposit staking rewards from validator node*
 
+1. Unlock owner stake from the validator
+
+   Run `resim call-method $c start_unlock_owner_stake_units 0 $v "[validator-owner-local-id]" -p $o`.
+
+      validator-owner-local-id is normally like `[83f03912114f7258c2d9889abaa035a28e0317c4ae8a16cc4d014e30bc85]`
+
+2. Unlock owner stake from the validator
+
+   Run `resim call-method $c finish_unlock_owner_stake_units $v "[validator-owner-local-id]" -p $o`
+
+3. Unlock owner stake from the validator
+
+   Run `resim call-method $c finish_unlock_owner_stake_units $v "[validator-owner-local-id]" -p $o`
+
 ### Build on test net

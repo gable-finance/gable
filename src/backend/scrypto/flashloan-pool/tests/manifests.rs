@@ -122,23 +122,6 @@ pub fn create_validator(
     // declare variables to get them in scope
     let mut mut_balance_change;
 
-    // // retrieve the inner map from the third key-value pair (assuming there is at least one)
-    // // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
-    // if let Some((_, inner_map)) = balance_changes.iter().nth(2) {
-
-    //     // retrieve the resource address and balance change from the second key-value pair
-    //     // from format Indexmap<ResourceAddress, Balancechange>
-    //     // which are the resource address and local id of the nft token returned to the caller
-    //     if let Some((address, balance_change)) = inner_map.iter().nth(1) {
-    //         // clone balance change to get remove reference
-    //         mut_balance_change = balance_change.clone();
-    //         // get the nft local id
-    //         nft_local_id = mut_balance_change.added_non_fungibles().clone();
-    //         // get the nft resource address
-    //         nft_resource_address = address.clone();
-    //     }
-    // }
-
     // retrieve the inner map from the third key-value pair (assuming there is at least one)
     // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
     if let Some((_, (resource_address, balance_change))) = balance_changes.iter().nth(2) {
@@ -191,7 +174,8 @@ pub fn create_flashloanpool(
                 manifest_args!(
                     lookup.bucket("owner_bucket"), 
                     lookup.bucket("validator_bucket"), 
-                    // Provide the XRD address instead of LSU address for testing purposes
+                    // Provide the XRD address instead of LSU & unstake NFT addresss for testing purposes
+                    XRD,
                     XRD
                 ),
             )

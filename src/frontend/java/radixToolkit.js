@@ -25,9 +25,6 @@ if (window.innerWidth >= 768) { // Adjust the width as needed for your desktop b
     // Determine whether to add or remove the "scrolled" class based on scroll position
     var shouldAddScrolledClass = window.scrollY > 20;
 
-    // Add or remove the "scrolled" class based on scroll position
-    nav.classList.toggle("scrolled", shouldAddScrolledClass);
-
     // Change the button theme based on the "scrolled" class
     if (shouldAddScrolledClass) {
         rdt.buttonApi.setTheme('white');

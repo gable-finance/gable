@@ -81,7 +81,12 @@ mod flashloanpool {
     }
 
     impl Flashloanpool {
-        pub fn instantiate_flashloan_pool(owner_badge: Bucket, validator_owner: Bucket, lsu_address: ResourceAddress) -> (Bucket, FungibleBucket, Global<Flashloanpool>) {
+        pub fn instantiate_flashloan_pool(
+            owner_badge: Bucket, 
+            validator_owner: Bucket, 
+            lsu_address: ResourceAddress,
+            unstake_nft_address: ResourceAddress
+        ) -> (Bucket, FungibleBucket, Global<Flashloanpool>) {
             let (address_reservation, component_address) =
                 Runtime::allocate_component_address(Flashloanpool::blueprint_id());
 
@@ -180,7 +185,7 @@ mod flashloanpool {
                 rewards_liquidity: Decimal::ZERO,
                 validator_owner_vault: Vault::with_bucket(validator_owner),
                 unstaking_lsu_vault: Vault::new(lsu_address),
-                unstaking_nft_vault: Vault::new(XRD),
+                unstaking_nft_vault: Vault::new(unstake_nft_address),
                 interest_rate: Decimal::ZERO,
                 transient_token: transient_token,
                 box_size: 250,
