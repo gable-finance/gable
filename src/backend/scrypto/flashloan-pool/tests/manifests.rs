@@ -73,8 +73,6 @@ pub fn create_validator(
     ResourceAddress,
     BTreeSet<NonFungibleLocalId> 
 ){
-    // Publish package
-    let package_address = test_runner.compile_and_publish(this_package!());
 
     let key = Secp256k1PublicKey([0; 33]);
 

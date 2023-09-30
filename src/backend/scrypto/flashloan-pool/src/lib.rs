@@ -30,7 +30,6 @@ mod flashloanpool {
             repay_flashloan => PUBLIC;
             owner_deposit_xrd => restrict_to: [OWNER];
             owner_withdraw_xrd => restrict_to: [OWNER];
-            deposit_batch => PUBLIC;
             deposit_lsu => PUBLIC;
             withdraw_lsu => PUBLIC;
             update_supplier_kvs => restrict_to: [admin, OWNER, component];
@@ -42,6 +41,7 @@ mod flashloanpool {
             finish_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             unstake => restrict_to: [admin, OWNER];
             claim_xrd => restrict_to: [admin, OWNER];
+            deposit_batch => PUBLIC;
         }
     }
 
@@ -238,7 +238,6 @@ mod flashloanpool {
                     repay_flashloan => Xrd(1.into()), locked;
                     owner_deposit_xrd => Xrd(1.into()), locked; 
                     owner_withdraw_xrd => Xrd(1.into()), locked;
-                    deposit_batch => Free, locked;
                     deposit_lsu => Xrd(1.into()), locked;
                     withdraw_lsu => Xrd(1.into()), locked; 
                     update_supplier_kvs => Xrd(1.into()), locked;
@@ -251,6 +250,7 @@ mod flashloanpool {
                     unstake => Free, locked;
                     claim_xrd => Free, locked;
                     update_box_size => Free, locked;
+                    deposit_batch => Free, locked;
                 }
             })
             .with_address(address_reservation)
@@ -418,14 +418,6 @@ mod flashloanpool {
             // Return bucket
             return withdraw;
         }        
-
-        // Temporary: Replicating validator node's staking rewards collection
-        pub fn deposit_batch(&mut self, bucket: Bucket) {
-            // Add bucket amount to rewards liquidity counter
-            self.rewards_liquidity += bucket.amount();
-            // Deposit batch into the liquidity pool vault
-            self.liquidity_pool_vault.put(bucket);
-        }
 
         pub fn deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
 
@@ -621,8 +613,8 @@ mod flashloanpool {
             // Remove the supplier's entry from the supplier indexmap
             self.supplier_partitioned_kvs.get_mut(&pool_nft_box_nr).unwrap().remove(&pool_nft_nr);
 
-            if let Some(value) = self.supplier_partitioned_kvs.get(&pool_nft_box_nr).unwrap().get(&pool_nft_nr) {
-                debug!("{:?}", value)
+            if let Some(_value) = self.supplier_partitioned_kvs.get(&pool_nft_box_nr).unwrap().get(&pool_nft_nr) {
+                debug!("{:?}", _value)
             } else {
                 debug!("None found")
             }
@@ -732,53 +724,57 @@ mod flashloanpool {
             // add 50% of the new interest to the owner's liquidity
             self.owner_liquidity += interest_new;
 
-            // The new rewards and interest have to be allocated to each each box in the aggregate index map
-            // This function loops over all entries of the index map to apply this allocation
-            for i in self.supplier_aggregate_im.values_mut() {
+            // Only loop over the hashmap if it is not empty. 
+            // And thus only reset the 'rewards_liquidity' if the hashmap is not empty
+            if !self.supplier_aggregate_im.is_empty() {
+                // The new rewards and interest have to be allocated to each each box in the aggregate index map
+                // This function loops over all entries of the index map to apply this allocation
+                for i in self.supplier_aggregate_im.values_mut() {
 
-                // New rewards are allocated based on relative LSU size of the box compared to the pool
-                
-                // Determine box total LSU
-                let box_lsu = i[1];
+                    // New rewards are allocated based on relative LSU size of the box compared to the pool
+                    
+                    // Determine box total LSU
+                    let box_lsu = i[1];
 
-                info!("box_lsu: {}", box_lsu);
+                    info!("box_lsu: {}", box_lsu);
 
-                // Determine supplier's LSU stake relative to the pool's total LSU
-                let box_relative_lsu_stake: Decimal = box_lsu / total_lsu;
+                    // Determine supplier's LSU stake relative to the pool's total LSU
+                    let box_relative_lsu_stake: Decimal = box_lsu / total_lsu;
 
-                info!("box_relative_lsu_stake: {}", box_relative_lsu_stake);
+                    info!("box_relative_lsu_stake: {}", box_relative_lsu_stake);
 
-                // New interest earnings are allocated based on relative XRD size of the box compared to the pool
-                
-                // Determine box distributed rewards
-                let box_rewards = i[2];
+                    // New interest earnings are allocated based on relative XRD size of the box compared to the pool
+                    
+                    // Determine box distributed rewards
+                    let box_rewards = i[2];
 
-                info!("box_rewards: {}", box_rewards);
+                    info!("box_rewards: {}", box_rewards);
 
-                // Determine supplier's XRD stake relative to the distributed earnings
-                let box_relative_xrd_stake: Decimal = if rewards_aggregated != Decimal::ZERO {
-                    box_rewards / rewards_aggregated
-                } else {
-                    // Handle the case where `supplier_distributed_interest` is zero
-                    // Assign a default value (`supplier_relative_lsu_stake`)
-                    box_relative_lsu_stake
-                };
+                    // Determine supplier's XRD stake relative to the distributed earnings
+                    let box_relative_xrd_stake: Decimal = if rewards_aggregated != Decimal::ZERO {
+                        box_rewards / rewards_aggregated
+                    } else {
+                        // Handle the case where `supplier_distributed_interest` is zero
+                        // Assign a default value (`supplier_relative_lsu_stake`)
+                        box_relative_lsu_stake
+                    };
 
-                info!("box_relative_xrd_stake: {}", box_relative_xrd_stake);
+                    info!("box_relative_xrd_stake: {}", box_relative_xrd_stake);
 
-                // Allocate new rewads to undistributed rewards value
-                i[3] += box_relative_lsu_stake * rewards_new;
+                    // Allocate new rewads to undistributed rewards value
+                    i[3] += box_relative_lsu_stake * rewards_new;
 
-                info!("i[3]: {}", i[3]);
+                    info!("i[3]: {}", i[3]);
 
-                // Allocate new interest earnings to undistributed interest value
-                i[5] += box_relative_xrd_stake * interest_new;
+                    // Allocate new interest earnings to undistributed interest value
+                    i[5] += box_relative_xrd_stake * interest_new;
 
-                info!("i[5]: {}", i[5]);
+                    info!("i[5]: {}", i[5]);
+                }
+
+                // As new rewards are allocated, the state variable has to be reset to 0
+                self.rewards_liquidity = Decimal::ZERO;
             }
-
-            // As new rewards are allocated, the state variable has to be reset to 0
-            self.rewards_liquidity = Decimal::ZERO;
         }
 
         // Method updating the individual/partitioned key value store.
@@ -796,14 +792,14 @@ mod flashloanpool {
             self.update_aggregate_im();
 
             // Determine 'total liquidity'
-            let total_liquidity: Decimal = self.liquidity_pool_vault.amount();
+            let _total_liquidity: Decimal = self.liquidity_pool_vault.amount();
 
-            info!("Total pool liquidity: {} XRD", total_liquidity);
+            info!("Total pool liquidity: {} XRD", _total_liquidity);
 
             // Determine 'owner liquidity'
-            let owner_liquidity: Decimal = self.owner_liquidity;
+            let _owner_liquidity: Decimal = self.owner_liquidity;
 
-            info!("Total owner's liquidity: {} XRD", owner_liquidity);
+            info!("Total owner's liquidity: {} XRD", _owner_liquidity);
 
             // Determine various values and log them in one go
             let (
@@ -1000,6 +996,14 @@ mod flashloanpool {
             self.rewards_liquidity += xrd_bucket.amount();
 
             self.liquidity_pool_vault.put(xrd_bucket);
+        }
+
+        // Temporary: Replicating validator node's staking rewards collection
+        pub fn deposit_batch(&mut self, bucket: Bucket) {
+            // Add bucket amount to rewards liquidity counter
+            self.rewards_liquidity += bucket.amount();
+            // Deposit batch into the liquidity pool vault
+            self.liquidity_pool_vault.put(bucket);
         }
     }
 }

@@ -3,7 +3,7 @@ use scrypto_unit::*;
 use transaction::builder::ManifestBuilder;
 use gable::test_bindings::*;
 use scrypto_test::prelude::*;
-use scrypto::prelude::KeyValueStore;
+// use scrypto::prelude::KeyValueStore;
 use scrypto::*;
 
 mod manifests;
@@ -377,7 +377,7 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     // The 'deposit_batch' method mimics the deposit of XRD staking rewards coming from the validator node
     let _ = flashloanpool.deposit_batch(xrd_bucket, &mut env)?;
 
-    let (lsu_bucket, xrd_bucket) = flashloanpool.withdraw_lsu(bucket_results.remove(0), &mut env)?;
+    let (_lsu_bucket, _xrd_bucket) = flashloanpool.withdraw_lsu(bucket_results.remove(0), &mut env)?;
 
     // Save component state
     let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
@@ -393,14 +393,14 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     // Assert
 
     // Ensure that the aggregate index map contains the correct information:
-    //  - 5 suppliers deposited 100 LSU (XRD)
+    //  - 5 suppliers deposited 1000 LSU (XRD)
     //  - A batch of 50 XRD is deposited as rewards
     //  - 1 supplier has withdrawn (NFT #1#)
 
     // Therefore box 1 in the index map contains:
     //
     //  - 1 supplier
-    //  - 100 LSU
+    //  - 1000 LSU
     //  - (50/5=) 10 XRD distributed rewards
     //
     // Rewards are first assigned as undistributed to the aggregate index map.
@@ -422,7 +422,7 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     // Therefore box 2 in the index map contains:
     //
     //  - 2 supplier
-    //  - 200 LSU
+    //  - 2000 LSU
     //  - 0 XRD distributed rewards
     //
     // As mentioned in previous assertions, no supplier has entered or left box 2 after the rewards were deposited.
@@ -443,7 +443,7 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     // Therefore box 3 in the index map contains:
     //
     //  - 1 supplier
-    //  - 100 LSU
+    //  - 1000 LSU
     //  - 0 XRD distributed rewards
     //  - (50/5=) 10 XRD undistributed rewards
     //  - 0 XRD distributed interest
@@ -993,7 +993,7 @@ fn integration_test_staker_withdraw_lsu() {
 
     // (2) retrieve the fourth balance change (assuming there is at least one)
     //  which is the non fungible token that is returned to the user
-    if let Some((_, (resource_address, balance_change))) = balance_changes.iter().nth(3) {
+    if let Some((_, (_, balance_change))) = balance_changes.iter().nth(3) {
         mut_balance_change = balance_change.clone();
         non_fungible_id = mut_balance_change.added_non_fungibles();
     }
@@ -1044,7 +1044,7 @@ fn integration_test_update_supplier_kvs() {
 
     // deposit lsu to create the supplier indexmap and keyvaluestore
     // without there is nothing to update, and the 'update_supplier_kvs' will fail
-    let receipt = deposit_lsu(
+    let _ = deposit_lsu(
         &mut test_runner, 
         public_key, 
         account_component, 

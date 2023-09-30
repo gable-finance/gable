@@ -7,15 +7,15 @@ CALL_METHOD
     Address("account_sim1c956qr3kxlgypxwst89j9yf24tjc7zxd4up38x37zr6q4jxdx9rhma")
     "withdraw"
     Address("resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3")
-    Decimal("500");
+    Decimal("1000");
 
 TAKE_FROM_WORKTOP
     Address("resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3")
-    Decimal("500")
+    Decimal("1000")
     Bucket("xrd_payment");
 
 CALL_METHOD
-    Address("validator_sim1s0crjys3fae93ske3zdt4gp4528qx97y469pdnzdq98rp0y9umgskr")
+    Address("validator_sim1sd0mzz4yg6n4gefzq5teg2gsts63wmez00826p8m5eslr864hf7c8s")
     "stake"
     Bucket("xrd_payment");
 
