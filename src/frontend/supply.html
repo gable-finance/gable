@@ -42,6 +42,7 @@
                     <div class="navigation-div">
                         <ul class="navigation">
                             <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -59,6 +60,7 @@
                         
                         <ul id="menu">
                             <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -76,6 +78,16 @@
 
         </header>
 
+        <section class="supply-intro">
+            <h1 class="supply-title-h1">
+                Supply Liquidity with Ease!
+            </h1>
+            <p class="supply-p">
+                Gable Liquidity Protocol collects liquidity via staking rewards. 
+                Before you get started as supplier it is advised to read the <a href="https://docs.gable.finance/for-suppliers" target="_blank">documentation</a> that is available for suppliers on Gable.
+            </p>
+        </section>
+
         <section class="jump">
             <fieldset id="left">
                 <legend>Supply Liquidity</legend>
@@ -85,23 +97,9 @@
 
             <fieldset id="right">
                 <legend>Withdraw Liquidity</legend>
-                <input type="button" value="[2] Withdraw LSU" onClick="smoothScroll('#nr3')" />
+                <input type="button" value="[3] Withdraw LSU" onClick="smoothScroll('#nr3')" />
             </fieldset>
         </section>
-
-        <section class="supply-title">
-            <h1 class="supply-title-h1">
-                Boost your Earnings; Provide Liquidity with Ease!
-            </h1>
-        </section>
-
-        <section class="supply-intro">
-            <p class="supply-p">
-                Gable Liquidity Protocol collects liquidity via staking rewards. 
-                Before you get started as supplier it is advised to read the <a href="https://docs.gable.finance/for-suppliers" target="_blank">documentation</a> that is available for suppliers on Gable.
-            </p>
-        </section>
-
 
         <section class="supply">
             <div class="supply-div">
@@ -318,11 +316,19 @@
                     GABLE LIQUIDITY PROTOCOL
                 </h1>
             </div>
-
+            
             <div class="menu">
+                <span id="footer-title">CONTENT</span>
+                <a href="gable-v1-whitepaper.pdf" target="_blank">WHITEPAPER</a>
                 <a href="http://gablefinance.medium.com" target="_blank">BLOG</a>
                 <a href="http://docs.gable.finance" target="_blank">DOCS</a>
                 <a href="http://docs.gable.finance/faq" target="_blank">FAQ</a>
+            </div>
+
+            <div class="company">
+                <span id="footer-title">COMPANY</span>
+                <a href="privacy-notice">PRIVACY NOTICE</a>
+                <a href="terms">TERMS OF USE</a>
                 <a href="mailto:contact@gable.finance">CONTACT</a>
             </div>
 
@@ -342,22 +348,22 @@
             </div>
             <div class="copyright">
                 <p>
-                    © 2023 Gable Finance, Inc. All rights reserved
+                    © 2023 GABLE FINANCE, INC. ALL RIGHTS RESERVED
                 </p>
                 <a href="https://www.radixdlt.com/full-stack" target="_blank">
-                    <img src="pictures/Long-Black-Monochrome-outline (1).png" alt="runsonradix">
+                    <img src="pictures/Long-Black-Monochrome-outline.png" alt="runsonradix">
                 </a>
             </div>
         </footer>
+
+        <script src="dist/bundle.js"></script>
 
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
         <script src="java/smooth_scroll.js"></script>
 
-        <!-- <script type="module" src="java/radixToolkit.js"></script> -->
-        <script type="module" src="java/supply.js"></script>
-
+        <script type="module" src="java/supply.mjs"></script>
 
     </body>
 </html>

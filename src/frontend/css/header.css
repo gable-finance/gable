@@ -46,6 +46,7 @@ section.dashboard {
   margin: 0 !important;
   font-size: 20px;
   font-weight: 400;
+  height: 40px;
 }
 
 /* TEMP TOP BANNER */
@@ -110,6 +111,7 @@ header {
   overflow: hidden;
   margin-bottom: 0;
   height: 600px;
+  position: relative;
 }
 
 #non-index {
@@ -304,7 +306,6 @@ header {
     margin: 0;
     margin-bottom: 50px;
     padding: 0 100px;
-    /* font-size: 25px; */
   }
   
   @media only screen and (max-width: 1080px) {
@@ -349,6 +350,12 @@ header {
   
   @media only screen and (max-width: 768px) {
 
+    .connectBtn {
+      --radix-connect-button-width: 30px;
+      --radix-connect-button-height: 35px;
+      --radix-connect-button-border-radius: 10px;
+    }
+
     #proxima-bold {
       font-family: 'proxima_nova_rgregular';
       letter-spacing: 5px;
@@ -381,7 +388,7 @@ header {
 
     header {
       animation: none;
-      height: 300px;
+      height: 400px;
     }
 
     #non-index {
@@ -446,7 +453,7 @@ header {
     }
   
     #banner {
-      height: 300px;
+      height: 400px;
     }
   
     /* ensure text is in center - thus 50px lower to account for navigation bar*/

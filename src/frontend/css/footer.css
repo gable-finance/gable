@@ -36,7 +36,19 @@ hr {
   
   footer.footer-mobile div.menu a {
     text-decoration: none !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
+  }
+
+  footer.footer-mobile div.company {
+    background-color: var(--body2);
+    padding: 20px 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  footer.footer-mobile div.company a {
+    text-decoration: none !important;
+    font-size: 15px !important;
   }
   
   footer.footer-mobile div.social-links {
@@ -64,10 +76,19 @@ hr {
     align-items: center;
     justify-content: space-between;
   }
-  
+
+  footer.footer-mobile #footer-title {
+    font-weight: 500;
+    font-size: 15px !important;
+    margin-bottom: 5px;
+    color: rgb(78, 78, 78);
+    /* color: var(--firsttheme); */
+  }
+
   footer.footer-mobile div.copyright p {
     margin: 0;
     padding: 10px 50px;
+    font-size: 15px !important;
   }
 
   footer.footer-mobile div.copyright a {

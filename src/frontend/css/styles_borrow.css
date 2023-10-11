@@ -1,20 +1,17 @@
 /* TITLE */
 
-section.borrow-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 250px;
-  }
-  
-  section.borrow-title .borrow-title-h1 {
-    font-size: 300%;
-    font-weight: 800;
-    text-align: center;
-    margin: 0;
-  }
-  
+section.borrow-intro {
+  margin: 0;
+  background-color: var(--boxcolor);
+  padding: 30px 100px 50px;
+  border-radius: 5px;
+}
+
+section.borrow-intro h1.borrow-title-h1 {
+  font-size: 200%;
+  font-weight: 500;
+}
+
   /* FLASHLOANS */
   
   section.flashloan div.flashloan-intro {
@@ -36,9 +33,14 @@ section.borrow-title {
   
   section.flashloan div.flashloan-steps {
     margin: 40px;
-    background-color: var(--boxcolor);
+    /* background-color: var(--boxcolor); */
     padding: 20px 50px;
     border-radius: 5px;
+  }
+
+  section.flashloan h1.flashloan-h1 {
+    font-size: 200%;
+    font-weight: 600;
   }
 
   section.flashloan ul.flasloan-ul {
@@ -176,14 +178,20 @@ section.borrow-title {
   }
  
   @media only screen and (max-width: 768px) {
-
     /* TITLE */
-    section.borrow-title .borrow-title-h1 {
-      font-size: 200%;
-      font-weight: 600;
+
+    section.borrow-intro {
+      margin: 0;
+      padding: 30px;
+    }
+
+    section.borrow-intro h1.borrow-title-h1 {
+      font-size: 150%;
+      margin: 0;
     }
   
     /* FLASHLOANS */
+
     section.flashloan div.flashloan-intro {
       margin: 0;
     }
@@ -194,6 +202,11 @@ section.borrow-title {
   
     section.flashloan div.flashloan-disclaimer {
       margin-top: 0;
+    }
+
+    section.flashloan h1.flashloan-h1 {
+      font-size: 150%;
+      font-weight: 500;
     }
 
     #receipt {

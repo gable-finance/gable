@@ -98,7 +98,7 @@ mod flashloanpool {
                 .metadata(metadata! {
                     init {
                         "name" => "Gable FLP Admin Badge", locked;
-                        "symbol" => "FLP", locked;
+                        "symbol" => "GFA", locked;
                         "description" => "Gable flash loan pool admin badge", locked;
                     }
                 })

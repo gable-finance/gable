@@ -42,6 +42,7 @@
                     <div class="navigation-div">
                         <ul class="navigation">
                             <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -59,6 +60,7 @@
                         
                         <ul id="menu">
                             <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
                             <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
                             <li><a class="menuItem" href="dashboard">Dashboard</a></li>
                             <li><a class="menuItem" href="supply">Supply</a></li>
@@ -76,29 +78,30 @@
             
         </header>
 
-        <section class="borrow-title">
+        <section class="borrow-intro">
             <h1 class="borrow-title-h1">
                 Discover the Power of Flash Loans!
             </h1>
+            <p class="borrow-p">
+                Gable Liquidity Protocol currently offers XRD flash loans as its main lending feature. 
+                Flash loans are loans that are issued and returned within a single (same) transaction.
+                Before you get started it is advised to read the <a href="https://docs.gable.finance/for-borrowers/flash-loan" target="_blank">documentation</a> for borrowers on Gable platform.
+            </p>
         </section>
 
         <section class="flashloan">
-            <div class="flashloan-intro">
-                <p class="flashloan-p">
-                    Gable Liquidity Protocol currently offers flash loans as its main lending feature. 
-                    Flash loans are loans that are issued and returned within a single (same) transaction.
-                    This page provides a function to build and execute a flash loan.
-                    Before you get started it is advised to read the <a href="https://docs.gable.finance/for-borrowers/flash-loan" target="_blank">documentation</a> for borrowers on Gable platform.
-                </p>
-            </div>
 
             <div class="flashloan-steps">
-                <h1>
+                <h1 class="flashloan-h1">
                     Flash Loans on Gable
                 </h1>
 
                 <p class="flashloan-p">
-                    The following functions are provided:
+                    See the currently available liquidity and interest rate on the <a href="https://gable.finance/dashboard">dashboard</a>.
+                </p>
+
+                <p class="flashloan-p">
+                    The following functions are provided below:
                 </p>
 
                 <ul class="flasloan-ul">
@@ -178,9 +181,17 @@
             </div>
 
             <div class="menu">
+                <span id="footer-title">CONTENT</span>
+                <a href="gable-v1-whitepaper.pdf" target="_blank">WHITEPAPER</a>
                 <a href="http://gablefinance.medium.com" target="_blank">BLOG</a>
                 <a href="http://docs.gable.finance" target="_blank">DOCS</a>
                 <a href="http://docs.gable.finance/faq" target="_blank">FAQ</a>
+            </div>
+
+            <div class="company">
+                <span id="footer-title">COMPANY</span>
+                <a href="privacy-notice">PRIVACY NOTICE</a>
+                <a href="terms">TERMS OF USE</a>
                 <a href="mailto:contact@gable.finance">CONTACT</a>
             </div>
 
@@ -200,21 +211,23 @@
             </div>
             <div class="copyright">
                 <p>
-                    © 2023 Gable Finance, Inc. All rights reserved
+                    © 2023 GABLE FINANCE, INC. ALL RIGHTS RESERVED
                 </p>
                 <a href="https://www.radixdlt.com/full-stack" target="_blank">
-                    <img src="pictures/Long-Black-Monochrome-outline (1).png" alt="runsonradix">
+                    <img src="pictures/Long-Black-Monochrome-outline.png" alt="runsonradix">
                 </a>
             </div>
         </footer>
+
+        <script src="dist/bundle.js"></script>
 
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
         <script src="java/disable_scroll.js"></script>
         <script src="java/tabs.js"></script>
 
-        <script type="module" src="java/radixToolkit.js"></script>
-        <script type="module" src="java/borrow.js"></script>
+        <script type="module" src="java/radixToolkit.mjs"></script>
+        <script type="module" src="java/borrow.mjs"></script>
 
     </body>
 </html>

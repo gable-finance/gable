@@ -5,6 +5,9 @@
   margin: 50px;
   padding: 50px 0;
   border-radius: 5px;
+  -webkit-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  -moz-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
 }
 
 /* SLOGAN */
@@ -109,8 +112,8 @@ section.provider div.provider-h2 h2{
 section.provider div.provider-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  /* white-space: nowrap; */
+  /* text-overflow: ellipsis; */
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;
@@ -118,21 +121,21 @@ section.provider div.provider-wrapper {
 
 section.provider div div.provider-container {
   flex: 0 0 auto;
-  width: 350px;
+  width: 250px;
   height: auto;
   margin: 10px 50px 10px 0;
   background: white;
   border-radius: 8px;
   padding: 20px 30px 30px 30px;
-}
+  -webkit-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  -moz-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);}
 
 section.provider div div h2.provider-content-h {
   font-size: 24px;
   margin: 0 !important;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  text-align:start;
 }
 
 section.provider div div p.provider-content-p {
@@ -215,7 +218,9 @@ section.borrower div.borrower-container {
   margin: 10px 0;
   background-color: var(--boxcolor);
   border-radius: 8px;
-}
+  -webkit-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  -moz-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);}
 
 section.borrower div p {
   padding: 30px;
@@ -228,7 +233,7 @@ section.borrower div p {
 /* RUNSONRADIX */
 
 section.runsonradix {
-  margin: 150px 50px;
+  margin: 150px 100px;
   padding: 50px;
   height: auto;
   display: flex;
@@ -237,6 +242,10 @@ section.runsonradix {
   justify-content:space-around;
   background: linear-gradient(to right, var(--boxcolor) 45%, var(--thirdtheme));
   border-radius: 8px;
+  -webkit-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  -moz-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+
 }
 
 section.runsonradix div.runsonradix-div {
@@ -254,10 +263,8 @@ section.runsonradix div.runsonradix-div {
 }
 
 section.runsonradix p.runsonradix-p {
-  /* margin-bottom: 50px; */
   max-width: 700px;
   height: auto;
-  /* margin-right: 50px; */
   text-align: center;
 }
 
@@ -270,6 +277,16 @@ section.runsonradix img {
 
 /* ROADMAP */
 
+.vl {
+  border-left: 6px dotted var(--firsttheme);
+  height: 60%;
+  position: absolute;
+  left: 50%;
+  margin-left: -3px;
+  top: 20%;
+  z-index: 1;
+}
+
 section.roadmap-box {
   position: relative; 
   background: white;
@@ -278,7 +295,6 @@ section.roadmap-box {
   margin: 0 100px;
   max-width: 100%;
   justify-content: center;
-  align-items: ce;
 }
 
 section.roadmap-box div.title {
@@ -296,16 +312,30 @@ section.roadmap-box div h1 {
   margin: 0;
 }
 
+section.roadmap-box div h2 {
+  color: var(--firsttheme);
+  font-weight: 450;
+}
+
 section.roadmap-box div.roadmap-feature {
   margin: 50px 0;
   width: 60%;
   height: auto;
-  padding: 20px 50px;
   display: inline-block;
   border-radius: 8px;
 
-  align-self: center; /* Initially center the boxes */
-  transition: transform 2s ease; /* Add a smooth transition for transform property */
+  align-self: center;
+  transition: transform 2s ease;
+  z-index: 2;
+}
+
+section.roadmap-box div.roadmap-feature-inner {
+  margin: 0;
+  padding: 30px 50px;
+  border-radius: 10px;
+  -webkit-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  -moz-box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
+  box-shadow: -2px 3px 18px -10px rgba(181,181,181,0.82);
 }
 
 section.roadmap-box div.first {
@@ -316,7 +346,6 @@ section.roadmap-box div.first {
     var(--body1),
     rgb(246, 246, 246)
   );
-  margin: 20px 0 50px 0;
 }
 
 section.roadmap-box div.rest {
@@ -330,8 +359,6 @@ section.roadmap-box li {
 .align-left {
   align-self: flex-start;
 }
-
-/* tedstte */
 
 .parent {
   position: relative;
@@ -356,7 +383,118 @@ section.roadmap-box li {
 }
 
 
-/* tesdtre */
+/* NEWS */
+
+section.news {
+  position: relative;
+  /* background: white; */
+  margin: 100px 30px;
+  height: auto;
+  padding: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+section.news h1.news-h1 {
+  font-size: 160%;
+  font-weight: 500;
+  margin-left: 150px;
+  /* background-color: green; */
+}
+
+section.news div.news-cont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+section.news img.slideRight {
+  margin: 0 30px;
+  width: 50px;
+}
+
+section.news img.slideLeft {
+  margin: 0 30px;
+  width: 50px;
+  /* background-color: red; */
+}
+
+section.news img.slideRight:hover {
+  cursor: pointer;
+
+}
+
+section.news img.slideLeft:hover {
+  cursor: pointer;
+}
+
+section.news a {
+  text-decoration: none;
+}
+
+section.news div.news-wrapper {
+  /* overflow-y: scroll; */
+  overflow-x: scroll;
+  scrollbar-width: 0px;
+  scrollbar-color: green;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+}
+
+section.news div.news-wrapper::-webkit-scrollbar{
+  display: none;
+}
+
+section.news div div.news-container {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  margin: 30px;
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  -webkit-box-shadow: -6px -1px 17px 0px rgba(181,181,181,0.82);
+  -moz-box-shadow: -6px -1px 17px 0px rgba(181,181,181,0.82);
+  box-shadow: -6px -1px 17px 0px rgba(181,181,181,0.82);
+  transition: all .2s ease-in-out; 
+}
+
+section.news div div.news-container:hover {
+  transform: scale(1.03); 
+  cursor: pointer;
+}
+
+section.news div div.news-container:hover h1.news-content-h {
+  text-decoration: underline;
+  text-decoration-color: darkgray;
+}
+
+section.news div div h1.news-content-h {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 !important;
+  color: rgb(62, 62, 62);
+  /* background-color: green; */
+  display: flex;
+  text-align: start;
+}
+
+section.news h3.news-content-p {
+  width: auto;
+  height: auto;
+  white-space: normal;
+  color: darkgray;
+  /* background-color: red; */
+  margin: 0;
+}
+
+img.news {
+  width: 400px;
+  height: 200px;
+  border-radius: 5px;
+}
 
 /* GITHUB */
 
@@ -400,6 +538,7 @@ section.github p.github-p {
     margin: 50px 0;
     padding: 1px 0;
     border-radius: 0;
+    box-shadow: none;
   }
 
   section.slogan {
@@ -434,10 +573,9 @@ section.github p.github-p {
   }
 
   section.provider div div.provider-container {
-    width: 300px;
-    margin: 0 10px 0 0;
+    width: 170px;
+    margin: 0 25px 0 0;
     border-radius: 8px;
-    margin-right: 15px;
     padding: 25px;
     background-color: var(--boxcolor);
   }
@@ -482,10 +620,6 @@ section.github p.github-p {
     padding: 0;
   }
 
-  section.borrower div p {
-    font-size: 14px;
-  }
-
   section.borrower div.button {
     margin-left: 20px;
   }
@@ -520,7 +654,6 @@ section.github p.github-p {
     height: auto;
     padding: 0 20px;
     text-align: center;
-    font-size: 90%; /* Increased font size for more impact */
   }
 
   section.runsonradix img {
@@ -544,10 +677,86 @@ section.github p.github-p {
     width: auto;
     height: auto;
     padding: 20px 30px;
-    display: inline-block;
     border-radius: 0px;
     margin: 10px 0;
   }
+
+  section.roadmap-box div.roadmap-feature-inner {
+    width: auto;
+    height: auto;
+    padding: 20px 30px;
+  }
+
+
+  /* NEWS */
+
+section.news {
+  position: relative;
+  margin: 100px 0;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+section.news h1.news-h1 {
+  font-size: 120%;
+  font-weight: 500;
+  margin-left: 0;
+  text-align: center;
+}
+
+section.news img.slideRight {
+  display: none;
+}
+
+section.news img.slideLeft {
+  display: none;
+}
+
+section.news div.news-wrapper {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  padding: 20px 0;
+}
+
+section.news div div.news-container {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  margin: 10px;
+  padding: 30px;
+}
+
+section.news div div.news-container:hover {
+  transform: scale(1.02); 
+  cursor: pointer;
+}
+
+section.news div div.news-container:hover h1.news-content-h {
+  text-decoration: underline;
+  text-decoration-color: darkgray;
+}
+
+section.news div div h1.news-content-h {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+section.news h3.news-content-p {
+  width: auto;
+  height: auto;
+  white-space: normal;
+  color: darkgray;
+  margin: 0;
+}
+
+img.news {
+  width: 300px;
+  height: 160px;
+  border-radius: 5px;
+}
 
   /* GITHUB */
   section.github {

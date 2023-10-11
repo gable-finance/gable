@@ -1,44 +1,107 @@
-/* SLOGAN */
+/* GABLE INTRODUCTION */
 
-div.slogan {
-    background-color: var(--footer1);
+section.gable-introduction {
+    /* background-color: var(--boxcolor); */
+    margin: 10px 50px;
+    padding: 50px;
     height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 100px 0;
-    padding: 50px 0;
+    border-radius: 10px;
 }
 
-#slogan-h1 {
-    font-size: 250%;
-    font-weight: 800;
-    text-align: center;
-    margin: 0;
-    padding: 0 50px;
+section.gable-introduction h1 {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-family: 'proxima_nova_rgregular';
+    letter-spacing: 10px;
+    font-size: 200%;
+    font-weight: 500;
+    color: #0000;
+    width: auto;
+    --g: no-repeat linear-gradient(black 0 0) 0 0;
+    background: var(--g), var(--g);
+    background-size: 0 100%;
+    -webkit-background-clip: padding-box,text;
+            background-clip: padding-box,text;
+    -webkit-box-decoration-break: clone;
+            box-decoration-break: clone;
+    animation: 
+      t 1.2s  .5s both,
+      b 1.2s 1.3s both;
+  }
+  @keyframes t{
+    to {background-size:150% 100%}
+  }
+  @keyframes b {
+    to {background-position:-200% 0,0 0}
+  }
+
+section.gable-introduction div {
+    margin-top: 80px;
+    height: 100px;
+    background-image: url('../pictures/Gables.png');
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-size: contain;
+}
+
+section.gable-introduction div img {
+    width: 400px;
 }
 
 /* TEAM */
 
 section.team {
-    background-color: var(--boxcolor);
+    /* background-color: var(--boxcolor); */
     margin: 0 50px;
-    padding: 50px;
+    padding: 0 50px;
     height: auto;
     border-radius: 5px;
-    display: flex;
-}
-
-section.team div.team-text {
-    padding-right: 50px;
-    align-self: center;
     display: flex;
     flex-direction: column;
 }
 
+section.team h1 {
+
+    /* font-size: 200%; */
+    /* font-weight: 450; */
+
+}
+
+section.team div.team-divs {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+section.team div.team-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* flex-wrap: wrap; */
+    width: 40%;
+    background-color: var(--boxcolor);
+    padding: 30px 50px;
+    margin: 5px 0;
+    border-radius: 10px;
+}
+
+section.team div.team-text {
+    display: flex;
+    flex-direction: column;
+    margin-right: 50px;
+}
+
+.text {
+    margin-top: auto;
+}
+
+.name {
+    margin-top: auto;
+}
+
 section.team div.team-img {
     width: auto;
-    margin-right: 20px;
     align-self: center;
 }
 
@@ -66,7 +129,7 @@ section.about div {
 
 section.contact {
     background-color: rgb(246, 246, 246);
-    margin: 50px;
+    margin: 100px;
     height: auto;
     border-radius: 5px;
 }
@@ -81,6 +144,27 @@ section.contact div {
     font-size: 16px;
 }
 
+@media only screen and (max-width: 1200px) {
+
+    section.gable-introduction h1 {
+        font-size: 130%;
+    }
+
+    section.team div.team-div {
+        flex-direction: column;
+        width: 30%;
+    }
+    
+    section.team div.team-text {
+        margin-right: 0;
+    }
+
+    section.team div.team-img {
+        margin-top: 30px;
+    }
+
+}
+
 @media only screen and (max-width: 768px) {
 
 /* SLOGAN */
@@ -93,22 +177,70 @@ div.slogan {
     font-size: 150%;
 }
 
+/* INTRODUCTION */
+
+section.gable-introduction {
+    margin: 0;
+    padding: 30px;
+    height: auto;
+}
+
+section.gable-introduction h1 {
+    margin: 20px 0;
+    letter-spacing: 4px;
+    font-size: 110%;
+}
+
+section.gable-introduction div {
+    margin-top: 80px;
+    height: 50px;
+}
+
 /* TEAM */
 
 section.team {
+    margin: 40px;
+    padding: 0;
+    height: auto;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+section.team div.team-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: none;
+}
+
+section.team div.team-div {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    max-width: auto;
     background-color: var(--boxcolor);
+    padding: 30px 50px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+section.team div.team-text {
     margin: 0;
-    margin-bottom: 50px;
-    padding: 30px 40px;
+    padding: 0;
+    /* align-self: center; */
+    display: flex;
     flex-direction: column;
 }
 
 section.team div.team-img {
-    margin: 30px 0 0 0;
+    width: auto;
+    align-self: center;
 }
 
 section.team div img {
-    height: 250px;
+    margin-top: 20px;
+    height: 200px;
+    border-radius: 10px;
 }
 
 /* ABOUT */

@@ -1,44 +1,53 @@
 /* TITLE */
 
-section.supply-title {
-    text-align: center;
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  section.supply-title .supply-title-h1 {
-    font-size: 250%;
-    font-weight: 500;
-    margin: 100px 0 50px;
-  }
-  
-  section.supply-title .supply-title-h2 {
-    margin: 0;
-  }
+section.supply-intro {
+  margin: 0;
+  background-color: var(--boxcolor);
+  padding: 30px 100px 50px;
+  border-radius: 5px;
+}
+
+section.supply-intro h1.supply-title-h1 {
+  font-size: 200%;
+  font-weight: 500;
+}
+
+/*   
+section.supply-title .supply-title-h1 {
+  font-weight: 500;
+  margin: 100px 0 50px;
+} */
+
+section.supply-title .supply-title-h2 {
+  margin: 0;
+}
   
   /* JUMP */
   
   section.jump {
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     align-items: center;
-    justify-content: space-around;
-    margin: 0;
-    padding: 20px 50px;
-    background-color: var(--boxcolor);
+    justify-content: center;
+    justify-content: center;
+    margin: 50px 0;
+    /* padding: 20px 50px; */
+    /* background-color: var(--boxcolor); */
+    /* position: absolute; */
+    /* bottom: 0; */
+    width: 100%;
   }
   
   fieldset {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     justify-content: center;
     width: auto;
     height: auto;
     padding: 0 20px;
-    margin: 30px 0;
-    border: 1px solid #ccc;
+    margin: 30px;
+    border: 1px solid #a8a8a8;
     border-radius: 5px;
     text-align: center;
   }
@@ -52,7 +61,7 @@ section.supply-title {
   input[type="button"] {
     border: none;
     color: black;
-    background-color: rgb(228, 228, 228);
+    background-color: rgba(228, 228, 228, 0.224);
     padding: 30px 100px;
     margin: 10px 20px 40px 20px;
     width: auto;
@@ -68,14 +77,6 @@ section.supply-title {
     color: white;
   }
 
-  /* INTRO */
-
-  section.supply-intro {
-    margin: 0 50px;
-    background-color: var(--body1);
-    padding: 20px 50px;
-    border-radius: 5px;
-  }
   
   /* TEMP INSTANTIATE COMPONENT */
   
@@ -90,9 +91,11 @@ section.supply-title {
   /* SUPPLY */
   
   section.supply {
-    background-color: white;
+    /* background-color: green; */
     margin: 50px 0;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
   }
   
   section.supply div.supply-div {
@@ -100,12 +103,14 @@ section.supply-title {
     align-self: center;
     margin: 50px;
     background-color: var(--boxcolor);
+    width: 60%;
     border-radius: 5px;
   }
   
   section.supply h1.supply-h1 {
     font-size: 200%;
     font-weight: 600;
+    text-align: ce;
   }
   
   section.supply div.supply-div ul {
@@ -176,73 +181,71 @@ section.supply-title {
   .transaction-button:hover {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   }
-  
-  
-  /* PAYOUT SCHEME */
-  
-  section.supply div.payout-scheme {
-    padding: 20px 50px;
-    background-color: var(--body1);
-  }
-  
-  section.supply div.payout-scheme ul {
-    padding-left: 20px;
-  }
-  
-  /* DISCLAIMER */
-  
-  section.supply div.disclaimer {
-    padding: 40px 50px;
-    background-color: var(--body2);
-  }
-  
-  section.supply div.disclaimer button.background {
-    background-color: var(--boxcolor);
+
+  @media only screen and (max-width: 1200px) {
+    input[type="button"] {
+      border: none;
+      color: black;
+      background-color: rgba(228, 228, 228, 0.224);
+      padding: 20px 20px;
+      margin: 10px 20px 40px 20px;
+      width: auto;
+      font-size: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px;
+    }
   }
   
   @media only screen and (max-width: 768px) {
     /* JUMP */
     section.jump {
-      padding: 20px;
+      padding: 0;
+      flex-wrap: wrap;
     }
   
     fieldset {
-      flex-direction: column;
-      padding: 0 20px;
-      margin: 15px 0;
+      /* flex-direction: ro; */
+      padding: 0;
+      margin: 15px;
+      flex-wrap: wrap;
     }
   
     legend {
       font-size: 100%;
-      padding: 0 40px;
+      padding: 0;
     }
   
     input[type="button"] {
-      padding: 15px 30px;
-      margin: 10px 20px 20px;
+      padding: 15px;
+      margin: 0 10px 20px;
       font-size: 14px;
     }
   
     /* TITLE */
-    section.supply-title .supply-title-h1 {
-      font-size: 200%;
-      font-weight: 600;
-      margin: 50px 30px;
+
+    section.supply-intro {
+      margin: 0;
+      padding: 30px;
     }
 
-    /* INTRO */
-    section.supply-intro {
-      margin: 0 20px;
-      padding: 10px 30px;
+    section.supply-intro h1.supply-title-h1 {
+      font-size: 150%;
+      margin: 0;
     }
   
     /* SUPPLY */
+    
     section.supply {
       margin: 50px 0;
+      padding: 0;
     }
   
     section.supply div.supply-div {
       margin: 50px 0;
+      width: auto;
+      /* padding: 10px; */
     }
   
     section.supply h1.supply-h1 {
