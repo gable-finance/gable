@@ -1,19 +1,10 @@
+mod events;
+mod nft_data;
+mod tokens;
+
 use scrypto::prelude::*;
 use events::*;
-
-mod events;
-
-#[derive(Debug, NonFungibleData, ScryptoSbor)]
-struct AmountDue {
-    amount: Decimal,
-    interest_rate: Decimal,
-}
-
-#[derive(Debug, NonFungibleData, ScryptoSbor)]
-struct LiquiditySupplier {
-    box_nr: u64,
-    lsu_amount: Decimal,
-}
+use nft_data::*;
 
 #[blueprint]
 #[events(LsuDepositEvent, LsuWithdrawEvent, UpdateIndexmapEvent, UpdateInterestRateEvent)]
@@ -90,87 +81,22 @@ mod flashloanpool {
             let (address_reservation, component_address) =
                 Runtime::allocate_component_address(Flashloanpool::blueprint_id());
 
-            // Provision fungible resource and generate admin's badge
-            // to support (co-)ownership
-            // Mintable and burnable by anyone who owns an admin's badge
-            let admin_badge: FungibleBucket = ResourceBuilder::new_fungible(OwnerRole::None)
-                .divisibility(DIVISIBILITY_NONE)
-                .metadata(metadata! {
-                    init {
-                        "name" => "Gable FLP Admin Badge", locked;
-                        "symbol" => "GFA", locked;
-                        "description" => "Gable flash loan pool admin badge", locked;
-                    }
-                })
-                .mint_roles(mint_roles! {
-                    minter => rule!(require(owner_badge.resource_address()));
-                    minter_updater => rule!(deny_all);
-                })
-                .burn_roles(burn_roles! {
-                    burner => rule!(require(owner_badge.resource_address()));
-                    burner_updater => rule!(deny_all);
-                })
-                .mint_initial_supply(1);
+            // Provision admin badge
+            let admin_badge: FungibleBucket = tokens::provision_admin_badge(
+                owner_badge.resource_address()
+            );
 
-            // Provision transient non-fungible resource
-            // to enforce flashloan repayment
-            let transient_token: ResourceManager =
-                ResourceBuilder::new_ruid_non_fungible::<AmountDue>(OwnerRole::None)
-                    .metadata(metadata! {
-                        roles {
-                            metadata_setter => rule!(require(owner_badge.resource_address()));
-                            metadata_setter_updater => rule!(deny_all);
-                            metadata_locker => rule!(require(owner_badge.resource_address()));
-                            metadata_locker_updater => rule!(deny_all);
-                        },
-                        init {
-                            "name" => "Gable Transient Token", locked;
-                            "symbol" => "STT", locked;
-                            "description" => "Flashloan transient token - amount due must be returned to burn this token", locked;
-                        }
-                    })
-                    .mint_roles(mint_roles! {
-                        minter => rule!(require(global_caller(component_address)));
-                        minter_updater => rule!(deny_all);
-                    })
-                    .burn_roles(burn_roles! {
-                        burner => rule!(require(global_caller(component_address)));
-                        burner_updater => rule!(deny_all);
-                    })
-                    .deposit_roles(deposit_roles! {
-                        depositor => rule!(deny_all);
-                        depositor_updater => rule!(deny_all);
-                    })
-                    .create_with_no_initial_supply();
+            // Provision transient token
+            let transient_token: ResourceManager = tokens::provision_transient_token(
+                owner_badge.resource_address(),
+                component_address
+            );
 
-            // Provision non-fungible resource
-            // serves as proof of supply
-            let pool_nft: ResourceManager =
-                ResourceBuilder::new_integer_non_fungible::<LiquiditySupplier>(
-                    OwnerRole::None,
-                )
-                .metadata(metadata! {
-                    roles {
-                        metadata_setter => rule!(require(owner_badge.resource_address()));
-                        metadata_setter_updater => rule!(deny_all);
-                        metadata_locker => rule!(require(owner_badge.resource_address()));
-                        metadata_locker_updater => rule!(deny_all);
-                    },
-                    init {
-                        "name" => "Gable Proof of Supply", locked;
-                        "symbol" => "SPS", locked;
-                        "description" => "Pool NFT that represents the proof of supply", locked;
-                    }
-                })
-                .mint_roles(mint_roles! {
-                    minter => rule!(require(global_caller(component_address)));
-                    minter_updater => rule!(deny_all);
-                })
-                .burn_roles(burn_roles! {
-                    burner => rule!(require(global_caller(component_address)));
-                    burner_updater => rule!(deny_all);
-                })
-                .create_with_no_initial_supply();
+            // Provision pool nft
+            let pool_nft: ResourceManager = tokens::provision_pool_nft(
+                owner_badge.resource_address(),
+                component_address
+            );
 
             let flashloan_component: Global<Flashloanpool> = Self {
                 liquidity_pool_vault: Vault::new(XRD),
@@ -226,23 +152,22 @@ mod flashloanpool {
             })
             .enable_component_royalties(component_royalties! {
                 roles { 
-                    royalty_setter => OWNER; 
-                    royalty_setter_updater => OWNER; 
-                    royalty_locker => OWNER;
-                    royalty_locker_updater => OWNER; 
-                    royalty_claimer => OWNER;
-                    royalty_claimer_updater => OWNER; 
+                    royalty_setter => rule!(deny_all); 
+                    royalty_setter_updater => rule!(deny_all); 
+                    royalty_locker => rule!(deny_all);
+                    royalty_locker_updater => rule!(deny_all); 
+                    royalty_claimer => rule!(deny_all);
+                    royalty_claimer_updater => rule!(deny_all); 
                 },
                 init {
-                    get_flashloan => Xrd(1.into()), locked;
-                    repay_flashloan => Xrd(1.into()), locked;
-                    owner_deposit_xrd => Xrd(1.into()), locked; 
-                    owner_withdraw_xrd => Xrd(1.into()), locked;
-                    deposit_lsu => Xrd(1.into()), locked;
-                    withdraw_lsu => Xrd(1.into()), locked; 
-                    update_supplier_kvs => Xrd(1.into()), locked;
-                    update_interest_rate => Xrd(1.into()), locked;
-                    // validator_component => Free, locked;
+                    get_flashloan => Free, locked;
+                    repay_flashloan => Free, locked;
+                    owner_deposit_xrd => Free, locked; 
+                    owner_withdraw_xrd => Free, locked;
+                    deposit_lsu => Free, locked;
+                    withdraw_lsu => Free, locked; 
+                    update_supplier_kvs => Free, locked;
+                    update_interest_rate => Free, locked;
                     deposit_validator_owner => Free, locked;
                     withdraw_validator_owner => Free, locked;
                     start_unlock_owner_stake_units => Free, locked;
@@ -388,9 +313,13 @@ mod flashloanpool {
                 "Please withdraw an amount larger than 0"
             );
         
+            // Update the suppliers hashmap to ensure that the new interest earnings are distributed
+            // and the owner liquidity is up to date
+            self.update_aggregate_im();
+        
             // Ensure amount is less or equal to liquidity provided by owner
             assert!(
-                amount <= self.liquidity_pool_vault.amount(),
+                amount <= self.owner_liquidity,
                 "Please withdraw an amount smaller than or equal to {}",
                 self.owner_liquidity
             );
@@ -400,9 +329,7 @@ mod flashloanpool {
             info!("Owner liquidity withdrawn: {} XRD", amount);
         
             debug!("{:?}", self.supplier_aggregate_im);
-        
-            // Update the suppliers hashmap before returning earnings
-            self.update_aggregate_im();
+
         
             debug!("{:?}", self.supplier_aggregate_im);
         
@@ -428,7 +355,7 @@ mod flashloanpool {
                 "Please provide liquids staking units (LSU's) generated by the Gable validator node"
             );
 
-            // Ensure the amount of LSU's provided is greater than 500
+            // Ensure the amount of LSU's provided is greater than 500.
             // A minimum LSU amount is declared to prevent over-population of the
             // component's substate, generally referred to as a "gas exhaustion attack".
             assert!(
@@ -455,78 +382,73 @@ mod flashloanpool {
             // Initiate box number as 1
             let mut box_nr: u64 = 1;
 
-            // Initialize a boolean flag to track whether the condition has been satisfied
-            let mut condition_satisfied = false;
-
             // Updating the aggregate index map for two possible scenarios:
             //  1. There is space available in one or more of the box's for an additional entry
             //  2. The boxes that contain the individual suppliers information are all full, 
-            //      e.g. the number of entries in all boxes are equal to the map's limit.
+            //     e.g. the number of entries in all boxes are equal to the map's limit.
             //     Or no box exists yet, e.g. no suppliers are present at all
-            
+
+            let mut vacant_box = None;
+
             // Iterate through the index map's key-value pairs to determine the applicable scenario
-            for (key, values) in &self.supplier_aggregate_im {
-                // Check if the Vec is not empty and satisfies your condition
-                if let Some(first_value) = values.first() {
-                    if *first_value < self.box_size.into() {
+            for (existing_box_nr, values) in &self.supplier_aggregate_im {
+                // Check if any Vec is not empty and satisfies your condition
+                if values.first().is_some_and(|suppliers_in_box| *suppliers_in_box < self.box_size.into()) {
+                    vacant_box = Some(*existing_box_nr);
 
-                        // update box number
-                        box_nr = *key;
+                    // Update existing supplier's info before adding a new supplier
+                    // to ensure that rewards and interest are distributed to existing suppliers
+                    // before a new supplier is added.
+                    self.update_supplier_kvs(existing_box_nr.clone());
 
-                        // update existing supplier's info before adding a new supplier
-                        self.update_supplier_kvs(box_nr);
-
-                        // Set the flag to true to indicate that the condition has been satisfied
-                        condition_satisfied = true;
-
-                        break;
-                    }
+                    break; 
                 }
             }
 
-            // Check if the condition was satisfied for any iteration.
-            // TRUE => scenario 1
-            // FALSE => scenario 2
-            if condition_satisfied {
-                // Scenario 1: Add new supplier to the existing key value store and index map
+            match vacant_box {
+                Some(existing_box_nr) => {
+                    // Increase the box's number of suppliers by 1 new supplier
+                    self.supplier_aggregate_im.get_mut(&existing_box_nr).unwrap()[0] += 1;
+                    // Increase the box's lsu amount by the supplied amount
+                    self.supplier_aggregate_im.get_mut(&existing_box_nr).unwrap()[1] += lsu_tokens.amount();
+                    // Add new supplier to the box
+                    self.supplier_partitioned_kvs.get_mut(&existing_box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    // Store the existing_box_nr outside of this scope
+                    box_nr = existing_box_nr;
+                },
+                None => {
+                    // Scenario 2: In case that all boxes are full or no box exists, a new box has to be inserted
 
-                // Increase the box's number of suppliers by 1 new supplier
-                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[0] += 1;
-                // Increase the box's lsu amount by the supplied amount
-                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[1] += lsu_tokens.amount();
-                // Add new supplier to the box
-                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
-            } else {
-                // Scenario 2: In case that all boxes are full or no box exists, a new box has to be inserted
+                    // Increment the new_key by one for the new key-value pair
+                    box_nr = self.supplier_aggregate_im.keys().max().unwrap_or(&0) + 1;
 
-                // Increment the new_key by one for the new key-value pair
-                box_nr = self.supplier_aggregate_im.keys().max().unwrap_or(&0) + 1;
+                    // Update the aggregate IndexMap to ensure that rewards and interest is distributed
+                    // to existing boxes before a new box is created
+                    self.update_aggregate_im();
 
-                // Update the aggregate IndexMap
-                self.update_aggregate_im();
+                    // Create a new vector for the new box
+                    let new_vec: Vec<Decimal> = vec![
+                        dec!("1"), 
+                        lsu_tokens.amount(), 
+                        Decimal::ZERO, 
+                        Decimal::ZERO,
+                        Decimal::ZERO,
+                        Decimal::ZERO
+                    ];
 
-                // Create a new vector for the new box
-                let new_vec: Vec<Decimal> = vec![
-                    dec!("1"), 
-                    lsu_tokens.amount(), 
-                    Decimal::ZERO, 
-                    Decimal::ZERO,
-                    Decimal::ZERO,
-                    Decimal::ZERO
-                ];
+                    // Insert the new box into the aggregate IndexMap
+                    self.supplier_aggregate_im.insert(box_nr, new_vec);
 
-                // Insert the new box into the aggregate IndexMap
-                self.supplier_aggregate_im.insert(box_nr, new_vec);
+                    // Create a new IndexMap for the new box
+                    let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
+                    indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
 
-                // Create a new IndexMap for the new box
-                let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
-                indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    // If none of the key-value pairs satisfy the condition, create a new key-value pair
+                    self.supplier_partitioned_kvs.insert(box_nr, indexmap);
 
-                // If none of the key-value pairs satisfy the condition, create a new key-value pair
-                self.supplier_partitioned_kvs.insert(box_nr, indexmap);
-
-                // Insert the new supplier data into the new box
-                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+                    // Insert the new supplier data into the new box
+                    self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+                },
             }
 
             // Mint an NFT containing the deposited vector <box number, lsu amount>
@@ -654,183 +576,185 @@ mod flashloanpool {
             return (lsu_bucket, earnings_bucket);
         }
 
-        // Method updating the aggregate index map
-        fn update_aggregate_im(&mut self) {
+        fn calculate_aggregated_rewards_interest(&self) -> (Decimal, Decimal) {
+            // calculate the total, already aggregated, rewards and interest
+            self.supplier_aggregate_im.values().map(|i| {
+                let rewards = i[2] + i[3];
+                let interest = i[4] + i[5];
+                (rewards, interest)
+            }).fold(
+                (Decimal::ZERO, Decimal::ZERO),
+                |(supplier_acc, interest_acc), (supplier_item, interest_item)| {
+                    (supplier_acc + supplier_item, interest_acc + interest_item)
+                }
+            )
+        }
 
-            // Save state variables
-            let total_pool: Decimal = self.liquidity_pool_vault.amount();
-
-            info!("total_pool: {}", total_pool);
-
-            let total_lsu = self.lsu_vault.amount();
-
-            info!("total_lsu: {}", total_lsu);
-
-            let owner_liquidity: Decimal = self.owner_liquidity;
-
-            info!("owner_liquidity: {}", owner_liquidity);
-
-            let rewards_new = self.rewards_liquidity;
-
-            info!("rewards_new: {} XRD", rewards_new);
-
-            // Determine total rewards and interest earnings by summing the undistributed and distributed rewards/interest over the whole index map
-            let (rewards_aggregated, interest_aggregated): (Decimal, Decimal) = 
-                self.supplier_aggregate_im
-                    .values()
-                    .map(|i| {
-                        let rewards = i[2] + i[3];
-                        let interest = i[4] + i[5];
-                        (rewards, interest)
-                    })
-                    .fold(
-                        (Decimal::ZERO, Decimal::ZERO), 
-                        |(supplier_acc, interest_acc), (supplier_item, interest_item)| {
-                            (supplier_acc + supplier_item, interest_acc + interest_item)
-                        }
-                    );
-
-            info!("rewards_aggregated: {}", rewards_aggregated);
-            info!("interest_aggregated: {}", interest_aggregated);
-
+        fn calculate_interest_new_divided(
+            &self,
+            total_pool: Decimal,
+            owner_liquidity: Decimal,
+            rewards_new: Decimal,
+            rewards_aggregated: Decimal,
+            interest_aggregated: Decimal,
+        ) -> Decimal {
             /*
-            The new interest earnings are not stored in a state variable, and therefore have to be calculated. 
+            Most contract data is stored in state variables - except for the new (non-distributed) interest earnings.
+            This is an unknown that needs to be calculated dynamically.
 
             The new interest earnings can be calculated as following:
 
-            1. Use the formula to calculate the pool's total liquidity:
+            1. Take the formula to calculate the pool's total liquidity:
                 
                 total liquidity = owner liquidity
                                     + supplier aggregated earnings (staking rewards + interest earnings)
-                                    + supplier new earnings (staking rewards + interest earnings)
+                                    + supplier non-aggregated (new) earnings (staking rewards + interest earnings);
                                     
             2. Deduce the formula for supplier undistributed earnings from the total liquidity formula.
                 This yields the following formula:
                 
-                supplier undistributed interest = total liquidity 
-                                                    - owner liquidity 
-                                                    - new staking rewards
-                                                    - aggregated staking rewards
-                                                    - aggregated interest earnings;
+                new interest = total liquidity 
+                                - owner liquidity 
+                                - new staking rewards
+                                - aggregated staking rewards
+                                - aggregated interest earnings;
 
-            3. Divide the new interest earning by 2, as 50% is allocated to the supplier and 50% to the owner.
+            3. Divide the new interest earnings by 2, as 50% is allocated to the supplier and 50% to the owner.
+
+                new divided interest = new interest / 2
             */
-            
-            let interest_new: Decimal =
-                (total_pool - owner_liquidity - rewards_new - rewards_aggregated - interest_aggregated) / dec!("2");
 
-            info!("interest_new: {}", interest_new);
+            (total_pool - owner_liquidity - rewards_new - rewards_aggregated - interest_aggregated)/2
 
-            // add 50% of the new interest to the owner's liquidity
-            self.owner_liquidity += interest_new;
+        }
 
-            // Only loop over the hashmap if it is not empty. 
-            // And thus only reset the 'rewards_liquidity' if the hashmap is not empty
-            if !self.supplier_aggregate_im.is_empty() {
-                // The new rewards and interest have to be allocated to each each box in the aggregate index map
-                // This function loops over all entries of the index map to apply this allocation
-                for i in self.supplier_aggregate_im.values_mut() {
+        fn allocate_aggregate_rewards_and_interest(
+            &mut self,
+            // supplier_aggregate_im: &mut IndexMap<KeyType, ValueType>,
+            rewards_new: Decimal,
+            interest_new_divided: Decimal,
+            rewards_aggregated: Decimal,
+            total_lsu: Decimal,
+        ) {
+            // Loop over the aggregate index map to allocate new rewards and interest
+            for i in self.supplier_aggregate_im.values_mut() {
 
-                    // New rewards are allocated based on relative LSU size of the box compared to the pool
-                    
-                    // Determine box total LSU
-                    let box_lsu = i[1];
+                // Allocate new rewards based on relative LSU size of the box compared to the pool
+                let box_lsu = i[1];
 
-                    info!("box_lsu: {}", box_lsu);
+                // Calculate the box's relative lsu stake compared to the total contract.
+                //
+                // First of all, ensure that the contract's total LSU is greater than 0.
+                // Else overwrite the box's relative LSU to 0, to prevent the contract from breaking.
+                let box_relative_lsu_stake: Decimal = if total_lsu > Decimal::ZERO {
+                    // Second of all, ensure that the box's LSU stake is larger than 0.
+                    // Else overwrite the box's relative LSU to 0, to prevent the contract from breaking.
+                    if box_lsu > Decimal::ZERO {
+                            box_lsu / total_lsu
+                    } else {
+                        Decimal::ZERO
+                    }
+                } else {
+                    Decimal::ZERO
+                };
+        
+                // Allocate new interest earnings based on relative XRD size of the box compared to the pool
+                // XRD size of the box is equal to the aggregated distributed and non-distributed rewards
+                let box_rewards = i[2] + i[3];
 
-                    // Determine supplier's LSU stake relative to the pool's total LSU
-                    let box_relative_lsu_stake: Decimal = box_lsu / total_lsu;
-
-                    info!("box_relative_lsu_stake: {}", box_relative_lsu_stake);
-
-                    // New interest earnings are allocated based on relative XRD size of the box compared to the pool
-                    
-                    // Determine box distributed rewards
-                    let box_rewards = i[2];
-
-                    info!("box_rewards: {}", box_rewards);
-
-                    // Determine supplier's XRD stake relative to the distributed earnings
-                    let box_relative_xrd_stake: Decimal = if rewards_aggregated != Decimal::ZERO {
+                // Calculate the box's relative xrd stake compared to the total contract.
+                //
+                // First of all, ensure that the contract's total aggregated rewards is greater than 0.
+                //
+                // This can happen in two cases:
+                //  1. for instance at instantiation of the contract
+                //  2. in the rare case that all suppliers withdraw
+                //
+                // In this case the relative LSU stake is substituted for the relative XRD stake to kickstart 
+                // the aggregation again.
+                let box_relative_xrd_stake: Decimal = if rewards_aggregated > Decimal::ZERO {
+                    // Second of all, ensure that the box's LSU stake is larger than 0.
+                    // Else overwrite the box's relative LSU to 0, to prevent the contract from breaking.
+                    if box_rewards > Decimal::ZERO {
                         box_rewards / rewards_aggregated
                     } else {
-                        // Handle the case where `supplier_distributed_interest` is zero
-                        // Assign a default value (`supplier_relative_lsu_stake`)
-                        box_relative_lsu_stake
-                    };
+                        Decimal::ZERO
+                    }
+                } else {
+                    box_relative_lsu_stake
+                };
 
-                    info!("box_relative_xrd_stake: {}", box_relative_xrd_stake);
+                // Finally, allocate both new rewards and interest to the box's 'non-distributed' variables.
+                i[3] += box_relative_lsu_stake * rewards_new;
+                i[5] += box_relative_xrd_stake * interest_new_divided;
+            }
+        }
 
-                    // Allocate new rewads to undistributed rewards value
-                    i[3] += box_relative_lsu_stake * rewards_new;
+        // Method updating the aggregate index map
+        fn update_aggregate_im(&mut self) {
 
-                    info!("i[3]: {}", i[3]);
+            // extract environment values
+            let total_pool = self.liquidity_pool_vault.amount();
+            let total_lsu = self.lsu_vault.amount();
+            let owner_liquidity = self.owner_liquidity;
+            let rewards_new = self.rewards_liquidity;
 
-                    // Allocate new interest earnings to undistributed interest value
-                    i[5] += box_relative_xrd_stake * interest_new;
+            // Assert in case that the owner liquidity surpassess the contract's total liquidity
+            assert!(
+                total_pool >= owner_liquidity,
+                "owner liquidity: {}, total pool liquidity: {} => The owner liquidity is not allowed to surpass the total liquidity",
+                    owner_liquidity, total_pool
+            );
 
-                    info!("i[5]: {}", i[5]);
-                }
-
-                // As new rewards are allocated, the state variable has to be reset to 0
+            let (rewards_aggregated, interest_aggregated): (Decimal, Decimal) = 
+                self.calculate_aggregated_rewards_interest();
+        
+            let interest_new_divided = self.calculate_interest_new_divided(
+                total_pool, 
+                owner_liquidity, 
+                rewards_new, 
+                rewards_aggregated, 
+                interest_aggregated
+            );
+            
+            assert!(
+                interest_new_divided >= Decimal::ZERO,
+                "Interest new = {}. The method is aborted as the interest new is not allowed to be negative.",
+                interest_new_divided
+            );
+        
+            // Add 50% of the new interest to the owner's liquidity
+            self.owner_liquidity += interest_new_divided;
+        
+            // Allocate new rewards and interest
+            if !self.supplier_aggregate_im.is_empty() {
+                self.allocate_aggregate_rewards_and_interest(rewards_new, interest_new_divided, rewards_aggregated, total_lsu);
                 self.rewards_liquidity = Decimal::ZERO;
             }
         }
 
-        // Method updating the individual/partitioned key value store.
-        // This method updates the individual suppliers' info in a single box.
-        // Only a single LSU deposit or withdrawal is permitted at a time, an event as such will only affect a single box.
-        // Therefore updating only the corresponding box information is required.
-        // The lazy look up function of the key value store is utilized to ensure that only the information corresponding to that box is loaded.
-        // This ensures scalability and cost efficiency of the component.
-        pub fn update_supplier_kvs(&mut self, box_nr: u64) {
-
-            info!("Pool liquidity: {} XRD", self.liquidity_pool_vault.amount());
-            info!("Owner liquidity: {} XRD", self.owner_liquidity);
-
-            // Update the suppliers indexmap before allocating earnings to the individual/partitioned key value store
-            self.update_aggregate_im();
-
-            // Determine 'total liquidity'
-            let _total_liquidity: Decimal = self.liquidity_pool_vault.amount();
-
-            info!("Total pool liquidity: {} XRD", _total_liquidity);
-
-            // Determine 'owner liquidity'
-            let _owner_liquidity: Decimal = self.owner_liquidity;
-
-            info!("Total owner's liquidity: {} XRD", _owner_liquidity);
-
+        fn extract_box_values(&self, box_nr: u64) ->(Decimal, Decimal, Decimal, Decimal, Decimal) {
             // Determine various values and log them in one go
-            let (
-                box_lsu,
-                box_distributed_rewards,
-                box_undistributed_rewards,
-                box_distributed_interest,
-                box_undistributed_interest,
-            ): (
-                Decimal,
-                Decimal,
-                Decimal,
-                Decimal,
-                Decimal,
-            ) = {
-                let supplier_aggregate = self.supplier_aggregate_im.get(&box_nr).unwrap();
-                (
-                    supplier_aggregate[1],
-                    supplier_aggregate[2],
-                    supplier_aggregate[3],
-                    supplier_aggregate[4],
-                    supplier_aggregate[5],
-                )
-            };
+            let supplier_aggregate = self.supplier_aggregate_im.get(&box_nr).unwrap();
 
-            info!("Box LSU: {} XRD", box_lsu);
-            info!("Box distributed rewards: {} XRD", box_distributed_rewards);
-            info!("Box undistributed rewards: {} XRD", box_undistributed_rewards);
-            info!("Box distributed interest: {} XRD", box_distributed_interest);
-            info!("Box undistributed interest: {} XRD", box_undistributed_interest);
-            
+            (
+                supplier_aggregate[1],
+                supplier_aggregate[2],
+                supplier_aggregate[3],
+                supplier_aggregate[4],
+                supplier_aggregate[5],
+            )
+
+        }
+
+        fn allocate_individual_rewards_interest(
+            &mut self, 
+            box_nr: u64,
+            box_lsu: Decimal,
+            box_distributed_rewards: Decimal,
+            box_undistributed_rewards: Decimal,
+            box_undistributed_interest: Decimal
+        ) {
             // Loop over all entries in the indexmap to update the information
             for i in self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().values_mut() {
 
@@ -838,6 +762,10 @@ mod flashloanpool {
  
                 // Determine supplier's LSU stake
                 let supplier_lsu = i[0];
+
+                if supplier_lsu < Decimal::ZERO {
+                    continue
+                }
 
                 // Determine supplier's LSU stake relative to the pool's total LSU
                 let supplier_relative_lsu_stake = supplier_lsu / box_lsu;
@@ -848,7 +776,9 @@ mod flashloanpool {
                 let supplier_rewards = i[1] + i[2];
 
                 // Determine supplier's XRD stake relative to the distributed earnings
-                let supplier_relative_xrd_stake = if box_distributed_interest != Decimal::ZERO {
+                // FIX 3: changed condition from box_distributed_interest to box_distributed_rewards
+                //  As the box_distributed_rewards is applicable in this scenario.
+                let supplier_relative_xrd_stake = if box_distributed_rewards > Decimal::ZERO {
                     supplier_rewards / box_distributed_rewards
                 } else {
                     // Handle the case where `supplier_distributed_interest` is zero
@@ -862,11 +792,58 @@ mod flashloanpool {
                 // Distribute the new interest earnings based on the staker's XRD relative to the pool's total XRD
                 i[2] += box_undistributed_interest * supplier_relative_xrd_stake;
             }
+        }
 
-            // Save the index map key-value pair corresponding to the box
+        /// Method updating the individual/partitioned key value store.
+        /// This method updates the individual suppliers' info in a single box.
+        /// Only a single LSU deposit or withdrawal is permitted at a time, an event as such will only affect a single box.
+        /// Therefore updating only the corresponding box information is required.
+        /// The lazy look up function of the key value store is utilized to ensure that only the information corresponding to that box is loaded.
+        /// This ensures scalability and cost efficiency of the component.
+        pub fn update_supplier_kvs(&mut self, box_nr: u64) {
+
+            info!("Pool liquidity: {} XRD", self.liquidity_pool_vault.amount());
+            info!("Owner liquidity: {} XRD", self.owner_liquidity);
+
+            // Update the suppliers indexmap before allocating earnings to the individual/partitioned key value store
+            self.update_aggregate_im();
+
+            let (
+                box_lsu,
+                box_distributed_rewards,
+                box_undistributed_rewards,
+                _box_distributed_interest,
+                box_undistributed_interest,
+            ): (
+                Decimal,
+                Decimal,
+                Decimal,
+                Decimal,
+                Decimal,
+            ) = self.extract_box_values(box_nr);
+
+            info!("Box LSU: {} XRD", box_lsu);
+            info!("Box distributed rewards: {} XRD", box_distributed_rewards);
+            info!("Box undistributed rewards: {} XRD", box_undistributed_rewards);
+            info!("Box distributed interest: {} XRD", _box_distributed_interest);
+            info!("Box undistributed interest: {} XRD", box_undistributed_interest);
+            
+            assert!(box_lsu > Decimal::ZERO, 
+                "Box LSU = {}. Asserted as box LSU amount has to be larger than 0.", box_lsu);
+
+            // allocate undistributed rewards and interest to individual suppliers
+            self.allocate_individual_rewards_interest(
+                box_nr,
+                box_lsu,
+                box_distributed_rewards,
+                box_undistributed_rewards,
+                box_undistributed_interest,
+            );
+
+            // Update the aggregate index map's box values:
+            // 1. add undistributed rewards and interest to distributed rewards and interest
+            // 2. reset the undistributed rewards and interest to 0
             let entry = self.supplier_aggregate_im.get_mut(&box_nr).unwrap();
-
-            // Update the aggregate index map's box values according to the distributed rewards and interest earnings
             
             //  e.g. undistributed rewards are added to distributed rewards and undistributed rewards are reset to zero.
             entry[2] += box_undistributed_rewards;
@@ -890,7 +867,13 @@ mod flashloanpool {
             // Ensure interest rate is larger than 0
             assert!(
                 interest_rate >= Decimal::ZERO,
-                "Please provide an interest rate larger than 0"
+                "Please provide an interest rate larger than or equal to 0"
+            );
+
+            // Ensure interest rate is larger than 0
+            assert!(
+                interest_rate < Decimal::ONE,
+                "Please provide an interest rate smaller than 1"
             );
 
             // Log the interest rate before and after change
@@ -909,7 +892,7 @@ mod flashloanpool {
 
         pub fn update_box_size(&mut self, amount: u64) {
             assert!(amount > 0, "Please provide a number larger than 0");
-            assert!(amount < 250, "Please provide a map size smaller than 250");
+            assert!(amount <= 250, "Please provide a map size smaller than 250");
 
             self.box_size = amount;
         }

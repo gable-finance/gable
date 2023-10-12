@@ -402,3 +402,34 @@ pub fn update_supplier_kvs(
     
 }
 
+pub fn get_and_repay_flashloan(
+    test_runner: &mut DefaultTestRunner,
+    public_key: Secp256k1PublicKey,
+    account_component: ComponentAddress,
+    component: ComponentAddress,
+    transient: ResourceAddress,
+    amount: Decimal,
+    interest_rate: Decimal
+) -> TransactionReceipt {
+
+    let interest_amount: Decimal = amount * interest_rate;
+
+    let manifest = ManifestBuilder::new()
+        .call_method(component, "get_flashloan", manifest_args![amount])
+        .withdraw_from_account(account_component, XRD, interest_amount)
+        .take_all_from_worktop(XRD, "xrd_bucket")
+        .take_all_from_worktop(transient, "transient_bucket")
+        .with_name_lookup(|builder, lookup| {
+            builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
+        })
+        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .build();
+
+    let receipt = test_runner.execute_manifest_ignoring_fee(
+        manifest,
+        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    );
+
+    receipt
+}
+
