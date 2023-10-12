@@ -1,4 +1,4 @@
-# Sundae Finance
+# Gable Finance
 
 ## Flash loan pool
 
@@ -6,7 +6,7 @@ The flash loan pool smart contract offers 2 main features:
 
 1. Liquidity pool
 
-This liquidity pool collects liquidity via staking rewards. Suppliers stake their XRD at Sundae validator node. Subsequently, the staker deposits its liquid staking units (LSU's) into the smart contract to register themselves as liquidity supplier - of which the supplier receives a NFT in return that represents its 'proof of supply'. 
+This liquidity pool collects liquidity via staking rewards. Suppliers stake their XRD at Gable validator node. Subsequently, the staker deposits its liquid staking units (LSU's) into the smart contract to register themselves as liquidity supplier - of which the supplier receives a NFT in return that represents its 'proof of supply'. 
 
 The validator node distributes the earned rewards to the staking pool on behalf of the supplier/staker. The staking rewards are monitored by the smart contract and allocated (proportionally) to the staker, by registering the earnings to the provisioned NFT's. The same applies to the interest earned by the liquidity pool.
 
