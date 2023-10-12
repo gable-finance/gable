@@ -105,7 +105,7 @@ mod flashloanpool {
                 owner_liquidity: Decimal::ZERO,
                 supplier_aggregate_im: IndexMap::new(),
                 supplier_partitioned_kvs: KeyValueStore::new_with_registered_type(),
-                pool_nft: pool_nft,
+                pool_nft,
                 pool_nft_nr: 0,
                 lsu_vault: Vault::new(lsu_address),
                 rewards_liquidity: Decimal::ZERO,
@@ -113,7 +113,7 @@ mod flashloanpool {
                 unstaking_lsu_vault: Vault::new(lsu_address),
                 unstaking_nft_vault: Vault::new(unstake_nft_address),
                 interest_rate: Decimal::ZERO,
-                transient_token: transient_token,
+                transient_token,
                 box_size: 250,
             }
             .instantiate()
@@ -183,7 +183,7 @@ mod flashloanpool {
 
             info!("{} admin badge is provided to user", admin_badge.amount());
 
-            return (owner_badge, admin_badge, flashloan_component);
+            (owner_badge, admin_badge, flashloan_component)
         }
 
         pub fn get_flashloan(&mut self, amount: Decimal) -> (Bucket, Bucket) {
@@ -203,7 +203,7 @@ mod flashloanpool {
             // Mint transient token
             let transient_token_resource_manager: ResourceManager = self.transient_token;
             let transient_token: Bucket = transient_token_resource_manager.mint_ruid_non_fungible(AmountDue {
-                amount: amount,
+                amount,
                 interest_rate: self.interest_rate,
             });
             debug!(
@@ -218,7 +218,7 @@ mod flashloanpool {
             let loan: Bucket = self.liquidity_pool_vault.take(amount);
         
             // Return transient token bucket and loan bucket
-            return (transient_token, loan);
+            (transient_token, loan)
         }
         
         pub fn repay_flashloan(&mut self, mut repayment: Bucket, transient_token: Bucket) -> Bucket {
@@ -275,7 +275,7 @@ mod flashloanpool {
 
             // Return residual
             // If no residual is applicable, an empty bucket will be returned
-            return repayment;
+            repayment
         }
         
         pub fn owner_deposit_xrd(&mut self, deposit: Bucket) {
@@ -341,7 +341,7 @@ mod flashloanpool {
             let withdraw: Bucket = self.liquidity_pool_vault.take(amount);
         
             // Return bucket
-            return withdraw;
+            withdraw
         }        
 
         pub fn deposit_lsu(&mut self, lsu_tokens: Bucket) -> Bucket {
@@ -373,9 +373,9 @@ mod flashloanpool {
             let interest_earnings: Decimal = Decimal::ZERO;
 
             // Insert variables into the vector
-            let lsu_nft_data: Vec<Decimal> = vec![lsu_amount, staking_rewards, interest_earnings];
+            let nft_data: Vec<Decimal> = vec![lsu_amount, staking_rewards, interest_earnings];
 
-            let lsu_nft_id: NonFungibleLocalId = NonFungibleLocalId::Integer(self.pool_nft_nr.into());
+            let nft_id: NonFungibleLocalId = NonFungibleLocalId::Integer(self.pool_nft_nr.into());
             
             // Initiate box number as 1
             let mut box_nr: u64 = 1;
@@ -397,7 +397,7 @@ mod flashloanpool {
                     // Update existing supplier's info before adding a new supplier
                     // to ensure that rewards and interest are distributed to existing suppliers
                     // before a new supplier is added.
-                    self.update_supplier_kvs(existing_box_nr.clone());
+                    self.update_supplier_kvs(*existing_box_nr);
 
                     break; 
                 }
@@ -410,7 +410,7 @@ mod flashloanpool {
                     // Increase the box's lsu amount by the supplied amount
                     self.supplier_aggregate_im.get_mut(&existing_box_nr).unwrap()[1] += lsu_tokens.amount();
                     // Add new supplier to the box
-                    self.supplier_partitioned_kvs.get_mut(&existing_box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    self.supplier_partitioned_kvs.get_mut(&existing_box_nr).unwrap().insert(nft_id.clone(), nft_data.clone());
                     // Store the existing_box_nr outside of this scope
                     box_nr = existing_box_nr;
                 },
@@ -439,13 +439,13 @@ mod flashloanpool {
 
                     // Create a new IndexMap for the new box
                     let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
-                    indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    indexmap.insert(nft_id.clone(), nft_data.clone());
 
                     // If none of the key-value pairs satisfy the condition, create a new key-value pair
                     self.supplier_partitioned_kvs.insert(box_nr, indexmap);
 
                     // Insert the new supplier data into the new box
-                    self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+                    self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(nft_id.clone(), nft_data);
                 },
             }
 
@@ -455,7 +455,7 @@ mod flashloanpool {
             let pool_nft: Bucket = lsu_nft_resource_manager.mint_non_fungible(
                 &NonFungibleLocalId::Integer(self.pool_nft_nr.into()),
                 LiquiditySupplier {
-                    box_nr: box_nr,
+                    box_nr,
                     lsu_amount: lsu_tokens.amount(),
                 },
             );
@@ -464,18 +464,18 @@ mod flashloanpool {
             self.lsu_vault.put(lsu_tokens);
 
             debug!("{:?}", self.supplier_aggregate_im);
-            debug!("{:?}", self.supplier_partitioned_kvs.get(&box_nr).unwrap().get(&lsu_nft_id));
+            debug!("{:?}", self.supplier_partitioned_kvs.get(&box_nr).unwrap().get(&nft_id));
 
             Runtime::emit_event(
                 LsuDepositEvent {
-                    box_nr: box_nr,
-                    nft_id: lsu_nft_id,
-                    lsu_amount: lsu_amount,
+                    box_nr,
+                    nft_id,
+                    lsu_amount,
                 },
             );
 
             // Return NFT as proof of LSU deposit to the user
-            return pool_nft;
+            pool_nft
         }
 
         pub fn withdraw_lsu(&mut self, pool_nft: Bucket) -> (Bucket, Bucket) {
@@ -565,16 +565,16 @@ mod flashloanpool {
                     box_nr: pool_nft_box_nr,
                     nft_id: pool_nft_nr,
                     lsu_amount: lsu_bucket.amount(),
-                    staking_rewards: staking_rewards,
-                    interest_earnings: interest_earnings
+                    staking_rewards,
+                    interest_earnings
                 }
             );
 
             // Return LSU's and rewards to the user
-            return (lsu_bucket, earnings_bucket);
+            (lsu_bucket, earnings_bucket)
         }
 
-        fn calculate_aggregated_rewards_interest(&self) -> (Decimal, Decimal) {
+        fn calculate_aggregated_rewards_and_interest(&self) -> (Decimal, Decimal) {
             // calculate the total, already aggregated, rewards and interest
             self.supplier_aggregate_im.values().map(|i| {
                 let rewards = i[2] + i[3];
@@ -705,7 +705,7 @@ mod flashloanpool {
             );
 
             let (rewards_aggregated, interest_aggregated): (Decimal, Decimal) = 
-                self.calculate_aggregated_rewards_interest();
+                self.calculate_aggregated_rewards_and_interest();
 
             let interest_new_divided = self.calculate_interest_new_divided(
                 total_pool, 
@@ -857,7 +857,7 @@ mod flashloanpool {
 
             Runtime::emit_event(
                 UpdateIndexmapEvent {
-                    epoch: epoch,
+                    epoch,
                 }
             );
         }
@@ -906,9 +906,7 @@ mod flashloanpool {
 
         pub fn withdraw_validator_owner(&mut self) -> Bucket {
 
-            let validator_owner = self.validator_owner_vault.take_all();
-
-            validator_owner
+            self.validator_owner_vault.take_all()
         }
 
         pub fn start_unlock_owner_stake_units(
@@ -944,9 +942,7 @@ mod flashloanpool {
                 self.validator_owner_vault.as_non_fungible().authorize_with_non_fungibles(
                     &index_set,
                     || {
-                        let bucket = validator.finish_unlock_owner_stake_units();
-
-                        bucket
+                        validator.finish_unlock_owner_stake_units()
                     }
                 );
             
