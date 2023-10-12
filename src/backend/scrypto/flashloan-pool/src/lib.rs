@@ -388,9 +388,13 @@ mod flashloanpool {
                 "Please withdraw an amount larger than 0"
             );
         
+            // Update the suppliers hashmap to ensure that the new interest earnings are distributed
+            // and the owner liquidity is up to date
+            self.update_aggregate_im();
+        
             // Ensure amount is less or equal to liquidity provided by owner
             assert!(
-                amount <= self.liquidity_pool_vault.amount(),
+                amount <= self.owner_liquidity,
                 "Please withdraw an amount smaller than or equal to {}",
                 self.owner_liquidity
             );
@@ -400,10 +404,6 @@ mod flashloanpool {
             info!("Owner liquidity withdrawn: {} XRD", amount);
         
             debug!("{:?}", self.supplier_aggregate_im);
-        
-            // Update the suppliers hashmap before returning earnings
-            self.update_aggregate_im();
-        
             debug!("{:?}", self.supplier_aggregate_im);
         
             // Subtract withdrawn amount from owner liquidity
