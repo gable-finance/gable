@@ -887,10 +887,16 @@ mod flashloanpool {
         }
 
         pub fn update_interest_rate(&mut self, interest_rate: Decimal) {
-            // Ensure interest rate is larger than 0
+            // Ensure interest rate is larger than 0%
             assert!(
                 interest_rate >= Decimal::ZERO,
-                "Please provide an interest rate larger than 0"
+                "Please provide an interest rate larger than 0%"
+            );
+
+            // Ensure interest rate is smaller than 10%
+            assert!(
+                interest_rate < dec!("0.1"),
+                "Please provide an interest rate smaller than 10%"
             );
 
             // Log the interest rate before and after change
