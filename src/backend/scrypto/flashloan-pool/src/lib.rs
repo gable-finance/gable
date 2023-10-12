@@ -984,7 +984,7 @@ mod flashloanpool {
 
         pub fn update_box_size(&mut self, amount: u64) {
             assert!(amount > 0, "Please provide a number larger than 0");
-            assert!(amount < 250, "Please provide a map size smaller than 250");
+            assert!(amount <= 250, "Please provide a map size smaller than or equal to 250");
 
             self.box_size = amount;
         }
