@@ -1,8 +1,7 @@
-
+use radix_engine::transaction::TransactionReceipt;
 use scrypto::prelude::*;
 use scrypto_unit::*;
 use transaction::builder::ManifestBuilder;
-use radix_engine::transaction::TransactionReceipt;
 
 pub fn create_fungible(
     test_runner: &mut DefaultTestRunner,
@@ -68,12 +67,11 @@ pub fn create_validator(
     test_runner: &mut DefaultTestRunner,
     account_component: ComponentAddress,
     public_key: Secp256k1PublicKey,
-) -> ( 
+) -> (
     TransactionReceipt,
     ResourceAddress,
-    BTreeSet<NonFungibleLocalId> 
-){
-
+    BTreeSet<NonFungibleLocalId>,
+) {
     let key = Secp256k1PublicKey([0; 33]);
 
     let fee_factor = dec!("1");
@@ -83,11 +81,7 @@ pub fn create_validator(
         .withdraw_from_account(account_component, XRD, dec!("5000"))
         .take_all_from_worktop(XRD, "xrd_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.create_validator(
-                key,
-                fee_factor,
-                lookup.bucket("xrd_bucket"),
-            )
+            builder.create_validator(key, fee_factor, lookup.bucket("xrd_bucket"))
         })
         .deposit_batch(account_component)
         .build();
@@ -106,11 +100,8 @@ pub fn create_validator(
     // (1) non fungible resource address
     // as the 'resource_address' has to be inititiated
     // but will be overwritten with the validator node owner non fungible address thereafter
-    let mut nft_resource_address: ResourceAddress = create_non_fungible(
-        test_runner, 
-        account_component, 
-        public_key
-    );
+    let mut nft_resource_address: ResourceAddress =
+        create_non_fungible(test_runner, account_component, public_key);
 
     // (2) non fungible local id
     // as the 'local id' has to be inititiated
@@ -123,16 +114,15 @@ pub fn create_validator(
     // retrieve the inner map from the third key-value pair (assuming there is at least one)
     // from format Indexmap<ComponentAddress, Indexmap<ResourceAddress, Balancechange>>
     if let Some((_, (resource_address, balance_change))) = balance_changes.iter().nth(2) {
-            // clone balance change to get remove reference
-            mut_balance_change = balance_change.clone();
-            // get the nft local id
-            nft_local_id = mut_balance_change.added_non_fungibles().clone();
-            // get the nft resource address
-            nft_resource_address = resource_address.clone();
+        // clone balance change to get remove reference
+        mut_balance_change = balance_change.clone();
+        // get the nft local id
+        nft_local_id = mut_balance_change.added_non_fungibles().clone();
+        // get the nft resource address
+        nft_resource_address = resource_address.clone();
     }
 
-    return(receipt, nft_resource_address, nft_local_id)
-
+    return (receipt, nft_resource_address, nft_local_id);
 }
 
 pub fn create_flashloanpool(
@@ -152,16 +142,17 @@ pub fn create_flashloanpool(
     // Create the owner badge
     let owner_badge: ResourceAddress = create_fungible(test_runner, account_component, public_key);
 
-    let (_validator_receipt, validator_owner_address, validator_owner_local_id) = create_validator(
-        test_runner, 
-        account_component, 
-        public_key,
-    );
+    let (_validator_receipt, validator_owner_address, validator_owner_local_id) =
+        create_validator(test_runner, account_component, public_key);
 
     // Create the manifest for flashloan pool instantiation
     let manifest = ManifestBuilder::new()
         .withdraw_from_account(account_component, owner_badge, dec!("1"))
-        .withdraw_non_fungibles_from_account(account_component, validator_owner_address, validator_owner_local_id)
+        .withdraw_non_fungibles_from_account(
+            account_component,
+            validator_owner_address,
+            validator_owner_local_id,
+        )
         .take_all_from_worktop(owner_badge, "owner_bucket")
         .take_all_from_worktop(validator_owner_address, "validator_bucket")
         .with_name_lookup(|builder, lookup| {
@@ -170,8 +161,8 @@ pub fn create_flashloanpool(
                 "Flashloanpool",
                 "instantiate_flashloan_pool",
                 manifest_args!(
-                    lookup.bucket("owner_bucket"), 
-                    lookup.bucket("validator_bucket"), 
+                    lookup.bucket("owner_bucket"),
+                    lookup.bucket("validator_bucket"),
                     // Provide the XRD address instead of LSU & unstake NFT addresss for testing purposes
                     XRD,
                     XRD
@@ -187,7 +178,8 @@ pub fn create_flashloanpool(
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
     );
 
-    let component_address: ComponentAddress = receipt.expect_commit(true).new_component_addresses()[0];
+    let component_address: ComponentAddress =
+        receipt.expect_commit(true).new_component_addresses()[0];
     let admin_badge: ResourceAddress = receipt.expect_commit(true).new_resource_addresses()[0];
     let transient: ResourceAddress = receipt.expect_commit(true).new_resource_addresses()[1];
     let nft: ResourceAddress = receipt.expect_commit(true).new_resource_addresses()[2];
@@ -261,7 +253,11 @@ pub fn owner_withdraw_xrd(
     let manifest = ManifestBuilder::new()
         .create_proof_from_account_of_amount(account_component, owner_badge, dec!("1"))
         .call_method(component, "owner_withdraw_xrd", manifest_args!(amount))
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
 
     // Execute the manifest for owner withdrawing liquidity
@@ -281,10 +277,14 @@ pub fn get_flashloan(
     amount: Decimal,
 ) -> TransactionReceipt {
     let manifest = ManifestBuilder::new()
-    // Create the manifest for calling the flash loan
-    .call_method(component, "get_flashloan", manifest_args![amount])
-    .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-    .build();
+        // Create the manifest for calling the flash loan
+        .call_method(component, "get_flashloan", manifest_args![amount])
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
+        .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
         manifest,
@@ -300,9 +300,8 @@ pub fn repay_flashloan(
     account_component: ComponentAddress,
     component: ComponentAddress,
     transient: ResourceAddress,
-    amount: Decimal
+    amount: Decimal,
 ) -> TransactionReceipt {
-    
     // Create the manifest for calling the flash loan
     let manifest = ManifestBuilder::new()
         .withdraw_from_account(account_component, XRD, amount)
@@ -310,11 +309,22 @@ pub fn repay_flashloan(
         .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
+            builder.call_method(
+                component,
+                "repay_flashloan",
+                manifest_args!(
+                    lookup.bucket("xrd_bucket"),
+                    lookup.bucket("transient_bucket")
+                ),
+            )
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
-    
+
     let receipt = test_runner.execute_manifest_ignoring_fee(
         manifest,
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
@@ -329,18 +339,25 @@ pub fn deposit_lsu(
     account_component: ComponentAddress,
     component: ComponentAddress,
     lsu_address: ResourceAddress,
-    amount: Decimal
+    amount: Decimal,
 ) -> TransactionReceipt {
-
     let manifest = ManifestBuilder::new()
         .withdraw_from_account(account_component, lsu_address, amount)
         .take_all_from_worktop(lsu_address, "lsu_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "deposit_lsu", manifest_args!(lookup.bucket("lsu_bucket")))
+            builder.call_method(
+                component,
+                "deposit_lsu",
+                manifest_args!(lookup.bucket("lsu_bucket")),
+            )
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
-    
+
     let receipt = test_runner.execute_manifest_ignoring_fee(
         manifest,
         vec![NonFungibleGlobalId::from_public_key(&public_key)],
@@ -357,16 +374,22 @@ pub fn withdraw_lsu(
     pool_nft: ResourceAddress,
     pool_nft_non_fungible_id: BTreeSet<NonFungibleLocalId>,
 ) -> TransactionReceipt {
-
     let manifest = ManifestBuilder::new()
         // Test the `withdraw_lsu` method (succes)
-
         .withdraw_non_fungibles_from_account(account_component, pool_nft, pool_nft_non_fungible_id)
         .take_all_from_worktop(pool_nft, "nft_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component, "withdraw_lsu", manifest_args!(lookup.bucket("nft_bucket")))
+            builder.call_method(
+                component,
+                "withdraw_lsu",
+                manifest_args!(lookup.bucket("nft_bucket")),
+            )
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -375,7 +398,6 @@ pub fn withdraw_lsu(
     );
 
     receipt
-
 }
 
 pub fn update_supplier_kvs(
@@ -385,7 +407,6 @@ pub fn update_supplier_kvs(
     component: ComponentAddress,
     admin_badge: ResourceAddress,
 ) -> TransactionReceipt {
-
     let box_nr: u64 = 1;
 
     let manifest = ManifestBuilder::new()
@@ -399,7 +420,6 @@ pub fn update_supplier_kvs(
     );
 
     receipt
-    
 }
 
 pub fn get_and_repay_flashloan(
@@ -409,9 +429,14 @@ pub fn get_and_repay_flashloan(
     component: ComponentAddress,
     transient: ResourceAddress,
     amount: Decimal,
+<<<<<<< HEAD
     interest_rate: Decimal
 ) -> TransactionReceipt {
 
+=======
+    interest_rate: Decimal,
+) -> TransactionReceipt {
+>>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
     let interest_amount: Decimal = amount * interest_rate;
 
     let manifest = ManifestBuilder::new()
@@ -420,9 +445,26 @@ pub fn get_and_repay_flashloan(
         .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
+<<<<<<< HEAD
             builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
         })
         .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+=======
+            builder.call_method(
+                component,
+                "repay_flashloan",
+                manifest_args!(
+                    lookup.bucket("xrd_bucket"),
+                    lookup.bucket("transient_bucket")
+                ),
+            )
+        })
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
+>>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -432,4 +474,7 @@ pub fn get_and_repay_flashloan(
 
     receipt
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32

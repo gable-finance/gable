@@ -1,5 +1,5 @@
-use scrypto::prelude::*;
 use radix_engine_common::{ScryptoEvent, ScryptoSbor};
+use scrypto::prelude::*;
 
 #[derive(ScryptoSbor, ScryptoEvent)]
 pub struct LsuDepositEvent {

@@ -1,8 +1,8 @@
+use gable::test_bindings::*;
 use manifests::*;
+use scrypto_test::prelude::*;
 use scrypto_unit::*;
 use transaction::builder::ManifestBuilder;
-use gable::test_bindings::*;
-use scrypto_test::prelude::*;
 // use scrypto::prelude::KeyValueStore;
 use scrypto::*;
 
@@ -51,25 +51,22 @@ fn creation_of_pool_component() -> Result<(), RuntimeError> {
     Ok(())
 }
 
-// Test the 'owner_deposit_xrd' method 
+// Test the 'owner_deposit_xrd' method
 //  by depositing a single XRD.
-// 
+//
 // This test ensures that the component state is updated accordingly.
 #[test]
 fn unit_test_owner_deposit_xrd() -> Result<(), RuntimeError> {
-
     let (mut env, mut flashloanpool) = setup_flashloan_pool()?;
 
     // Act
     env.with_auth_module_disabled(|env| {
-
         let rtn = ResourceManager(XRD).mint_fungible(1.into(), env);
 
         let _ = flashloanpool.owner_deposit_xrd(rtn.unwrap(), env);
-
     });
 
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
 
     let xrd_amount = flashloanpool_state.liquidity_pool_vault.amount(&mut env)?;
     let owner_amount = flashloanpool_state.owner_liquidity;
@@ -81,9 +78,9 @@ fn unit_test_owner_deposit_xrd() -> Result<(), RuntimeError> {
     Ok(())
 }
 
-// Test the 'owner_withdraw_xrd' method 
+// Test the 'owner_withdraw_xrd' method
 //  by depositing a 100 XRD and withdrawing 50 XRD.
-// 
+//
 // This test ensures that the component state is updated accordingly,
 //  e.g. the method returns a bucket with 50 XRD
 //  and 50 XRD remains entitled to the owner in the component state.
@@ -101,11 +98,10 @@ fn unit_test_owner_withdraw_xrd() -> Result<(), RuntimeError> {
         let bucket = flashloanpool.owner_withdraw_xrd(dec!("50"), env);
 
         bucket
-
     })?;
 
     // Act
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
 
     let xrd_amount = flashloanpool_state.liquidity_pool_vault.amount(&mut env)?;
     let owner_amount = flashloanpool_state.owner_liquidity;
@@ -118,9 +114,9 @@ fn unit_test_owner_withdraw_xrd() -> Result<(), RuntimeError> {
     Ok(())
 }
 
-// Test the 'deposit_lsu' method 
+// Test the 'deposit_lsu' method
 //  by depositing a 100 LSU (XRD) as supplier.
-// 
+//
 // This test ensures that:
 //  1. a single pool NFT is returned to the supplier
 //  2. the component state is updated accordingly:
@@ -133,11 +129,9 @@ fn unit_test_deposit_lsu() -> Result<(), RuntimeError> {
 
     // Act: mint XRD
     let lsu_bucket: Bucket = env.with_auth_module_disabled(|env| {
-
         let rtn = ResourceManager(XRD).mint_fungible(1000.into(), env);
 
         rtn
-
     })?;
 
     let lsu_bucket_amount = lsu_bucket.amount(&mut env)?;
@@ -146,7 +140,7 @@ fn unit_test_deposit_lsu() -> Result<(), RuntimeError> {
     let nft_bucket = flashloanpool.deposit_lsu(lsu_bucket, &mut env)?;
 
     // Act: set state and save state variables
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
 
     let nft_address: ResourceAddress = flashloanpool_state.pool_nft.address();
     // let nft_local_id: NonFungibleLocalId = NonFungibleLocalId::Integer(1.into());
@@ -154,7 +148,7 @@ fn unit_test_deposit_lsu() -> Result<(), RuntimeError> {
     let index_map: IndexMap<u64, Vec<Decimal>> = flashloanpool_state.supplier_aggregate_im;
     let index_map_box_1: &Vec<Decimal> = index_map.get(&1).unwrap();
 
-    // let key_value_store: KeyValueStore<u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>> = 
+    // let key_value_store: KeyValueStore<u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>> =
     //     flashloanpool_state.supplier_partitioned_kvs;
     // let key_value_store_box_1_im_1 = key_value_store.get(&1).get(&nft_local_id).unwrap();
 
@@ -174,9 +168,9 @@ fn unit_test_deposit_lsu() -> Result<(), RuntimeError> {
     Ok(())
 }
 
-// Test the 'withdraw_lsu' method 
-//  by first depositing and then a 100 LSU (XRD) as supplier. 
-// 
+// Test the 'withdraw_lsu' method
+//  by first depositing and then a 100 LSU (XRD) as supplier.
+//
 // This test ensures that:
 //  1. the pool NFT returns the exact amount the supplier is entitled to,
 //      e.g. a bucket with 100 LSU (XRD) and 0 rewards/interest XRD
@@ -190,11 +184,9 @@ fn unit_test_withdraw_lsu() -> Result<(), RuntimeError> {
 
     // Act: mint XRD
     let lsu_bucket: Bucket = env.with_auth_module_disabled(|env| {
-
         let bucket = ResourceManager(XRD).mint_fungible(1000.into(), env);
 
         bucket
-
     })?;
 
     // Act: deposit lsu as supplier
@@ -204,7 +196,7 @@ fn unit_test_withdraw_lsu() -> Result<(), RuntimeError> {
     let (lsu_bucket, xrd_bucket) = flashloanpool.withdraw_lsu(nft_bucket, &mut env)?;
 
     // Act: set component state
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
     let index_map: IndexMap<u64, Vec<Decimal>> = flashloanpool_state.supplier_aggregate_im;
 
     let lsu_address = flashloanpool_state.lsu_vault.resource_address(&mut env)?;
@@ -224,12 +216,12 @@ fn unit_test_withdraw_lsu() -> Result<(), RuntimeError> {
     Ok(())
 }
 
-// Test the 'get_flashloan' method 
-//  by requesting a loan of 50 XRD. 
-// 
+// Test the 'get_flashloan' method
+//  by requesting a loan of 50 XRD.
+//
 // This test ensures that:
 //  1. the correct amount of XRD is provided as requested.
-//  2. the correct resources (transient token, and XRD) are provided in return 
+//  2. the correct resources (transient token, and XRD) are provided in return
 #[test]
 fn unit_test_get_flashloan() -> Result<(), RuntimeError> {
     // Arrange
@@ -241,20 +233,22 @@ fn unit_test_get_flashloan() -> Result<(), RuntimeError> {
         let rtn = ResourceManager(XRD).mint_fungible(100.into(), env);
 
         let _ = flashloanpool.owner_deposit_xrd(rtn.unwrap(), env);
-
     });
 
     // execute 'get_flashloan' method
     let (transient_bucket, xrd_bucket) = flashloanpool.get_flashloan(dec!("50"), &mut env)?;
 
     // set component state
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
 
     // save state variables
     let transient_address = flashloanpool_state.transient_token.address();
 
     // Assert: ensure the transient token and XRD returned are of the correct address
-    assert_eq!(transient_bucket.resource_address(&mut env)?, transient_address);
+    assert_eq!(
+        transient_bucket.resource_address(&mut env)?,
+        transient_address
+    );
     assert_eq!(xrd_bucket.resource_address(&mut env)?, XRD);
 
     assert_eq!(transient_bucket.amount(&mut env)?, Decimal::ONE);
@@ -269,7 +263,7 @@ fn unit_test_repay_flashloan() -> Result<(), RuntimeError> {
     let (mut env, mut flashloanpool) = setup_flashloan_pool()?;
 
     // Act
-    
+
     // Mint XRD and deposit XRD as owner
     env.with_auth_module_disabled(|env| {
         // Act
@@ -282,7 +276,8 @@ fn unit_test_repay_flashloan() -> Result<(), RuntimeError> {
     let (transient_bucket, xrd_bucket) = flashloanpool.get_flashloan(dec!("50"), &mut env)?;
 
     // Execute 'repay_flashloan' method
-    let residual_xrd_bucket = flashloanpool.repay_flashloan(xrd_bucket, transient_bucket, &mut env)?;
+    let residual_xrd_bucket =
+        flashloanpool.repay_flashloan(xrd_bucket, transient_bucket, &mut env)?;
 
     // Assert: ensure that the returned bucket is of the correct XRD address and amount
     // As the interest rate is 0% by default, the repayment amount equals the loan amount,
@@ -291,16 +286,14 @@ fn unit_test_repay_flashloan() -> Result<(), RuntimeError> {
     assert_eq!(residual_xrd_bucket.amount(&mut env)?, Decimal::ZERO);
 
     // Act
-    
+
     // Update interest rate
     let interest_bucket = env.with_auth_module_disabled(|env| {
-
         let _ = flashloanpool.update_interest_rate(dec!("0.1"), env);
 
         let bucket = ResourceManager(XRD).mint_fungible(100.into(), env);
 
         bucket
-
     })?;
 
     // Execute 'get_flashloan' method
@@ -310,16 +303,17 @@ fn unit_test_repay_flashloan() -> Result<(), RuntimeError> {
     xrd_bucket.put(interest_bucket, &mut env)?;
 
     // Execute 'repay_flashloan' method
-    let residual_xrd_bucket = flashloanpool.repay_flashloan(xrd_bucket, transient_bucket, &mut env)?;
+    let residual_xrd_bucket =
+        flashloanpool.repay_flashloan(xrd_bucket, transient_bucket, &mut env)?;
 
     // Calculate residual repayment amount
     //
-    // residual amount = repayment - loan * (1 + interest rate) = 
+    // residual amount = repayment - loan * (1 + interest rate) =
     // residual amount = 150       - 50   * (1 + 0.1)           = 95
     let residual_amount = dec!("95");
 
     // Assert
-    
+
     // Ensure that returned bucket is of correct XRD address and amount
     assert_eq!(residual_xrd_bucket.resource_address(&mut env)?, XRD);
     assert_eq!(residual_xrd_bucket.amount(&mut env)?, residual_amount);
@@ -362,7 +356,8 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     // Iterate through the specified bucket values
     for value in bucket_values.iter() {
         // Mint an LSU (XRD) bucket with the given value
-        let minted_bucket = env.with_auth_module_disabled(|env| ResourceManager(XRD).mint_fungible(*value, env))?;
+        let minted_bucket =
+            env.with_auth_module_disabled(|env| ResourceManager(XRD).mint_fungible(*value, env))?;
 
         // Deposit the minted LSU (XRD) bucket into the flashloanpool
         let deposited_bucket = flashloanpool.deposit_lsu(minted_bucket, &mut env)?;
@@ -372,21 +367,23 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     }
 
     // Mint XRD and deposit it into the pool
-    let xrd_bucket = env.with_auth_module_disabled(|env| ResourceManager(XRD).mint_fungible(50.into(), env))?;
+    let xrd_bucket =
+        env.with_auth_module_disabled(|env| ResourceManager(XRD).mint_fungible(50.into(), env))?;
 
     // The 'deposit_batch' method mimics the deposit of XRD staking rewards coming from the validator node
     let _ = flashloanpool.deposit_batch(xrd_bucket, &mut env)?;
 
-    let (_lsu_bucket, _xrd_bucket) = flashloanpool.withdraw_lsu(bucket_results.remove(0), &mut env)?;
+    let (_lsu_bucket, _xrd_bucket) =
+        flashloanpool.withdraw_lsu(bucket_results.remove(0), &mut env)?;
 
     // Save component state
-    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?; 
+    let flashloanpool_state = env.read_component_state::<FlashloanpoolState, _>(flashloanpool)?;
 
     let index_map: IndexMap<u64, Vec<Decimal>> = flashloanpool_state.supplier_aggregate_im;
 
     let index_map_box_1: &Vec<Decimal> = index_map.get(&1).unwrap();
 
-    // let key_value_store: KeyValueStore<u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>> = 
+    // let key_value_store: KeyValueStore<u64, IndexMap<NonFungibleLocalId, Vec<Decimal>>> =
     //     flashloanpool_state.supplier_partitioned_kvs;
     // let key_value_store_box_1_im_1 = key_value_store.get(&1).get(&nft_local_id).unwrap();
 
@@ -470,11 +467,8 @@ fn integration_test_create_validator() {
     // Create an account
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-    let (receipt, _nft_address, _nft_id) = create_validator(
-        &mut test_runner, 
-        account_component, 
-        public_key,
-    );
+    let (receipt, _nft_address, _nft_id) =
+        create_validator(&mut test_runner, account_component, public_key);
 
     println!("{:?}\n", receipt);
 
@@ -508,12 +502,12 @@ fn integration_test_update_interest_rate() {
 
     // Execute update_interest_rate method test (success)
     let receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        admin_badge, 
-        ir
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        admin_badge,
+        ir,
     );
 
     println!("{:?}\n", receipt);
@@ -522,12 +516,12 @@ fn integration_test_update_interest_rate() {
 
     // Execute update_interest_rate method test (success)
     let receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        ir
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        ir,
     );
 
     println!("{:?}\n", receipt);
@@ -535,19 +529,15 @@ fn integration_test_update_interest_rate() {
     receipt.expect_commit(true);
 
     // Execute update_interest_rate method test (fail - wrong badge)
-    let badge = create_fungible(
-        &mut test_runner, 
-        account_component, 
-        public_key
-    );
+    let badge = create_fungible(&mut test_runner, account_component, public_key);
 
     let receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        badge, 
-        ir
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        badge,
+        ir,
     );
 
     println!("{:?}\n", receipt);
@@ -558,12 +548,12 @@ fn integration_test_update_interest_rate() {
     ir = dec!("-0.05");
 
     let receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        ir
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        ir,
     );
 
     println!("{:?}\n", receipt);
@@ -585,19 +575,16 @@ fn integration_test_owner_deposit_liquidity() {
     let mut amount: Decimal = dec!("100");
 
     // Test the `admin_deposit_liquidity` method (fail - wrong proof)
-    let badge = create_fungible(
-        &mut test_runner, 
-        account_component,
-        public_key
-    );
+    let badge = create_fungible(&mut test_runner, account_component, public_key);
 
     let receipt = owner_deposit_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        badge, 
-        amount);
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        badge,
+        amount,
+    );
 
     println!("{:?}\n", receipt);
 
@@ -606,12 +593,12 @@ fn integration_test_owner_deposit_liquidity() {
     // Test the `admin_deposit_liquidity` method (fail - negative amount)
     amount = dec!("-100");
     let receipt = owner_deposit_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -622,12 +609,12 @@ fn integration_test_owner_deposit_liquidity() {
     amount = dec!("100");
 
     let receipt = owner_deposit_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -650,12 +637,12 @@ fn integration_test_owner_withdraw_liquidity() {
     let mut amount: Decimal = dec!("100");
 
     let receipt = owner_deposit_xrd(
-        &mut test_runner, 
+        &mut test_runner,
         public_key,
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -666,12 +653,12 @@ fn integration_test_owner_withdraw_liquidity() {
     amount = dec!("-100");
 
     let receipt = owner_withdraw_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -681,25 +668,70 @@ fn integration_test_owner_withdraw_liquidity() {
     // Test the `owner_withdraw_xrd` method (fail - wrong badge)
     amount = dec!("100");
 
-    let badge = create_fungible(
-        &mut test_runner, 
-        account_component, 
-        public_key
-    );
+    let badge = create_fungible(&mut test_runner, account_component, public_key);
 
     let receipt = owner_withdraw_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        badge, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(false);
 
+    // Test the `owner_withdraw_xrd` method
+    //  (fail - withdraw more than entitled, but less than total liquity)
+
+    // set interest rate at 10% for testing purposes
+    let ir = dec!("0.1");
+
+    let _receipt = update_interest_rate(
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        ir,
+    );
+
+    // get flashloan and repay interest - thereby increasing the available liquidity
+    amount = dec!("100");
+
+    let _receipt = get_and_repay_flashloan(
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        transient,
+        amount,
+        ir,
+    );
+
+    // owner entitled XRD:
+    //  100 xrd is deposited by the owner
+    //  5 xrd is added as 50% of interest earnings is for owner
+    //      = 105 XRD
+    //  withdrawing more than 105 should fail
+    amount = dec!("105.1");
+
+    let receipt = owner_withdraw_xrd(
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+<<<<<<< HEAD
     // Test the `owner_withdraw_xrd` method
     //  (fail - withdraw more than entitled, but less than total liquity)
 
@@ -717,6 +749,10 @@ fn integration_test_owner_withdraw_liquidity() {
 
     // get flashloan and repay interest - thereby increasing the available liquidity
     amount = dec!("100");
+=======
+    // Test the `owner_withdraw_xrd` method (success)
+    amount = dec!("105");
+>>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
 
     let _receipt = get_and_repay_flashloan(
         &mut test_runner, 
@@ -752,12 +788,12 @@ fn integration_test_owner_withdraw_liquidity() {
     amount = dec!("105");
 
     let receipt = owner_withdraw_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -777,12 +813,12 @@ fn integration_test_get_flashloan() {
     let amount: Decimal = dec!("100");
 
     let _receipt = owner_deposit_xrd(
-        &mut test_runner, 
+        &mut test_runner,
         public_key,
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     // Test the `owner_withdraw_xrd` method (fail - transient token)
@@ -791,18 +827,60 @@ fn integration_test_get_flashloan() {
     //  this function should always be used in conjuntion with the repay_flashloan function
     //  that will burn the transient token - enabling the transaction to complete.
     let receipt = get_flashloan(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        amount
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        amount,
     );
-    
+
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(false);
-}
+<<<<<<< HEAD
+=======
 
+    // The following transaction uses the get_flashloan function in conjunction with other methods
+    let manifest = ManifestBuilder::new()
+        // Test the `get_flashloan` method (success)
+        //  Call the get_loan function
+        //  Call the repay_loan to burn transient token
+        //  Thereafter deposit batch
+        .call_method(
+            component_address,
+            "get_flashloan",
+            manifest_args![dec!("100")],
+        )
+        .withdraw_from_account(account_component, XRD, dec!("110"))
+        .take_all_from_worktop(XRD, "xrd_bucket")
+        .take_all_from_worktop(transient, "transient_bucket")
+        .with_name_lookup(|builder, lookup| {
+            builder.call_method(
+                component_address,
+                "repay_flashloan",
+                manifest_args!(
+                    lookup.bucket("xrd_bucket"),
+                    lookup.bucket("transient_bucket")
+                ),
+            )
+        })
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
+        .build();
+
+    let receipt = test_runner.execute_manifest_ignoring_fee(
+        manifest,
+        vec![NonFungibleGlobalId::from_public_key(&public_key)],
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(true);
+>>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
+}
 
 #[test]
 fn integration_test_repay_flashloan() {
@@ -812,11 +890,8 @@ fn integration_test_repay_flashloan() {
     let (owner_badge, component_address, _admin_badge, transient, _nft) =
         create_flashloanpool(&mut test_runner, account_component, public_key);
 
-    let transient_replica: ResourceAddress = create_non_fungible(
-        &mut test_runner, 
-        account_component, 
-        public_key
-    );
+    let transient_replica: ResourceAddress =
+        create_non_fungible(&mut test_runner, account_component, public_key);
 
     // Set up dependencies
 
@@ -824,57 +899,67 @@ fn integration_test_repay_flashloan() {
     let ir = dec!("0.05");
 
     let _receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        ir
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
+        ir,
     );
 
     // (2) put 100 XRD in the vault for testing
     let amount: Decimal = dec!("100");
 
     let _receipt = owner_deposit_xrd(
-        &mut test_runner, 
+        &mut test_runner,
         public_key,
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
+        account_component,
+        component_address,
+        owner_badge,
+        amount,
     );
 
     // test repay flash loan method
     // this method is bound to fail as long as it is not used in conjunction with the 'get_flashloan' method
     let receipt = repay_flashloan(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         transient_replica,
-        amount
+        amount,
     );
 
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(false);
 
-    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan' 
+    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan'
     let manifest = ManifestBuilder::new()
         // Test the `repay_flashloan` method (fail)
         //  Repayed amount is 0.000000001 smaller than loan amount - should therefore fail
         //  Call the get_loan function
         //  Call the repay_loan to burn transient token
         //  Thereafter deposit batch
-
         .call_method(component_address, "get_flashloan", manifest_args![amount])
-        .withdraw_from_account(account_component, XRD, amount*ir-dec!("0.00000001"))
+        .withdraw_from_account(account_component, XRD, amount * ir - dec!("0.00000001"))
         .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
+            builder.call_method(
+                component_address,
+                "repay_flashloan",
+                manifest_args!(
+                    lookup.bucket("xrd_bucket"),
+                    lookup.bucket("transient_bucket")
+                ),
+            )
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -885,22 +970,32 @@ fn integration_test_repay_flashloan() {
     println!("{:?}\n", receipt);
     receipt.expect_commit(false);
 
-    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan' 
+    // test the 'repay_flashloan' method in conjunction with the 'get_flashloan'
     let manifest = ManifestBuilder::new()
         // Test the `repay_flashloan` method (succes)
         //  Repayed loan plus interest amount
         //  Call the get_loan function
         //  Call the repay_loan to burn transient token
         //  Thereafter deposit batch
-
         .call_method(component_address, "get_flashloan", manifest_args![amount])
-        .withdraw_from_account(account_component, XRD, amount*ir)
+        .withdraw_from_account(account_component, XRD, amount * ir)
         .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-            builder.call_method(component_address, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
+            builder.call_method(
+                component_address,
+                "repay_flashloan",
+                manifest_args!(
+                    lookup.bucket("xrd_bucket"),
+                    lookup.bucket("transient_bucket")
+                ),
+            )
         })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
+        .call_method(
+            account_component,
+            "deposit_batch",
+            manifest_args!(ManifestExpression::EntireWorktop),
+        )
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -914,7 +1009,6 @@ fn integration_test_repay_flashloan() {
 
 #[test]
 fn integration_test_staker_deposit_lsu() {
-
     let mut test_runner = TestRunnerBuilder::new().build();
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
@@ -926,12 +1020,12 @@ fn integration_test_staker_deposit_lsu() {
     // Test the `deposit_lsu` method (succes)
     // provide valid lsu amount, and address.
     let receipt = deposit_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         XRD,
-        amount
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -942,29 +1036,28 @@ fn integration_test_staker_deposit_lsu() {
     amount = dec!("-100");
 
     let receipt = deposit_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         XRD,
-        amount
+        amount,
     );
 
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(false);
 
-
     // Test the `deposit_lsu` method (fail - wrong lsu_address)
     amount = dec!("501");
 
     let receipt = deposit_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         admin_badge,
-        amount
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -974,7 +1067,6 @@ fn integration_test_staker_deposit_lsu() {
 
 #[test]
 fn integration_test_staker_withdraw_lsu() {
-
     let mut test_runner = TestRunnerBuilder::new().build();
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
@@ -987,12 +1079,12 @@ fn integration_test_staker_withdraw_lsu() {
 
     // (1) deposit lsu
     let receipt = deposit_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         XRD,
-        amount
+        amount,
     );
 
     println!("{:?}\n", receipt);
@@ -1027,38 +1119,36 @@ fn integration_test_staker_withdraw_lsu() {
     let non_fungible_id_replica = BTreeSet::from([NonFungibleLocalId::integer(2)]);
 
     let receipt = withdraw_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         nft,
-        non_fungible_id_replica
+        non_fungible_id_replica,
     );
 
     println!("{:?}\n", receipt);
-    
+
     receipt.expect_commit(false);
 
     // Test the `withdraw_lsu` method (succes)
     // provide valid lsu amount, and address.
     let receipt = withdraw_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         nft,
-        non_fungible_id.clone()
+        non_fungible_id.clone(),
     );
 
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(true);
-    
 }
 
 #[test]
 fn integration_test_update_supplier_kvs() {
-
     let mut test_runner = TestRunnerBuilder::new().build();
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
@@ -1068,21 +1158,21 @@ fn integration_test_update_supplier_kvs() {
     // deposit lsu to create the supplier indexmap and keyvaluestore
     // without there is nothing to update, and the 'update_supplier_kvs' will fail
     let _ = deposit_lsu(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
         XRD,
-        dec!("1000")
+        dec!("1000"),
     );
 
     // Test the `update_supplier_kvs` method (succes - admin badge)
     let receipt = update_supplier_kvs(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        admin_badge
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        admin_badge,
     );
 
     println!("{:?}\n", receipt);
@@ -1091,11 +1181,11 @@ fn integration_test_update_supplier_kvs() {
 
     // Test the `update_supplier_hashmap` method (succes - owner badge)
     let receipt = update_supplier_kvs(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        owner_badge,
     );
 
     println!("{:?}\n", receipt);
@@ -1104,18 +1194,14 @@ fn integration_test_update_supplier_kvs() {
 
     // Test the `update_supplier_hashmap` method (fail - wrong badge)
 
-    let badge = create_fungible(
-        &mut test_runner, 
-        account_component, 
-        public_key
-    );
+    let badge = create_fungible(&mut test_runner, account_component, public_key);
 
     let receipt = update_supplier_kvs(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        badge
+        &mut test_runner,
+        public_key,
+        account_component,
+        component_address,
+        badge,
     );
 
     println!("{:?}\n", receipt);
