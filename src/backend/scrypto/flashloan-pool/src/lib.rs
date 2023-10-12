@@ -226,23 +226,22 @@ mod flashloanpool {
             })
             .enable_component_royalties(component_royalties! {
                 roles { 
-                    royalty_setter => OWNER; 
-                    royalty_setter_updater => OWNER; 
-                    royalty_locker => OWNER;
-                    royalty_locker_updater => OWNER; 
-                    royalty_claimer => OWNER;
-                    royalty_claimer_updater => OWNER; 
+                    royalty_setter => rule!(deny_all); 
+                    royalty_setter_updater => rule!(deny_all); 
+                    royalty_locker => rule!(deny_all);
+                    royalty_locker_updater => rule!(deny_all); 
+                    royalty_claimer => rule!(deny_all);
+                    royalty_claimer_updater => rule!(deny_all); 
                 },
                 init {
-                    get_flashloan => Xrd(1.into()), locked;
-                    repay_flashloan => Xrd(1.into()), locked;
-                    owner_deposit_xrd => Xrd(1.into()), locked; 
-                    owner_withdraw_xrd => Xrd(1.into()), locked;
-                    deposit_lsu => Xrd(1.into()), locked;
-                    withdraw_lsu => Xrd(1.into()), locked; 
-                    update_supplier_kvs => Xrd(1.into()), locked;
-                    update_interest_rate => Xrd(1.into()), locked;
-                    // validator_component => Free, locked;
+                    get_flashloan => Free, locked;
+                    repay_flashloan => Free, locked;
+                    owner_deposit_xrd => Free, locked; 
+                    owner_withdraw_xrd => Free, locked;
+                    deposit_lsu => Free, locked;
+                    withdraw_lsu => Free, locked; 
+                    update_supplier_kvs => Free, locked;
+                    update_interest_rate => Free, locked;
                     deposit_validator_owner => Free, locked;
                     withdraw_validator_owner => Free, locked;
                     start_unlock_owner_stake_units => Free, locked;
