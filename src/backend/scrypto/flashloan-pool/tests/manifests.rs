@@ -429,14 +429,8 @@ pub fn get_and_repay_flashloan(
     component: ComponentAddress,
     transient: ResourceAddress,
     amount: Decimal,
-<<<<<<< HEAD
-    interest_rate: Decimal
-) -> TransactionReceipt {
-
-=======
     interest_rate: Decimal,
 ) -> TransactionReceipt {
->>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
     let interest_amount: Decimal = amount * interest_rate;
 
     let manifest = ManifestBuilder::new()
@@ -445,11 +439,6 @@ pub fn get_and_repay_flashloan(
         .take_all_from_worktop(XRD, "xrd_bucket")
         .take_all_from_worktop(transient, "transient_bucket")
         .with_name_lookup(|builder, lookup| {
-<<<<<<< HEAD
-            builder.call_method(component, "repay_flashloan", manifest_args!(lookup.bucket("xrd_bucket"), lookup.bucket("transient_bucket")))
-        })
-        .call_method(account_component, "deposit_batch", manifest_args!(ManifestExpression::EntireWorktop))
-=======
             builder.call_method(
                 component,
                 "repay_flashloan",
@@ -464,7 +453,6 @@ pub fn get_and_repay_flashloan(
             "deposit_batch",
             manifest_args!(ManifestExpression::EntireWorktop),
         )
->>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
         .build();
 
     let receipt = test_runner.execute_manifest_ignoring_fee(
@@ -474,7 +462,3 @@ pub fn get_and_repay_flashloan(
 
     receipt
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
