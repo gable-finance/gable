@@ -1,0 +1,222 @@
+/* TITLE */
+
+section.borrow-intro {
+  margin: 0;
+  background-color: var(--boxcolor);
+  padding: 30px 100px 50px;
+  border-radius: 5px;
+}
+
+section.borrow-intro h1.borrow-title-h1 {
+  font-size: 200%;
+  font-weight: 500;
+}
+
+  /* FLASHLOANS */
+  
+  section.flashloan div.flashloan-intro {
+    margin: 0 40px;
+    background-color: var(--body1);
+    padding: 20px 50px;
+    border-radius: 5px;
+  }
+  
+  section.flashloan div.flashloan-background {
+    margin: 40px 0;
+    background-color: #e5e0d9;
+    padding: 20px 50px;
+  }
+  
+  #borrow-title-h2 {
+    text-align: center;
+  }
+  
+  section.flashloan div.flashloan-steps {
+    margin: 40px;
+    /* background-color: var(--boxcolor); */
+    padding: 20px 50px;
+    border-radius: 5px;
+  }
+
+  section.flashloan h1.flashloan-h1 {
+    font-size: 200%;
+    font-weight: 600;
+  }
+
+  section.flashloan ul.flasloan-ul {
+    padding-left: 20px;
+  }
+  
+  section.flashloan div.flashloan-interest-rates {
+    margin: 40px 0;
+    background-color: #e5e0d9;
+    padding: 20px 50px;
+  }
+  
+  section.flashloan div.flashloan-tip {
+    margin: 40px 0;
+    background-color: #e5e0d9;
+    padding: 20px 50px;
+  }
+  
+  section.flashloan div.flashloan-disclaimer {
+    margin-top: 40px;
+    padding: 20px 50px;
+  }
+
+  /* DOUBLE TAB */
+
+  .tab-container {
+    margin: 50px 0;
+    /* padding: 0; */
+    max-width: 600px;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    background-color: rgb(233, 232, 232);
+    border-radius: 5px;
+    border: 1px solid transparent;
+  }
+  
+  .tab-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* margin-bottom: 20px; */
+  }
+  
+  .tab-button {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  /* .tab-button:hover {
+    background-color: #e0e0e0;
+  } */
+
+  .tab-button.active {
+    background-color: rgb(233, 232, 232);
+  }
+  
+  .tab-content {
+    display: none;
+    padding: 10px;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }  
+  
+
+    /* API */
+
+  p.flashloan-disclaimer {
+    margin: 20px 10px;
+    padding: 0;
+  }
+  
+  div.callflashloan-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .callflashloan-icon {
+    height: 10px;
+    width: 10px;
+  }
+  
+  .callflashloan-h2 {
+    color: var(--firsttheme);
+    padding: 0;
+    margin: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 26px;
+  }
+  
+  .callflashloan-text {
+    box-sizing: border-box;
+    display: block;
+    max-width: 100%;
+    border: none;
+    border-radius: 3px;
+    margin: 10px;
+    padding-left: 10px;
+    background-color: var(--boxcolor);
+    font-size: 18px;
+    height: 40px;
+  }
+  
+  .callflashloan-text:focus {
+    outline: none;
+  }
+  
+  .callflashloan-button {
+    background-color: var(--boxcolor) !important;
+    margin: 10px !important;
+    width: 100px !important;
+    font-size: 18px !important;
+    border-radius: 3px !important;
+    color: black !important;
+  }
+  
+  .callflashloan-button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  }
+
+  #receipt-container {
+    margin: 10px;
+  }
+
+  #receipt {
+    overflow:scroll;
+    font-size: 16px;
+  }
+ 
+  @media only screen and (max-width: 768px) {
+    /* TITLE */
+
+    section.borrow-intro {
+      margin: 0;
+      padding: 30px;
+    }
+
+    section.borrow-intro h1.borrow-title-h1 {
+      font-size: 150%;
+      margin: 0;
+    }
+  
+    /* FLASHLOANS */
+
+    section.flashloan div.flashloan-intro {
+      margin: 0;
+    }
+  
+    section.flashloan div.flashloan-steps {
+      margin: 40px 0;
+    }
+  
+    section.flashloan div.flashloan-disclaimer {
+      margin-top: 0;
+    }
+
+    section.flashloan h1.flashloan-h1 {
+      font-size: 150%;
+      font-weight: 500;
+    }
+
+    #receipt {
+      overflow:scroll;
+      font-size: 14px;
+    }
+
+    .tab-button {
+      font-size: 14px;
+      color: black;
+    }
+  }
+  
