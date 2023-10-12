@@ -643,7 +643,7 @@ fn integration_test_owner_withdraw_liquidity() {
     // Create an account
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-    let (owner_badge, component_address, _admin_badge, _transient, _nft) =
+    let (owner_badge, component_address, _admin_badge, transient, _nft) =
         create_flashloanpool(&mut test_runner, account_component, public_key);
 
     // put 100 XRD in the pool
@@ -700,8 +700,56 @@ fn integration_test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-    // Test the `owner_withdraw_xrd` method (success)
+    // Test the `owner_withdraw_xrd` method
+    //  (fail - withdraw more than entitled, but less than total liquity)
+
+    // set interest rate at 10% for testing purposes
+    let ir = dec!("0.1");
+
+    let _receipt = update_interest_rate(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        ir
+    );
+
+    // get flashloan and repay interest - thereby increasing the available liquidity
     amount = dec!("100");
+
+    let _receipt = get_and_repay_flashloan(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        transient,
+        amount,
+        ir,
+    );
+
+    // owner entitled XRD:
+    //  100 xrd is deposited by the owner
+    //  5 xrd is added as 50% of interest earnings is for owner
+    //      = 105 XRD
+    //  withdrawing more than 105 should fail
+    amount = dec!("105.1");
+
+    let receipt = owner_withdraw_xrd(
+        &mut test_runner, 
+        public_key, 
+        account_component, 
+        component_address, 
+        owner_badge, 
+        amount
+    );
+
+    println!("{:?}\n", receipt);
+
+    receipt.expect_commit(false);
+
+    // Test the `owner_withdraw_xrd` method (success)
+    amount = dec!("105");
 
     let receipt = owner_withdraw_xrd(
         &mut test_runner, 
