@@ -454,78 +454,73 @@ mod flashloanpool {
             // Initiate box number as 1
             let mut box_nr: u64 = 1;
 
-            // Initialize a boolean flag to track whether the condition has been satisfied
-            let mut condition_satisfied = false;
-
             // Updating the aggregate index map for two possible scenarios:
             //  1. There is space available in one or more of the box's for an additional entry
             //  2. The boxes that contain the individual suppliers information are all full, 
-            //      e.g. the number of entries in all boxes are equal to the map's limit.
+            //     e.g. the number of entries in all boxes are equal to the map's limit.
             //     Or no box exists yet, e.g. no suppliers are present at all
-            
+
+            let mut vacant_box = None;
+
             // Iterate through the index map's key-value pairs to determine the applicable scenario
-            for (key, values) in &self.supplier_aggregate_im {
-                // Check if the Vec is not empty and satisfies your condition
-                if let Some(first_value) = values.first() {
-                    if *first_value < self.box_size.into() {
+            for (existing_box_nr, values) in &self.supplier_aggregate_im {
+                // Check if any Vec is not empty and satisfies your condition
+                if values.first().is_some_and(|suppliers_in_box| *suppliers_in_box < self.box_size.into()) {
+                    vacant_box = Some(*existing_box_nr);
 
-                        // update box number
-                        box_nr = *key;
+                    // Update existing supplier's info before adding a new supplier
+                    // to ensure that rewards and interest are distributed to existing suppliers
+                    // before a new supplier is added.
+                    self.update_supplier_kvs(existing_box_nr.clone());
 
-                        // update existing supplier's info before adding a new supplier
-                        self.update_supplier_kvs(box_nr);
-
-                        // Set the flag to true to indicate that the condition has been satisfied
-                        condition_satisfied = true;
-
-                        break;
-                    }
+                    break; 
                 }
             }
 
-            // Check if the condition was satisfied for any iteration.
-            // TRUE => scenario 1
-            // FALSE => scenario 2
-            if condition_satisfied {
-                // Scenario 1: Add new supplier to the existing key value store and index map
+            match vacant_box {
+                Some(existing_box_nr) => {
+                    // Increase the box's number of suppliers by 1 new supplier
+                    self.supplier_aggregate_im.get_mut(&existing_box_nr).unwrap()[0] += 1;
+                    // Increase the box's lsu amount by the supplied amount
+                    self.supplier_aggregate_im.get_mut(&existing_box_nr).unwrap()[1] += lsu_tokens.amount();
+                    // Add new supplier to the box
+                    self.supplier_partitioned_kvs.get_mut(&existing_box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    // Store the existing_box_nr outside of this scope
+                    box_nr = existing_box_nr;
+                },
+                None => {
+                    // Scenario 2: In case that all boxes are full or no box exists, a new box has to be inserted
 
-                // Increase the box's number of suppliers by 1 new supplier
-                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[0] += 1;
-                // Increase the box's lsu amount by the supplied amount
-                self.supplier_aggregate_im.get_mut(&box_nr).unwrap()[1] += lsu_tokens.amount();
-                // Add new supplier to the box
-                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data.clone());
-            } else {
-                // Scenario 2: In case that all boxes are full or no box exists, a new box has to be inserted
+                    // Increment the new_key by one for the new key-value pair
+                    box_nr = self.supplier_aggregate_im.keys().max().unwrap_or(&0) + 1;
 
-                // Increment the new_key by one for the new key-value pair
-                box_nr = self.supplier_aggregate_im.keys().max().unwrap_or(&0) + 1;
+                    // Update the aggregate IndexMap to ensure that rewards and interest is distributed
+                    // to existing boxes before a new box is created
+                    self.update_aggregate_im();
 
-                // Update the aggregate IndexMap
-                self.update_aggregate_im();
+                    // Create a new vector for the new box
+                    let new_vec: Vec<Decimal> = vec![
+                        dec!("1"), 
+                        lsu_tokens.amount(), 
+                        Decimal::ZERO, 
+                        Decimal::ZERO,
+                        Decimal::ZERO,
+                        Decimal::ZERO
+                    ];
 
-                // Create a new vector for the new box
-                let new_vec: Vec<Decimal> = vec![
-                    dec!("1"), 
-                    lsu_tokens.amount(), 
-                    Decimal::ZERO, 
-                    Decimal::ZERO,
-                    Decimal::ZERO,
-                    Decimal::ZERO
-                ];
+                    // Insert the new box into the aggregate IndexMap
+                    self.supplier_aggregate_im.insert(box_nr, new_vec);
 
-                // Insert the new box into the aggregate IndexMap
-                self.supplier_aggregate_im.insert(box_nr, new_vec);
+                    // Create a new IndexMap for the new box
+                    let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
+                    indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
 
-                // Create a new IndexMap for the new box
-                let mut indexmap: IndexMap<NonFungibleLocalId, Vec<Decimal>> = IndexMap::new();
-                indexmap.insert(lsu_nft_id.clone(), lsu_nft_data.clone());
+                    // If none of the key-value pairs satisfy the condition, create a new key-value pair
+                    self.supplier_partitioned_kvs.insert(box_nr, indexmap);
 
-                // If none of the key-value pairs satisfy the condition, create a new key-value pair
-                self.supplier_partitioned_kvs.insert(box_nr, indexmap);
-
-                // Insert the new supplier data into the new box
-                self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+                    // Insert the new supplier data into the new box
+                    self.supplier_partitioned_kvs.get_mut(&box_nr).unwrap().insert(lsu_nft_id.clone(), lsu_nft_data);
+                },
             }
 
             // Mint an NFT containing the deposited vector <box number, lsu amount>
