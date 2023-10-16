@@ -128,7 +128,7 @@ section.about div {
 /* CONTACT */
 
 section.contact {
-    background-color: rgb(246, 246, 246);
+    background-color: var(--boxcolor);
     margin: 100px;
     height: auto;
     border-radius: 5px;
@@ -256,8 +256,8 @@ section.contact {
     margin-bottom: 50px;
 }
 
-#mail {
+/* #mail {
     font-size: 13px;
-}
+} */
 
 }

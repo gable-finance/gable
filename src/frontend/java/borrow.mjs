@@ -6,60 +6,108 @@ import {
   transientAddress
 } from './global-states.mjs';
 import { rdt } from './radixToolkit.mjs'
+import { getInterestRate, getPoolAmount } from './dashboardGeneric.mjs'
 
 // Instantiate Gateway SDK
 const transactionApi = new TransactionApi()
-// const stateApi = new StateApi();
-// const statusApi = new StatusApi();
-// const streamApi = new StreamApi();
+
+let interest;
+let liquidity;
+
+// call functions
+document.addEventListener('DOMContentLoaded', async () => {
+  interest = parseFloat(await getInterestRate());
+  liquidity = parseFloat(await getPoolAmount());
+
+  const liquidityH1 = document.getElementById("liquidity");
+  const interestH1 = document.getElementById("interest-rate");
+
+  liquidityH1.textContent = liquidity + ' XRD';
+  interestH1.textContent = interest + '%';
+});
+
+const copyButton = document.getElementById("copy");
+const copyText = document.getElementById("copy-text");
+const copyImg = document.getElementById("copy-img");
+const textToCopy = document.getElementById("borrow-receipt");
+
+copyButton.addEventListener("click", function() {
+
+  navigator.clipboard.writeText(textToCopy.innerText)
+
+  // Provide feedback to the user (optional)
+  copyText.innerText = "Text Copied!";
+  copyImg.style.display = "none"
+});
+
 
 // *********** Build Flash Loan ***********
+
+const errorContainer1 = document.getElementById("error-d-1");
+const closeBtn1 = document.getElementById("error-b-1");
+
+closeBtn1.addEventListener("click", function () {
+  errorContainer1.style.display = "none";
+});
+
 document.getElementById('buildflashloan').onclick = async function () {
 
-  let xrd_amount = document.getElementById("buildamount").value;
-  let interest = 0.05;
+  let xrd_amount = parseFloat(document.getElementById("buildamount").value);
   let repayment = xrd_amount * (1 + interest);
+  console.log("INTEREST RATE: ", interest);
+  console.log("liquidity: ", typeof liquidity);
+  console.log("xrd_amount: ", typeof xrd_amount);
 
-  // let manifest = new ManifestBuilder()
-  //   .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
-  //   .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
-  //   .takeFromWorktop(xrdAddress, "xrd_bucket")
-  //   .callMethod(yourComponentAddress, "your_bucket", ["xrd_bucket", "your_arguments"])
-  //   .takeFromWorktop(xrdAddress, "xrd_bucket2")
-  //   .takeFromWorktop(transient_address, "transient_bucket")
-  //   .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket2"), Bucket("transient_bucket")])
-  //   .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-  //   .build()
-  //   .toString();
-  // console.log('Build flashloan manifest: ', manifest)
+  let accountAddress;
+  const errorContainer = document.getElementById("error-d-1");
+  const errorDiv = document.getElementById("error-p-1");
 
-  let accountAddress = rdt.walletApi.getWalletData().accounts[0].address;
+  if (xrd_amount < liquidity) {
+    try {
+      accountAddress = rdt.walletApi.getWalletData().accounts[0].address;
+    } catch(error) {
+      const errorMessage = "Please connect your wallet, or refresh the page."; // Customize your error message here
+      errorDiv.textContent = errorMessage;
+    
+      errorContainer.style.backgroundColor = "#FFEBB4";
+      errorContainer.style.display = "flex";
+      document.getElementById("borrow-receipt-container").style.display = "none";
+      return;
+    }
+  }  else {
+      const errorMessage = 
+        `Please provide an amount smaller than the total available liquidity: ${liquidity}`; // Customize your error message here
+      errorDiv.textContent = errorMessage;
+    
+      errorContainer.style.backgroundColor = "#FFEBB4";
+      errorContainer.style.display = "flex";
+      document.getElementById("borrow-receipt-container").style.display = "none";
+      return;
+  }
 
   console.log('account address 3: ', accountAddress);
 
   const manifest = 
-  `
-  # 1. GET FLASH LOAN
-  #   Which returns:
-  #     - ${xrd_amount} XRD
-  #     - transient token
+  `  # 1. GET FLASH LOAN
+  #   Which returns: ${xrd_amount} XRD, 1 Transient Token
+
   CALL_METHOD
     Address("${componentAddress}")
     "get_flashloan"
     Decimal("${xrd_amount}");
 
   # 2. USE FLASH LOAN
-  #   Take the XRD from worktop and execute personal strategy with it
+  #   Take the XRD from worktop 
+
   TAKE_ALL_FROM_WORKTOP
     Address("${xrdAddress}")
     Bucket("xrd_bucket");
   
-  # ...
+  # *Execute Personal Strategy*
   
   # 3. REPAY FLASHLOAN
-  #   By taking:
-  #     1. ${xrd_amount} * ${1 + interest} = ${repayment} XRD
-  #     2. transient token
+  #   By taking: ${xrd_amount} * ${1 + interest} = ${repayment} XRD, and 1 transient token
+
   TAKE_ALL_FROM_WORKTOP
     Address("${xrdAddress}")
     Bucket("xrd_bucket");
@@ -73,37 +121,65 @@ document.getElementById('buildflashloan').onclick = async function () {
     Bucket("transient_bucket");
 
   # 4. RETURN PROFIT
-  #   Returns residual XRD to your wallet, a.k.a. your profit
+  #   Return residual XRD to your wallet, a.k.a. your profit
+
   CALL_METHOD
     Address("${accountAddress}")
     "deposit_batch"
     Expression("ENTIRE_WORKTOP");`;
 
   // Show the receipt on the DOM
-  document.getElementById("receipt-container").style.display = "block";
-  document.getElementById('receipt').innerText = manifest;
+  const errorMessage = "See transaction recipe below 👇"; // Customize your error message here
+  errorDiv.textContent = errorMessage;
+
+  errorContainer.style.backgroundColor = "#E1ECC8";
+  errorContainer.style.display = "flex";
+
+  document.getElementById("borrow-receipt-container").style.display = "flex";
+  document.getElementById('borrow-receipt').innerText = manifest;
 };
 
 //--------------------------------------------------------------------------------------------------------//
   
-  // *********** Execute Flash Loan ***********
-document.getElementById('callflashloan').onclick = async function () {
+const errorContainer2 = document.getElementById("error-d-2");
+const closeBtn2 = document.getElementById("error-b-2");
 
-  let xrd_amount = document.getElementById("xrdamount").value;
-  let interest = xrd_amount * 0.1; // temp
+closeBtn2.addEventListener("click", function () {
+  errorContainer2.style.display = "none";
+});
 
-  // let manifest = new ManifestBuilder()
-  //   .callMethod(componentAddress, "get_flashloan", [Decimal(xrd_amount)])
-  //   .callMethod(accountAddress, "withdraw", [Address(xrdAddress), Decimal(interest)])
-  //   .takeFromWorktop(xrdAddress, "xrd_bucket")
-  //   .takeFromWorktop(transient_address, "transient_bucket")
-  //   .callMethod(componentAddress, "repay_flashloan", [Bucket("xrd_bucket"), Bucket("transient_bucket")])
-  //   .callMethod(accountAddress, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-  //   .build()
-  //   .toString();
-  // console.log('call flashloan manifest: ', manifest)
+// *********** Execute Flash Loan ***********
+document.getElementById('callFlashloan').onclick = async function () {
 
-  let accountAddress = rdt.walletApi.getWalletData().accounts[0].address
+  let xrd_amount = parseFloat(document.getElementById("xrdamount").value);
+  interest = xrd_amount * interest; // temp
+
+  let accountAddress;
+  const errorContainer = document.getElementById("error-d-2");
+  const errorDiv = document.getElementById("error-p-2");
+
+  if (parseFloat(xrd_amount) < parseFloat(liquidity)) {
+    try {
+      accountAddress = rdt.walletApi.getWalletData().accounts[0].address;
+    } catch(error) {
+      const errorMessage = "Please connect your wallet, or refresh the page."; // Customize your error message here
+      errorDiv.textContent = errorMessage;
+    
+      errorContainer.style.backgroundColor = "#FFEBB4";
+      errorContainer.style.display = "flex";
+      document.getElementById("borrow-receipt-container").style.display = "none";
+      return;
+    }
+  }  else {
+      const errorMessage = 
+        `Please provide an amount smaller than the total available liquidity: ${liquidity}`; // Customize your error message here
+      errorDiv.textContent = errorMessage;
+    
+      errorContainer.style.backgroundColor = "#FFEBB4";
+      errorContainer.style.display = "flex";
+      document.getElementById("borrow-receipt-container").style.display = "none";
+      return;
+  }
 
   console.log('account address 3: ', accountAddress)
 
@@ -137,9 +213,20 @@ document.getElementById('callflashloan').onclick = async function () {
   const result = await rdt.walletApi.sendTransaction({
       transactionManifest: manifest,
       version: 1,
-    })
+  })
 
-  if (result.isErr()) throw result.error
+  if (result.isErr()) {
+    const errorMessage = "Your transaction failed. Please try again."; // Customize your error message here
+    errorDiv.textContent = errorMessage;
+
+    errorContainer.style.backgroundColor = "#FFBFA9";
+    errorContainer.style.display = "flex"; 
+  } else {
+    const errorMessage = "Your flash loan transaction was successful! Thank you for borrowing at Gable 🤝"; // Customize your success message here
+    errorDiv.textContent = errorMessage;
+    errorContainer.style.backgroundColor = "#E1ECC8";
+    errorContainer.style.display = "flex";
+  }   
 
   console.log("Deposit Lpu send Transaction Result: ", result)
 

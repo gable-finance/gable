@@ -9,16 +9,16 @@ CALL_METHOD
     "create_proof_of_non_fungibles"
     Address("resource_sim1nfxxxxxxxxxxvdrwnrxxxxxxxxx004365253834xxxxxxxxxjxu0rl")
     Array<NonFungibleLocalId>(
-        NonFungibleLocalId("[835fb10aa446a754652205179429105c35176f227bcead04fba661f19f55]"),
+        NonFungibleLocalId("[83f03912114f7258c2d9889abaa035a28e0317c4ae8a16cc4d014e30bc85]"),
     );
 
 # Register your validator, so that it can be part of the validator set
 CALL_METHOD
-    Address("validator_sim1sd0mzz4yg6n4gefzq5teg2gsts63wmez00826p8m5eslr864hf7c8s")
+    Address("validator_sim1s0crjys3fae93ske3zdt4gp4528qx97y469pdnzdq98rp0y9umgskr")
     "register";
     
 # Set your validator to accept stake from non-owners
 CALL_METHOD
-    Address("validator_sim1sd0mzz4yg6n4gefzq5teg2gsts63wmez00826p8m5eslr864hf7c8s")
+    Address("validator_sim1s0crjys3fae93ske3zdt4gp4528qx97y469pdnzdq98rp0y9umgskr")
     "update_accept_delegated_stake"
     true;

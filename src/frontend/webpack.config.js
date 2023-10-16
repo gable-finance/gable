@@ -2,10 +2,17 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    index: './java/index.mjs'
+    index: './java/index.mjs',
+    supply: './java/supply.mjs',
+    dashboard: './java/dashboard.mjs',
+    counting: './java/counting.mjs',
+    dashboardGeneric: './java/dashboardGeneric.mjs',
+    dashboardDashboard: './java/dashboardDashboard.mjs',
+    radixToolkit: './java/radixToolkit.mjs',
+    borrow: './java/borrow.mjs'
   },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'), // Replace 'dist' with your desired output directory
   },
   resolve: {
@@ -19,6 +26,12 @@ module.exports = {
     },
     fullySpecified: false,
   },
+  performance: {
+    maxAssetSize: 1000000,
+    hints: false,
+    maxEntrypointSize: 512000,
+  },
+  mode: 'production'
   // experiments: {
   //   topLevelAwait: true,
   // },

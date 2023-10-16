@@ -731,28 +731,8 @@ fn integration_test_owner_withdraw_liquidity() {
 
     receipt.expect_commit(false);
 
-<<<<<<< HEAD
-    // Test the `owner_withdraw_xrd` method
-    //  (fail - withdraw more than entitled, but less than total liquity)
-
-    // set interest rate at 10% for testing purposes
-    let ir = dec!("0.1");
-
-    let _receipt = update_interest_rate(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        ir
-    );
-
-    // get flashloan and repay interest - thereby increasing the available liquidity
-    amount = dec!("100");
-=======
     // Test the `owner_withdraw_xrd` method (success)
     amount = dec!("105");
->>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
 
     let _receipt = get_and_repay_flashloan(
         &mut test_runner, 
@@ -837,8 +817,6 @@ fn integration_test_get_flashloan() {
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(false);
-<<<<<<< HEAD
-=======
 
     // The following transaction uses the get_flashloan function in conjunction with other methods
     let manifest = ManifestBuilder::new()
@@ -879,7 +857,6 @@ fn integration_test_get_flashloan() {
     println!("{:?}\n", receipt);
 
     receipt.expect_commit(true);
->>>>>>> 24ee59e0233044a320e318a4fe7ab46e2fc08e32
 }
 
 #[test]

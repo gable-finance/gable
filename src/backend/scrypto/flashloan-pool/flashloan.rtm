@@ -31,7 +31,7 @@ TAKE_FROM_WORKTOP
 
 # take transient token from worktop
 TAKE_ALL_FROM_WORKTOP 
-  Address("resource_sim1nf976zrag5az472z44h65zv9ajlnc8yrajjn2w50ylqh8lc38na29f") 
+  Address("resource_sim1n2xuvjrpl7p7ju4k8d3pcvhcc24kcrla2sphpxe236w0m8x005j92r") 
   Bucket("transient_bucket");
 
 # call repay flashloan method

@@ -1,29 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" 
-            content=
-            "Decentralized liquidity market protocol built on Radix DLT, where users can participate as borrowers or suppliers.
-            The protocol offers lending products for borrowers, and liquidity solutions for suppliers. 
-            Built on Radix DLT, the protocol offers transparency, security, and innovative solutions for traders and investors.
-            This allows users to enjoy fast and efficient transaction processing, low fees, and transparent terms.">
-        <meta name="keywords" content="DeFi, Radix, Lending, Liquidity, Flashloan, Staking, Loan, Pool">
-        <title>Gable Liquidity Protocol</title>
-        <link rel="icon" href="pictures/Gable_Logo_Favicon.ico">
-        <link rel="stylesheet" href="css/generics.css">
-        <link rel="stylesheet" href="css/styles_dashboard.css">
-        <link rel="stylesheet" href="css/header.css">
-        <link rel="stylesheet" href="css/footer.css">
-        <link rel="stylesheet" href="css/button.css">
-        <link rel="stylesheet" href="css/hamburger.css">
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-R83ZKJQFP5"></script>
-        <script src="java/gtag.js"></script>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page Title and Description -->
+    <title>Gable - Liquidity Protocol on Radix DLT</title>
+    <meta name="description" content="Gable Liquidity Protocol is a decentralized liquidity market protocol built on Radix DLT.">
+
+    <!-- Open Graph Tags for Social Sharing -->
+    <meta property="og:title" content="Gable Liquidity Protocol">
+    <meta property="og:description" content="Gable is a decentralized liquidity market protocol built on Radix DLT.">
+    <meta property="og:image" content="https://drive.google.com/uc?id=10Sho_117oIHN_pSXnn3xRTYGMUj1mzP6">
+    <meta property="og:url" content="https://gable.finance">
+    <meta property="og:type" content="website">
+
+    <!-- Keywords for SEO -->
+    <meta name="keywords" content="Gable, Radix, DeFi, Lending, Liquidity, Flashloan, Staking, Loan, Pool">
+
+    <!-- Favicon -->
+    <link rel="icon" href="pictures/Gable_Logo_Favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/generics.css">
+    <link rel="stylesheet" href="css/styles_dashboard.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/button.css">
+    <link rel="stylesheet" href="css/hamburger.css">
+    
+    <!-- Google Tag Manager for Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R83ZKJQFP5"></script>
+    <script src="java/gtag.js"></script>
+
+    <!-- Preconnect for Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" media="all">
+</head>
 
     <body>        
         <header id="non-index">
@@ -130,7 +147,7 @@
 
         <section class="chart-section">
             <h1 id="h1">
-                Liquidity Supplier APY
+                Protocol Dashboard
             </h1>
             <p id="p">
                 The charts below display the annual percentage yield (APY) that is earned by supplying liquidity on Gable.
@@ -280,7 +297,14 @@
 
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-        <script src="dist/bundle.js"></script>
+        <!-- <script src="dist/bundle.js"></script> -->
+
+        <script src="dist/radixToolkit.bundle.js"></script>
+        <script src="dist/dashboardGeneric.bundle.js"></script>
+        <script src="dist/dashboard.bundle.js"></script>
+        <script src="dist/dashboardDashboard.bundle.js"></script>
+        <!-- <script src="dist/.js"></script> -->
+        <!-- <script src="dist/bundle.js"></script> -->
 
         <script src="java/scroll.js"></script>
         <script src="java/scroll_phone.js"></script>
