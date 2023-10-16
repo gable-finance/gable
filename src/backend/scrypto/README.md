@@ -144,11 +144,11 @@ Gable's 'flashloan pool' smart contract is compiled, deployed and tested locally
 
    Run `resim call-method $c claim_xrd $v -p $o`
 
-*NOTE*: The Radic local simulator (resim) can simulate a validator component. However, it can't simulate the distribution of staking rewards. Therefore, we need to mimick this functionality using a custom method:
+<!-- *NOTE*: The Radic local simulator (resim) can simulate a validator component. However, it can't simulate the distribution of staking rewards. Therefore, we need to mimick this functionality using a custom method:
 
 6. Mimich staking rewards
 
-   Run `resim call-method $c deposit_batch resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3:[amount] -p $o`
+   Run `resim call-method $c deposit_batch resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3:[amount] -p $o` -->
 
 *Request and return flash loan*
 

@@ -37,7 +37,6 @@ mod flashloanpool {
             finish_unlock_owner_stake_units => restrict_to: [admin, OWNER];
             unstake => restrict_to: [admin, OWNER];
             claim_xrd => restrict_to: [admin, OWNER];
-            deposit_batch => PUBLIC;
         }
     }
 
@@ -179,7 +178,6 @@ mod flashloanpool {
                     unstake => Free, locked;
                     claim_xrd => Free, locked;
                     update_box_size => Free, locked;
-                    deposit_batch => Free, locked;
                 }
             })
             .with_address(address_reservation)
@@ -906,14 +904,6 @@ mod flashloanpool {
             self.rewards_liquidity += xrd_bucket.amount();
 
             self.liquidity_pool_vault.put(xrd_bucket);
-        }
-
-        // Temporary: Replicating validator node's staking rewards collection
-        pub fn deposit_batch(&mut self, bucket: Bucket) {
-            // Add bucket amount to rewards liquidity counter
-            self.rewards_liquidity += bucket.amount();
-            // Deposit batch into the liquidity pool vault
-            self.liquidity_pool_vault.put(bucket);
         }
     }
 }
