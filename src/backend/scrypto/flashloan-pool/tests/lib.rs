@@ -366,12 +366,31 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
         bucket_results.push(deposited_bucket);
     }
 
-    // Mint XRD and deposit it into the pool
-    let xrd_bucket =
-        env.with_auth_module_disabled(|env| ResourceManager(XRD).mint_fungible(50.into(), env))?;
+    // Deposit XRD as owner, update interest rate, and mint XRD used to pay interest
+    let interest_bucket = env.with_auth_module_disabled(|env| {
 
-    // The 'deposit_batch' method mimics the deposit of XRD staking rewards coming from the validator node
-    let _ = flashloanpool.deposit_batch(xrd_bucket, &mut env)?;
+        // Update interest rate
+        let _ = flashloanpool.update_interest_rate(dec!("0.1"), env);
+
+        // Deposit 1000 XRD as owner
+        let bucket = ResourceManager(XRD).mint_fungible(1000.into(), env);
+        let _ = flashloanpool.owner_deposit_xrd(bucket.unwrap(), env);
+
+        // Mint 100 XRD to cover interest fees later on
+        let bucket2 = ResourceManager(XRD).mint_fungible(100.into(), env);
+
+        bucket2
+    })?;
+
+    // Execute 'get_flashloan' method
+    let (transient_bucket, xrd_bucket) = flashloanpool.get_flashloan(dec!("1000"), &mut env)?;
+
+    // Merge the interest bucket into the loan bucket
+    xrd_bucket.put(interest_bucket, &mut env)?;
+
+    // Execute 'repay_flashloan' method
+    let _residual_xrd_bucket =
+        flashloanpool.repay_flashloan(xrd_bucket, transient_bucket, &mut env)?;
 
     let (_lsu_bucket, _xrd_bucket) =
         flashloanpool.withdraw_lsu(bucket_results.remove(0), &mut env)?;
@@ -391,27 +410,29 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
 
     // Ensure that the aggregate index map contains the correct information:
     //  - 5 suppliers deposited 1000 LSU (XRD)
-    //  - A batch of 50 XRD is deposited as rewards
+    //  - A batch of 100 XRD is deposited as interest fee
+    //      - Of which 50% goes to the owner, and 50% to suppliers: 50 XRD
     //  - 1 supplier has withdrawn (NFT #1#)
 
     // Therefore box 1 in the index map contains:
     //
     //  - 1 supplier
     //  - 1000 LSU
-    //  - (50/5=) 10 XRD distributed rewards
-    //
-    // Rewards are first assigned as undistributed to the aggregate index map.
-    // The undistributed rewards are only distributed to the individual key value store prior to a supplier entering or leaving the corresponding 'box'.
-    // As NFT #1# has withdrawn from the box, the rewards have been distributed.
-    //
-    //  - 0 XRD undistributed rewards
     //  - 0 XRD distributed interest
+    //  - 0 XRD undistributed rewards
+    //  - (50/5=) 10 XRD distributed interest
     //  - 0 XRD undistributed interest
+    //
+    // Interest fees are first assigned as undistributed to the aggregate index map.
+    // The undistributed interest fees are only distributed to the individual key value store 
+    // prior to a supplier entering or leaving the corresponding 'box'. As NFT #1# has withdrawn 
+    // from the box, the interest fees have been distributed.
+
     assert_eq!(index_map_box_1[0], dec!("1"));
     assert_eq!(index_map_box_1[1], dec!("1000"));
-    assert_eq!(index_map_box_1[2], dec!("10"));
+    assert_eq!(index_map_box_1[2], Decimal::ZERO);
     assert_eq!(index_map_box_1[3], Decimal::ZERO);
-    assert_eq!(index_map_box_1[4], Decimal::ZERO);
+    assert_eq!(index_map_box_1[4], dec!("10"));
     assert_eq!(index_map_box_1[5], Decimal::ZERO);
 
     let index_map_box_2: &Vec<Decimal> = index_map.get(&2).unwrap();
@@ -421,19 +442,19 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     //  - 2 supplier
     //  - 2000 LSU
     //  - 0 XRD distributed rewards
-    //
-    // As mentioned in previous assertions, no supplier has entered or left box 2 after the rewards were deposited.
-    // Therefore, the rewards on aggregate level have not yet been distributed to individual level.
-    //
-    //  - (50/5*2=) 20 XRD undistributed rewards
+    //  - 0 XRD undistributed rewards
     //  - 0 XRD distributed interest
-    //  - 0 XRD undistributed interest
+    //  - (50/5*2=) 20 XRD undistributed interest
+    //
+    // As mentioned in previous assertions, no supplier has entered or left box 2 after the interest fees
+    // were deposited. Therefore, the rewards on aggregate level have not yet been distributed to individual level.
+
     assert_eq!(index_map_box_2[0], dec!("2"));
     assert_eq!(index_map_box_2[1], dec!("2000"));
     assert_eq!(index_map_box_2[2], Decimal::ZERO);
-    assert_eq!(index_map_box_2[3], dec!("20"));
+    assert_eq!(index_map_box_2[3], Decimal::ZERO);
     assert_eq!(index_map_box_2[4], Decimal::ZERO);
-    assert_eq!(index_map_box_2[5], Decimal::ZERO);
+    assert_eq!(index_map_box_2[5], dec!("20"));
 
     let index_map_box_3: &Vec<Decimal> = index_map.get(&3).unwrap();
 
@@ -442,15 +463,15 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     //  - 1 supplier
     //  - 1000 LSU
     //  - 0 XRD distributed rewards
-    //  - (50/5=) 10 XRD undistributed rewards
+    //  - 0 XRD undistributed rewards
     //  - 0 XRD distributed interest
-    //  - 0 XRD undistributed interest
+    //  - (50/5=) 10 XRD undistributed interest
     assert_eq!(index_map_box_3[0], dec!("1"));
     assert_eq!(index_map_box_3[1], dec!("1000"));
     assert_eq!(index_map_box_3[2], Decimal::ZERO);
-    assert_eq!(index_map_box_3[3], dec!("10"));
+    assert_eq!(index_map_box_3[3], Decimal::ZERO);
     assert_eq!(index_map_box_3[4], Decimal::ZERO);
-    assert_eq!(index_map_box_3[5], Decimal::ZERO);
+    assert_eq!(index_map_box_3[5], dec!("10"));
 
     Ok(())
 }
@@ -734,39 +755,6 @@ fn integration_test_owner_withdraw_liquidity() {
     // Test the `owner_withdraw_xrd` method (success)
     amount = dec!("105");
 
-    let _receipt = get_and_repay_flashloan(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        transient,
-        amount,
-        ir,
-    );
-
-    // owner entitled XRD:
-    //  100 xrd is deposited by the owner
-    //  5 xrd is added as 50% of interest earnings is for owner
-    //      = 105 XRD
-    //  withdrawing more than 105 should fail
-    amount = dec!("105.1");
-
-    let receipt = owner_withdraw_xrd(
-        &mut test_runner, 
-        public_key, 
-        account_component, 
-        component_address, 
-        owner_badge, 
-        amount
-    );
-
-    println!("{:?}\n", receipt);
-
-    receipt.expect_commit(false);
-
-    // Test the `owner_withdraw_xrd` method (success)
-    amount = dec!("105");
-
     let receipt = owner_withdraw_xrd(
         &mut test_runner,
         public_key,
@@ -786,7 +774,7 @@ fn integration_test_get_flashloan() {
     let mut test_runner = TestRunnerBuilder::new().build();
     let (public_key, _private_key, account_component) = test_runner.new_allocated_account();
 
-    let (owner_badge, component_address, _admin_badge, _transient, _nft) =
+    let (owner_badge, component_address, _admin_badge, transient, _nft) =
         create_flashloanpool(&mut test_runner, account_component, public_key);
 
     // Put 100 XRD in the vault for testing
