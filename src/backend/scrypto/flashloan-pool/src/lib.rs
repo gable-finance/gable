@@ -73,6 +73,8 @@ mod flashloanpool {
         interest_rate: Decimal,
         // map dize
         box_size: u64,
+        // ordered nft local id vec
+        nft_vec: Vec<NonFungibleLocalId>,
     }
 
     impl Flashloanpool {
@@ -116,6 +118,7 @@ mod flashloanpool {
                 interest_rate: Decimal::ZERO,
                 transient_token,
                 box_size: 250,
+                nft_vec: Vec::new(),
             }
             .instantiate()
             .prepare_to_globalize(OwnerRole::Fixed(rule!(require(
@@ -890,14 +893,19 @@ mod flashloanpool {
 
             let nft_bucket: Bucket = validator.unstake(stake_unit_bucket);
 
+            let nft_id = nft_bucket.as_non_fungible().non_fungible_local_id();
+
+            self.nft_vec.push(nft_id);
+            
             self.unstaking_nft_vault.put(nft_bucket);
         }
 
         pub fn claim_xrd(&mut self, mut validator: Global<Validator>) {
-            // NFT vaults work on a 'first in first out' basis
-            // which entails that the unstake activity that is most likely to being finished
-            // can be extracted by simply taking the first nft out of the vault
-            let unstake_nft_bucket: Bucket = self.unstaking_nft_vault.take(dec!("1"));
+
+            // Remove the first entry (pop from the front)
+            let nft_id: NonFungibleLocalId = self.nft_vec.remove(0);
+
+            let unstake_nft_bucket: Bucket = self.unstaking_nft_vault.as_non_fungible().take_non_fungible(&nft_id).into();
 
             let xrd_bucket: Bucket = validator.claim_xrd(unstake_nft_bucket);
 
