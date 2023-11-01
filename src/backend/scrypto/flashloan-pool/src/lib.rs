@@ -344,7 +344,7 @@ mod flashloanpool {
             let nft_id: NonFungibleLocalId = NonFungibleLocalId::Integer(self.pool_nft_nr.into());
 
             // Initiate box number as 1
-            let mut box_nr: u64 = 1;
+            let box_nr: u64;
 
             // Updating the aggregate index map for two possible scenarios:
             //  1. There is space available in one or more of the box's for an additional entry
