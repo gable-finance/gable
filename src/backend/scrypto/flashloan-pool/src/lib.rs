@@ -764,7 +764,6 @@ mod flashloanpool {
         // The lazy look up function of the key value store is utilized to ensure that only the information corresponding to that box is loaded.
         // This ensures scalability and cost efficiency of the component.
         pub fn update_supplier_kvs(&mut self, box_nr: u64) {
-
             // Update the suppliers indexmap before allocating earnings to the individual/partitioned key value store
             self.update_aggregate_im();
 
@@ -896,16 +895,19 @@ mod flashloanpool {
             let nft_id = nft_bucket.as_non_fungible().non_fungible_local_id();
 
             self.nft_vec.push(nft_id);
-            
+
             self.unstaking_nft_vault.put(nft_bucket);
         }
 
         pub fn claim_xrd(&mut self, mut validator: Global<Validator>) {
-
             // Remove the first entry (pop from the front)
             let nft_id: NonFungibleLocalId = self.nft_vec.remove(0);
 
-            let unstake_nft_bucket: Bucket = self.unstaking_nft_vault.as_non_fungible().take_non_fungible(&nft_id).into();
+            let unstake_nft_bucket: Bucket = self
+                .unstaking_nft_vault
+                .as_non_fungible()
+                .take_non_fungible(&nft_id)
+                .into();
 
             let xrd_bucket: Bucket = validator.claim_xrd(unstake_nft_bucket);
 

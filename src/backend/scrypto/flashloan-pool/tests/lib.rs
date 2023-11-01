@@ -368,7 +368,6 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
 
     // Deposit XRD as owner, update interest rate, and mint XRD used to pay interest
     let interest_bucket = env.with_auth_module_disabled(|env| {
-
         // Update interest rate
         let _ = flashloanpool.update_interest_rate(dec!("0.1"), env);
 
@@ -424,8 +423,8 @@ fn unit_test_update_supplier_info() -> Result<(), RuntimeError> {
     //  - 0 XRD undistributed interest
     //
     // Interest fees are first assigned as undistributed to the aggregate index map.
-    // The undistributed interest fees are only distributed to the individual key value store 
-    // prior to a supplier entering or leaving the corresponding 'box'. As NFT #1# has withdrawn 
+    // The undistributed interest fees are only distributed to the individual key value store
+    // prior to a supplier entering or leaving the corresponding 'box'. As NFT #1# has withdrawn
     // from the box, the interest fees have been distributed.
 
     assert_eq!(index_map_box_1[0], dec!("1"));
