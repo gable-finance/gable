@@ -1,0 +1,35 @@
+# Create a proof of a badge on your account. The "create_proof_of_amount" method returns a Proof to the authzone.
+CALL_METHOD
+  Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+  "create_proof_of_amount"
+  Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+  Decimal("1");
+
+SET_METADATA
+    Address("resource_rdx1tknu3dqlkysz9lt08s7spuvllz3kk2k2yccslfpdk73t4lnznl9jck")
+    "dapp_definitions"
+    Enum<Metadata::Address>(
+        Address("account_rdx128ku70k3nxy9q0ekcwtwucdwm5jt80xsmxnqm5pfqj2dyjswgh3rm3")
+    );
+    
+SET_METADATA
+    Address("resource_rdx1tknu3dqlkysz9lt08s7spuvllz3kk2k2yccslfpdk73t4lnznl9jck")
+    "info_url"
+    Enum<Metadata::Url>("https://gable.finance");
+
+SET_METADATA
+    Address("resource_rdx1tknu3dqlkysz9lt08s7spuvllz3kk2k2yccslfpdk73t4lnznl9jck")
+    "icon_url"
+    Enum<Metadata::Url>("https://gable.finance/gable.png");
+
+    # For example, for strings:
+SET_METADATA
+    Address("resource_rdx1tknu3dqlkysz9lt08s7spuvllz3kk2k2yccslfpdk73t4lnznl9jck")
+    "tags"
+    # "Metadata::StringArray" is equivalent to 128u8
+    Enum<Metadata::StringArray>(
+        Array<String>(
+            "DeFi",
+            "L&B",
+        )
+    );

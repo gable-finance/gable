@@ -1,0 +1,16 @@
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "withdraw"
+    Address("resource_rdx1thrz4g8g83802lumrtrdsrhjd6k5uxhxhgkrwjg0jn75cvxfc99nap")
+    Decimal("1000");
+TAKE_ALL_FROM_WORKTOP
+    Address("resource_rdx1thrz4g8g83802lumrtrdsrhjd6k5uxhxhgkrwjg0jn75cvxfc99nap")
+    Bucket("lsu_bucket");
+CALL_METHOD
+    Address("component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws")
+    "deposit_lsu"
+    Bucket("lsu_bucket");
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "deposit_batch"
+    Expression("ENTIRE_WORKTOP");

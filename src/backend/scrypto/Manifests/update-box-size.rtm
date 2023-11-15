@@ -1,0 +1,10 @@
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "create_proof_of_amount"
+    Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+    Decimal("1");
+
+CALL_METHOD
+    Address("component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws")
+    "update_box_size"
+    200u64;

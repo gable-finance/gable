@@ -1,0 +1,20 @@
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "create_proof_of_amount"
+    Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+    Decimal("1");
+
+CALL_METHOD 
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl") 
+    "withdraw" 
+    Address("resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd")
+    Decimal("100");
+
+TAKE_ALL_FROM_WORKTOP 
+    Address("resource_sim1n2xuvjrpl7p7ju4k8d3pcvhcc24kcrla2sphpxe236w0m8x005j92r") 
+    Bucket("xrd_bucket");
+
+CALL_METHOD
+    Address("component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws")
+    "owner_deposit_xrd"
+    Bucket("xrd_bucket");

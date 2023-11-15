@@ -1,0 +1,10 @@
+# Create a proof of a badge on your account. The "create_proof_of_amount" method returns a Proof to the authzone.
+CALL_METHOD
+  Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+  "create_proof_of_amount"
+  Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+  Decimal("1");
+
+LOCK_METADATA
+    Address("resource_rdx1tknu3dqlkysz9lt08s7spuvllz3kk2k2yccslfpdk73t4lnznl9jck")
+    "field_name";

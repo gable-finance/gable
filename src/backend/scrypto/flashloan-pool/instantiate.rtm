@@ -1,32 +1,31 @@
 CALL_METHOD
 Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
 "withdraw"
-Address("resource_rdx1th5h662dw3qnjcd3msxwn5qev5cn5lq8yp0mr5hr0hyfals8t3nql6")
+Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
 Decimal("1");
 
 CALL_METHOD
-Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
-"withdraw"
-Address("resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd")
-Decimal("1");
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "withdraw_non_fungibles"
+    Address("resource_rdx1nfxxxxxxxxxxvdrwnrxxxxxxxxx004365253834xxxxxxxxxvdrwnr")
+    Array<NonFungibleLocalId>(NonFungibleLocalId("[8352fab8dcc7b15ffdd059c6ea41328d1e89fe7fe5c6123caeb290eb531b]"));
 
-Array<NonFungibleLocalId>(NonFungibleLocalId("${validatorOwnerBadgeId}"));
 TAKE_ALL_FROM_WORKTOP
-Address("resource_rdx1th5h662dw3qnjcd3msxwn5qev5cn5lq8yp0mr5hr0hyfals8t3nql6")
+Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
 Bucket("owner_bucket");
 
 TAKE_ALL_FROM_WORKTOP
-Address("resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd")
+Address("resource_rdx1nfxxxxxxxxxxvdrwnrxxxxxxxxx004365253834xxxxxxxxxvdrwnr")
 Bucket("validator_owner_bucket");
 
 CALL_FUNCTION
-Address("package_rdx1phvf3fslg4m0qqdldgk3chp4aexcgecwpqwqp7xwp6ku878k8svnmv")
-"Flashloanpooltest"
+Address("package_rdx1pkwskq8h6u28aqmgdshp6t7d2j3dn8xrzcaht5ahjt3kvnq36g80ll")
+"Flashloanpool"
 "instantiate_flashloan_pool"
 Bucket("owner_bucket")
 Bucket("validator_owner_bucket")
-Address("resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd")
-Address("resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd");
+Address("resource_rdx1thrz4g8g83802lumrtrdsrhjd6k5uxhxhgkrwjg0jn75cvxfc99nap")
+Address("resource_rdx1nt3r8ndj0mzvgqdg4w854h8447gh93ssk7m7tvxhe9j5xvt5wfe3xw");
 
 CALL_METHOD
 Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
