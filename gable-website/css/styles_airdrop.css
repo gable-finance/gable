@@ -1,0 +1,449 @@
+/* STATS */
+
+section.airdrop {
+    position: absolute;
+    width: 100%;
+    bottom: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+section.airdrop div.airdrop-input {
+    background-color: white;
+    display: flex;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+section.airdrop input.airdrop-address {
+    width: 800px;
+    font-size: 20px;
+    border: none;
+    padding: 5px 20px;
+    outline: none;
+}
+
+section.airdrop h3.airdrop-go {
+    background-color: gray;
+    font-size: 20px;
+    border: none;
+    padding: 0 20px;
+    margin: 0;
+    border-radius: 5px;
+    color: white;
+}
+
+section.airdrop h3.airdrop-go:hover {
+    cursor: pointer;
+}
+
+/* UPDATE DATE */
+
+section.airdrop-update {
+    /* padding-left: 200px; */
+    text-align: center;
+}
+
+/* <section class="airdrop-update">
+<p>Airdrop distribution last update:</p><p id="update-date"></p>
+</section> */
+
+/* AIRDROP INTRO */
+
+section.airdrop-intro {
+    padding: 30px 200px;
+    background-color: var(--boxcolor);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+section.airdrop-intro div.airdrop-intro-div {
+    width: 80%;
+}
+
+section.airdrop-intro h1.accordion-h1 {
+    position: relative;
+    cursor: pointer;
+}
+
+.accordion-container h1.accordion-h1::before {
+    content: '+';
+    color: black;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    font-size: 30px;
+    transform: translateY(-50%);
+}
+
+.accordion-container.active h1.accordion-h1::before {
+    content: '-';
+    font-size: 30px;
+}
+
+.accordion-container div.accordion-content {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    height: 0;
+    overflow: scroll;
+    transition: 0.5s;
+}
+
+.accordion-container.active div.accordion-content {
+    height: 300px;
+}
+
+section.airdrop-intro li {
+    margin-left: 20px;
+}
+
+.borrow-h1::before {
+    content: '+';
+    color: black;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    font-size: 30px;
+    transform: translateY(-50%);
+}
+  
+.borrow-content {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    height: 0;
+    overflow: scroll;
+    transition: 0.5s;
+}
+
+/* BUTTON */
+
+.buttons {
+    width: 100%;
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tab-buttons {
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    /* margin: 5px; */
+    border-radius: 10px 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px;
+    margin: 10px;
+    border: none;
+    background-color: var(--boxcolor);
+    color: black;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 90%;
+}
+
+.tab-button.active {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px, rgba(0, 0, 0, 0.23) 0px 1px 2px;
+    /* background-color: #f3f0f0; */
+    color: black;
+  }
+  
+  .tab-button:hover {
+    background-color: #f3f0f0;
+    color: black;
+  }
+
+/* AIRDROP STATS */
+
+section.airdrop-stats {
+    padding: 30px 200px;
+    /* background-color: yellow; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+section.airdrop-stats .tab-content {
+    background-color: var(--boxcolor);
+    width: 80%;
+    padding: 50px;
+    border-radius: 10px;
+    display: none;
+    /* display: flex; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#content1 {
+    display: none;
+}
+
+#content2 {
+    display: none;
+}
+
+section.airdrop-stats #airdrop-table {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    border-radius: 10px;
+}
+
+section.airdrop-stats div.airdrop-cell {
+    padding: 0 20px;
+    text-align: center;
+}
+
+section.airdrop-stats h2.airdrop-cell-header {
+    color: rgb(109, 109, 109);
+    font-size: 90%;
+}
+
+section.airdrop-stats h2.airdrop-cell-value {
+    font-size: 90%;
+}
+
+section.airdrop-stats #chart-airdrop {
+    padding: 30px 50px;
+    width: 90%;
+    height: 400px;
+}
+
+section.airdrop-stats #chart-borrower-airdrop {
+    padding: 30px 50px;
+    width: 90%;
+    height: 400px;
+}
+
+#airdrop-error {
+    display: none;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
+}
+
+#airdrop-error-div {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    background-color: rgb(237, 237, 237);
+    border-radius: 10px;
+    padding: 10px 30px;
+}
+
+#airdrop-error-message {
+    color: rgb(90, 90, 90);
+}
+
+#airdrop-error-button {
+    margin-left: 40px;
+    color: rgb(90, 90, 90);
+}
+
+#airdrop-error-button:hover {
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 1800px) {
+
+    section.airdrop-stats .tab-content {
+        background-color: var(--boxcolor);
+        width: 100%;
+        padding: 50px;
+        border-radius: 10px;
+        display: none;
+        /* display: flex; */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    section.airdrop-stats #airdrop-table {
+        display: flex;
+        flex-direction: row;
+        width: 90%;
+        justify-content: space-between;
+        margin-bottom: 50px;
+        border-radius: 10px;
+    }
+
+}
+
+@media only screen and (max-width: 1400px) {
+
+    section.airdrop-intro {
+        padding: 30px;
+    }
+    
+    section.airdrop-intro div.airdrop-intro-div {
+        width: 80%;
+    }
+
+    /*  */
+
+    section.airdrop-stats {
+        width: 100%;
+        padding: 0;
+        /* margin: 50px 0; */
+    }
+
+    section.airdrop-stats .tab-content {
+        width: 80%;
+        margin: 50px 0;
+    }
+
+    section.airdrop-stats #airdrop-table {
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        justify-content: space-between;
+        margin-bottom: 50px;
+        border-radius: 10px;
+    }
+
+    section.airdrop-stats h2.airdrop-cell-header {
+        font-size: 80%;
+    }
+
+    section.airdrop-stats h2.airdrop-cell-value {
+        font-size: 80%;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+
+    section.airdrop-intro {
+        padding: 0;
+    }
+    
+    section.airdrop-intro div.airdrop-intro-div {
+        width: 80%;
+    }
+
+    section.airdrop {
+        bottom: 20px;
+    }
+
+    section.airdrop input.airdrop-address {
+        width: 300px;
+    }
+
+    section.airdrop-stats {
+        /* padding: 0; */
+        width: 100%;
+    }
+    section.airdrop input.airdrop-address {
+        width: 300px;
+        font-size: 16px;
+    }
+    
+    section.airdrop h3.airdrop-go {
+        font-size: 16px;
+    }
+
+    /*  */
+
+    section.airdrop-stats .tab-content {
+        width: 80%;
+        margin: 50px 0;
+        padding: 0;
+    }
+
+    section.airdrop-stats #airdrop-table {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        margin: 0;
+        margin-top: 50px;
+        padding: 0;
+    }
+
+    section.airdrop-stats div.airdrop-cell {
+        padding: 0 !important;
+        border: none !important;
+        margin: 10px;
+        text-align: center;
+    }
+    
+
+    section.airdrop-stats h2.airdrop-cell-header {
+        font-size: 80%;
+        padding: 0;
+        margin: 0;
+    }
+
+    section.airdrop-stats h2.airdrop-cell-value {
+        font-size: 80%;
+        padding: 0;
+        /* margin: 0; */
+    }
+
+    section.airdrop-stats #chart-airdrop {
+        padding: 0;
+        margin-bottom: 30px;
+        width: 90%;
+        height: 300px;
+    }
+
+    section.airdrop-stats #chart-borrower-airdrop {
+        padding: 0;
+        margin-bottom: 30px;
+        width: 90%;
+        height: 300px;
+    }
+
+    #airdrop-error-div {
+        /* padding: 0 15px; */
+        max-width: 70%;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+
+    section.airdrop {
+        bottom: 20px;
+        /* margin-top: 50px; */
+    }
+
+    section.airdrop input.airdrop-address {
+        width: 200px;
+    }
+
+    section.airdrop-stats {
+        padding: 0;
+        width: 100%;
+    }
+    section.airdrop input.airdrop-address {
+        width: 200px;
+        font-size: 14px;
+    }
+    
+    section.airdrop h3.airdrop-go {
+        font-size: 14px;
+    }
+
+    #airdrop-error-message {
+        font-size: 90%;
+    }
+
+    #airdrop-error-button {
+        margin-left: 40px;
+        font-size: 90%;
+    }
+
+    #airdrop-error {
+        margin-top: 50px;
+    }
+}

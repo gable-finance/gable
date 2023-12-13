@@ -1,0 +1,11 @@
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "create_proof_of_amount"
+    Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+    Decimal("1");
+
+CALL_METHOD
+    Address("component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws")
+    "finish_unlock_owner_stake_units"
+    Address("validator_rdx1sdf04wxuc7c4llwst8rw5sfj350gnlnluhrpy09wk2gwk5cmvgffpy")
+    NonFungibleLocalId("[8352fab8dcc7b15ffdd059c6ea41328d1e89fe7fe5c6123caeb290eb531b]");

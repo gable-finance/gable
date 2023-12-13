@@ -1,0 +1,14 @@
+CALL_METHOD
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl")
+    "create_proof_of_amount"
+    Address("resource_rdx1thldnn22hqz475s74pk6594skrfpue3w8kd0tpl7gq5ap9kx6nxhd5")
+    Decimal("1");
+
+MINT_FUNGIBLE
+    Address("resource_rdx1t4zd2h95htm79dmyr9d422qy4c03urvkutqxgsyxx9udcmrdgk9s22")
+    Decimal("1.0");
+
+CALL_METHOD 
+    Address("account_rdx168nhk2f07xg3vqgp6ntlel08f8w3cy4mhq4nwt7gky33z84sxncljl") 
+    "deposit_batch" 
+    Expression("ENTIRE_WORKTOP");

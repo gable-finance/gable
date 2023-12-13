@@ -1,0 +1,847 @@
+
+#h1 {
+    font-size: 160%;
+    font-weight: 300;
+    /* text-align: ; */
+    margin: 20px 80px 0;
+}
+
+#p {
+    font-size: 90%;
+    font-weight: 300;
+    text-align: left;
+    margin: 0 80px 50px;
+}
+
+#button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.chart-button {
+    background-color: var(--secondthemetransparant);
+    border-radius: 2px;
+    border-width: 0;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 20px;
+    list-style: none;
+    margin: 0 20px;
+    padding: 10px 50px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 10px;
+    width: auto;
+    font-size: 15px;
+    color: black
+}
+
+.chart-button2 {
+    background-color: var(--secondthemetransparant);
+    border-radius: 2px;
+    border-width: 0;
+    cursor: pointer;
+    display: inline-block;
+    line-height: 20px;
+    list-style: none;
+    margin: 0 20px;
+    padding: 10px 20px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 10px;
+    width: auto;
+    font-size: 15px;
+    color: black
+}
+
+.chart-button:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+.chart-button2:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+/* STATS */
+
+section.stats {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+section.stats div.stats-cont {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+section.stats div div.liq-int-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background-color: white; */
+    margin: 5px;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+section.stats div div div.liq-int-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background-color: white; */
+    background-color: rgba(255, 255, 255, 0.392);
+
+    /* margin: 20px; */
+    margin: 10px;
+    padding: 20px 0;
+    border-radius: 10px;
+    flex: 1;
+}
+
+/* section.stats div div.stats-divs:first-child::before {
+    display: none;
+} */
+
+section.stats div div.apy {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border-radius: 10px;
+    margin: 5px;
+    flex: 1;
+}
+
+section.stats div div div.apy-div {
+    position: relative;
+    display: flex;
+    /* width: 100%; */
+    padding: 0;
+    margin-right: 10px;
+    /* background-color: white; */
+    background-color: rgba(255, 255, 255, 0.392);
+    border-radius: 10px;
+}
+
+section.stats div div.apy-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 20px 0;
+    margin: 0;
+    background-color: transparent;
+}
+
+
+.stats-top-h1 {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    color: rgb(99, 99, 99);
+}
+
+.show-stats {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+    line-height: 2;
+    color: black;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+/* INFO BUTTON */
+
+.info-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    /* background-color: red; */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.info-icon {
+    font-size: 80%;
+    margin-right: 12px;
+    cursor: pointer;
+    color: lightgray;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    right: 0%;
+    padding: 10px;
+    margin-right: 50px;
+    /* margin-top: 50px; */
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    font-size: 13px;
+    width: 250px;
+}
+
+.info-container:hover .tooltip {
+    cursor: pointer;
+    display: block;
+}
+
+/* Liquidity */
+
+section.liquidity-chart-section {
+    margin: 50px;
+    padding: 30px 0 50px;
+    background-color: var(--boxcolor);
+    border-radius: 10px;
+    width: auto;
+}
+
+section.liquidity-chart-section .liquidity-chart-div {
+    width: 100%;
+}
+
+#liquidity-h1 {
+    font-size: 160%;
+    font-weight: 300;
+    /* text-align: ; */
+    padding: 20px 80px;
+}
+
+#chart-liquidity {
+    height: 300px;
+    width: 100%;
+}
+
+/* Flash Loan and TVL */
+
+section.borrow-supply-section {
+    margin: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+section.borrow-supply-section .borrow-supply-div {
+    padding: 30px 50px;
+    border-radius: 10px;
+    background-color: var(--boxcolor);
+    width: 40%;
+    position: relative;
+}
+
+section.borrow-supply-section .borrow-supply-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 20px 0 50px 0;
+}
+
+section.borrow-supply-section .borrow-supply-divs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px 20px;
+    background-color: white;
+    width: 35%;
+    border-radius: 10px;
+    box-shadow: rgba(51, 51, 51, 0.16) 0px 0px 1px, rgba(51, 51, 51, 0.16) 0px 0px 1px;
+}
+
+section.borrow-supply-section .borrow-supply-divs:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px, rgba(0, 0, 0, 0.16) 0px 1px 2px;
+}
+
+section.borrow-supply-section .show-stats-small {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-size: 25px;
+    margin: 0;
+    padding: 0;
+    line-height: 2;
+    color: black;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+section.borrow-supply-section #chart-tvl {
+    height: 300px;
+}
+
+section.borrow-supply-section #chart-flashloan {
+    height: 300px;
+}
+
+/* APY CHART */
+
+section.chart-section {
+    margin: 50px;
+    background-color: var(--boxcolor);
+    padding: 20px;
+    border-radius: 10px;
+    width: auto;
+}
+
+section.chart-section p {
+    text-align: center;
+    margin: 20px;
+}
+
+section.chart-section #chart {
+    max-width: 100%;
+    height: 400px;
+    margin: 0;
+}
+
+/* SUPPLIER DASHBOARD */
+
+section.supplier-dashboard {
+    margin: 50px;
+    padding: 30px 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--boxcolor);
+    border-radius: 10px;
+    position: relative;
+}
+
+section.supplier-dashboard div.supplier-seperator {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 50px;
+}
+
+/* SUPPLIER DASHBOARD TEXT */
+
+section.supplier-dashboard div.supplier-dashboard-text{
+    padding: 0 50px;
+}
+
+section.supplier-dashboard div.supplier-dashboard-text p{
+    text-align: center;
+}
+
+/* SUPPLIER DASHBOARD POP UP */
+
+#pop-up{
+    display: none;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    background-color: darkgray;
+    border-radius: 10px;
+    padding: 5px 25px;
+    margin: 30px;
+}
+
+#pop-up p {
+    color: white;
+    font-size: 100%;
+    text-align: center;
+}
+
+#pop-up1 {
+    display: none;
+}
+
+#pop-up2 {
+    display: none;
+}
+
+/* SUPPLIER TABLE */
+
+section.supplier-dashboard div.supplier-table {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: auto;
+    justify-content: center;
+    min-width: 45%;
+    margin-right: 20px;
+    margin-top: 50px;
+    border-radius: 7px;
+}
+
+section.supplier-dashboard div.dashboard h1.stats-h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
+    padding: 10px 20px;
+    /* background-color: green; */
+}
+
+section.supplier-dashboard div.dashboard h1.stats-h1:first-child {
+    font-weight: bold;
+}
+
+section.supplier-dashboard .bold {
+    font-weight: bold;
+}
+
+section.supplier-dashboard .border-top {
+    border-top: solid lightgray;
+}
+
+ /* section.supplier-dashboard #shadow {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px, rgba(0, 0, 0, 0.16) 0px 1px 2px;
+} */
+
+ section.supplier-dashboard div.dashboard div.dashboard-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* border-bottom: none; */
+    align-items: center;
+    padding: 10px 0;
+}
+
+/* SUPPLIER-CHART */
+
+div.chart2-section {
+    border-radius: 10px;
+    width: auto;
+    min-width: 55%;
+}
+
+div.chart2-section p {
+    text-align: center;
+    margin: 20px;
+}
+
+div.chart2-section #chart2 {
+    max-width: 100%;
+    height: 350px;
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+
+@media only screen and (max-width: 1300px) {
+
+    /* Liquidity */
+
+    section.liquidity-chart-section {
+        margin: 50px 50px 30px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #liquidity-h1 {
+        font-size: 130%;
+        font-weight: 300;
+        /* text-align: ; */
+        margin: 0;
+    }
+
+    #chart-liquidity {
+        height: 250px;
+        /* width: 90%; */
+    }
+
+    /*  */
+
+    section.supplier-dashboard div.supplier-seperator {
+        display: flex;
+        flex-direction: column;
+    }    
+
+    div.chart2-section {
+        border-radius: 10px;
+        width: auto;
+        min-width: 55%;
+        margin-top: 70px;
+    }
+
+    div.chart2-section #chart {
+        height: 400px;
+    }
+
+    .show-stats {
+        font-size: 25px;
+    }
+
+    /* Flash Loan and TVL */
+
+    section.borrow-supply-section {
+        margin: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    section.borrow-supply-section #h1 {
+        font-size: 130%;
+        margin: 0;
+        text-align: center;
+    }
+
+    section.borrow-supply-section .borrow-supply-div {
+        padding: 20px 30px;
+        border-radius: 10px;
+    }
+
+    section.borrow-supply-section .borrow-supply-stats {
+        margin: 20px 0 30px 0;
+        flex-direction: column;
+    }
+
+    section.borrow-supply-section .borrow-supply-divs {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 5px;
+        margin: 5px;
+        background-color: white;
+        width: 80%;
+        border-radius: 10px;
+    }
+
+    section.borrow-supply-section .show-stats-small {
+        font-size: 20px;
+        display: flex;
+    }
+
+    section.borrow-supply-section .stats-top-h1 {
+        padding-top: 10px;
+    }
+
+    section.borrow-supply-section #chart-tvl {
+        height: 250px;
+    }
+
+    section.borrow-supply-section #chart-flashloan {
+        height: 250px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+
+    section.liquidity-chart-section {
+        width: 100%;
+        margin: 20px 0 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+    }
+
+    section.liquidity-chart-section .liquidity-chart-div {
+        background-color: var(--boxcolor);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 80%;
+        padding: 0 30px 30px 30px;
+        border-radius: 10px;
+    }
+
+    #liquidity-h1 {
+        padding: 20px 0;
+    }
+
+    /* STATS */
+
+    section.stats {
+        width: 100%;
+        bottom: 0;
+    }
+
+    section.stats div.stats-cont {
+        flex-direction: column;
+        margin: 5px;
+    }
+
+    section.stats div div.liq-int-div {
+        margin: 0;
+        border-radius: 10px;
+        width: 100%;
+    }
+
+    section.stats div div div.liq-int-divs {
+        margin: 10px 10px 0 10px;
+        padding: 0;
+    }
+
+    section.stats div div.apy {
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        flex: 1;
+        width: 100%;
+        margin: 10px;
+        padding: 0;
+    }
+
+    section.stats div div div.apy-div {
+        display: flex;
+        padding: 0;
+        margin: 10px;
+    }
+
+    section.stats div div.apy-divs {
+        padding: 0;
+    }
+
+    section.stats .stats-top-h1 {
+        font-size: 15px;
+        font-weight: 200;
+        margin: 0;
+        padding: 0;
+    }
+
+    .show-stats {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        font-size: 18px;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 2;
+        color: black;
+        height: 40px;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        position: absolute;
+        top:auto;
+        top: 3px;
+        right: 3px;
+    }
+
+    .info-icon {
+        font-size: 70%;
+    }
+    
+    .tooltip {
+        margin-bottom: 50px;
+        font-size: 10px;
+        min-width: 70%;
+    }
+
+    /* Flash Loan and TVL */
+
+    section.borrow-supply-section {
+        margin: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    section.borrow-supply-section #h1 {
+        font-size: 130%;
+        margin: 0;
+        text-align: center;
+    }
+
+    section.borrow-supply-section .borrow-supply-div {
+        padding: 20px 30px;
+        margin: 0;
+        border-radius: 10px;
+        width: 80%;
+        margin-top: 20px;
+    }
+
+    section.borrow-supply-section .borrow-supply-stats {
+        margin: 20px 0 30px 0;
+        flex-direction: row;
+    }
+
+    section.borrow-supply-section .borrow-supply-divs {
+        text-align: center;
+        padding: 0 5px;
+        margin: 5px;
+        width: 80%;
+    }
+
+    section.borrow-supply-section .show-stats-small {
+        font-size: 18px;
+        height: 50px;
+    }
+
+    section.borrow-supply-section .stats-top-h1 {
+        font-size: 18px;
+    }
+        
+    /* APY CHART */
+
+    section.chart-section {
+        margin: 0;
+        margin-top: 50px;
+        padding: 0;
+        background-color: white;
+    }
+
+    #h1  {
+        font-size: 130%;
+        font-weight: 300;
+        margin: 30px 30px 0 30px;
+    }
+
+    #p  {
+        font-size: 80%;
+        font-weight: 300;
+        margin: 0 30px 30px 30px;
+    }
+
+    #chart {
+        height: 100px;
+        margin: 0;
+        padding: 0;
+    }
+
+    #button {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .chart-button {
+        background-color: var(--secondthemetransparant);
+        border-radius: 3px;
+        border-width: none;
+        margin: 5px;
+        padding: 0 20px;
+        width: auto;
+        height: 30px;
+        font-size: 15px;
+    }
+
+    .chart-button:hover {
+        box-shadow: none;
+    }
+
+    /* DASHBOARD */
+
+    /* SUPPLIER DASHBOARD POP UP */
+
+    #pop-up p {
+        font-size: 80%;
+    }
+
+    /* SUPPLIER */
+
+    section.supplier-dashboard {
+        margin: 50px 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: none;
+    }
+    
+    section.supplier-dashboard div.supplier-dashboard-text{
+        padding: 0;
+    }
+
+    section.supplier-dashboard div.supplier-seperator {
+        /* background-color: red; */
+        margin: 20px;
+    }
+
+    section.supplier-dashboard div.supplier-table {
+        /* max-width: none; */
+        width: auto;
+        margin: 0;
+        padding: 0;
+        overflow-x: auto;
+        display: flex;
+    }
+
+    section.supplier-dashboard div.dashboard h1.stats-h1{
+        font-size: 70%;
+        font-weight: 300;
+        overflow-x: auto;
+    }
+
+    /* CHART2 */
+
+    div.chart2-section {
+        border-radius: 10px;
+        width: auto;
+        min-width: 55%;
+        margin-top: 70px;
+        /* background-color: yellow; */
+        margin: 0;
+        margin-top: 50px;
+        padding: 0;
+    }
+
+    .chart-button2 {
+        background-color: var(--secondthemetransparant);
+        border-radius: none;
+        border-width: none;
+        margin: 5px;
+        padding: 0 10px;
+        height: 30px;
+        font-size: 15px;
+        width: auto;
+    }
+
+    .chart-button2:hover {
+        box-shadow: none;
+    }
+
+    #chart2 {
+        height: 300px;
+        margin-top: 30px !important;
+        padding: 0 !important;
+    }
+}

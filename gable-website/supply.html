@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page Title and Description -->
+    <title>Gable - Liquidity Protocol on Radix DLT</title>
+    <meta name="description" content="Gable Liquidity Protocol is a decentralized liquidity market protocol built on Radix DLT.">
+
+    <!-- Open Graph Tags for Social Sharing -->
+    <meta property="og:title" content="Gable Liquidity Protocol">
+    <meta property="og:description" content="Gable is a decentralized liquidity market protocol built on Radix DLT.">
+    <meta property="og:image" content="https://drive.google.com/uc?id=10Sho_117oIHN_pSXnn3xRTYGMUj1mzP6">
+    <meta property="og:url" content="https://gable.finance">
+    <meta property="og:type" content="website">
+
+    <!-- Keywords for SEO -->
+    <meta name="keywords" content="Gable, Radix, DeFi, Lending, Liquidity, Flashloan, Staking, Loan, Pool">
+
+    <!-- Favicon -->
+    <link rel="icon" href="pictures/Gable_Logo_Favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/generics.css">
+    <link rel="stylesheet" href="css/styles_supply.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/button.css">
+    <link rel="stylesheet" href="css/hamburger.css">
+
+    <!-- Google Tag Manager for Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R83ZKJQFP5"></script>
+    <script src="java/gtag.js"></script>
+
+    <!-- Preconnect for Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" media="all">
+</head>
+
+    <body>
+        <header id="non-index">
+            <nav>
+                <div class="wrapper">
+                    <div class="logo">
+                        <a href="./">
+                            <img src="pictures/Gable_Logo_Blue_Black.png" alt="logo" class="logo">
+                        </a>
+                        
+                        <a href="./">
+                            <img src="pictures/Gable_Logo_White.png" alt="logo" class="logo-transparant">
+                        </a>
+                    </div>
+
+                    <div class="navigation-div">
+                        <ul class="navigation">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="menuToggle">
+
+                        <input type="checkbox" id="checkbox_check"/>
+                        
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        
+                        <ul id="menu">
+                            <li><a class="menuItem" href="./">Home</a></li>
+                            <li><a class="menuItem" href="about">About</a></li>
+                            <li><a class="menuItem" href="http://docs.gable.finance" target="_blank">Docs</a></li>
+                            <li><a class="menuItem" href="dashboard">Dashboard</a></li>
+                            <li><a class="menuItem" href="supply">Supply</a></li>
+                            <li><a class="menuItem" href="borrow">Borrow</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="connectBtn">
+                        <radix-connect-button />
+                    </div>
+
+                </div>
+                
+            </nav>
+
+        </header>
+
+        <section class="supply-intro">
+            <h1 class="supply-title-h1">
+                Supply Liquidity with Ease!
+            </h1>
+            <p class="supply-p">
+                Gable Liquidity Protocol collects liquidity via staking rewards. 
+                Before you get started as supplier it is advised to read the <a href="https://docs.gable.finance/for-suppliers" target="_blank">documentation</a> that is available for suppliers on Gable.
+            </p>
+        </section>
+
+        <section class="supply-info">
+            <div class="supply-info-cont">
+                <div class="supply-info-div">
+                    <h1 class="supply-h">Rewards APY</h1>
+                    <h1 class="supply-nr" id="apy-staking">-</h1>
+                </div>
+                <div class="supply-info-div">
+                    <h1 class="supply-h">Interest APY</h1>
+                    <h1 class="supply-nr" id="apy-interest">-</h1>
+                </div>
+                <div class="supply-info-div">
+                    <h1 class="supply-h">Total APY</h1>
+                    <h1 class="supply-nr" id="apy-total">-</h1>
+                </div>
+            </div>
+        </section>
+
+        <section class="supply-test">
+            <div class="supply-test-cont">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="changeTab(event, 'content1')">Supply</button>
+                    <button class="tab-button" onclick="changeTab(event, 'content2')">Withdraw</button>
+                </div>
+                <div class="supply-test-div">
+                    <div class="tab-content" id="content1">
+                        <div class="stake" style="margin-bottom: 100px;">
+
+                            <div class="accordion-container">
+                                <h1 class="supply-h1">
+                                    [1] Stake XRD
+                                </h1>   
+                                <div class="supply-content"  id="supply-content-1">                       
+                                    <p class="supply-p">
+                                        The first step into supplying liquidity is to stake your XRD at Gable validator node.
+                                        In return you will receive 'Liquid staking units' (LSU's) - which serve as proof of your stake.
+                                    </p>
+                                </div>  
+                            </div>
+            
+                            <div class="transaction" id="nr1">
+                                <div class="transaction-input">
+                                    <input type="text" placeholder="XRD amount" id="amountXRD" class="transaction-text"/>
+                                    <h3 class="transaction-max" id="max-xrd">MAX</h3>
+                                </div>
+                                <button id="stakeXRD" class="learn-more transaction-button">Send</button>
+                                <div class="error-container" id="error-d-1">
+                                    <p class="error-text" id="error-p-1"></p>
+                                    <button class="error-button" id="error-b-1">X</button>
+                                </div>
+                            </div>  
+                            <p style="font-size: 80%;"><span class="highlight">Note:</span> 501 XRD is the minimal amount you can supply - equal to 501 LSU's.</p>
+                        </div>
+
+                        <div class="deposit">
+                            <div class="accordion-container">
+                                <h1 class="supply-h1">
+                                    [2] Deposit LSU
+                                </h1>
+                                <div class="supply-content" id="supply-content-2">                       
+                                    <p class="supply-p">
+                                        The second step is to deposit Gable validator node's 'Liquid Staking Units' (LSU's) into the protocol, that were returned to you in the previous step.
+                                        By doing so, you register yourself as liquidity provided.
+                                    </p>
+                    
+                                    <p class="supply-p">
+                                        In exchange, you will receive a non-fungible token (NFT) that represents your 'Proof Of Supply'.
+                                        With this NFT, you can withdraw the resources that you are entitled to (see step 3 in the 'withdraw' tab).
+                                    </p>
+                                </div>
+                            </div>
+                        
+            
+                            <div class="transaction" id="nr2">
+                                <div class="transaction-input">
+                                    <input type="text" placeholder="LSU amount" id="amountLSU" class="transaction-text"/>
+                                    <h3 class="transaction-max" id="max-lsu">MAX</h3>
+                                </div>
+                                <button id="supplyLSU" class="learn-more transaction-button">Send</button>
+                                <div class="error-container" id="error-d-2">
+                                    <p class="error-text" id="error-p-2"></p>
+                                    <button class="error-button" id="error-b-2">X</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="withdraw tab-content" id="content2">
+                        <div class="withdraw">
+                            <div class="accordion-container">
+                                <h1 class="supply-h1">
+                                    [3] Withdraw Resources
+                                </h1>
+
+                                <div class="supply-content" id="supply-content-3">                       
+                                    <p class="supply-p">
+                                        Withdrawing returns the following resources to your wallet:
+                                    </p>
+                                    <ul class="supply-ul">
+                                        <li class="supply-li">LSU's that you have deposited into the liquidity pool</li>
+                                        <li class="supply-li">Staking rewards (XRD) that you are entitled to</li>
+                                        <li class="supply-li">Interest earnings (XRD) that you are entitled to</li>
+                                    </ul>
+                                    <p class="supply-p">
+                                        Once your LSU's are returned to you, you withdraw your stake from the Gable validator node.
+                                        This takes 2016 epochs (approx. 1 weeks) to return, as is inherent to the Radix network.
+                                    </p>
+                                </div>
+                            </div>
+
+            
+                            <div class="transaction" id="nr3">
+                                <div class="transaction-input">
+                                    <input type="text" placeholder="NFT Local ID" id="nftId" class="transaction-text" />
+                                
+                                    <div class="dropdown">
+                                        <button id="nfts"><h3 class="transaction-max">NFT</h3></button>
+                                        <div class="dropdown-options" id="nft-dropdown" style="display: none;">
+                                            <a href="">test</a>
+                                            <!-- populated by javascript -->
+                                        </div>
+                                    </div>  
+                                </div>
+
+                                <button id="withdrawLSU" class="learn-more transaction-button">Send</button>
+                                <div class="error-container" id="error-d-3">
+                                    <p class="error-text" id="error-p-3"></p>
+                                    <button class="error-button" id="error-b-3">X</button>
+                                </div>
+                            </div>
+                      </div>            
+                </div>
+            </div>
+        </section>
+
+        <hr>
+        
+        <footer class="footer-mobile">
+            <div class="gable">
+                <h1>
+                    GABLE LIQUIDITY PROTOCOL
+                </h1>
+            </div>
+            
+            <div class="menu">
+                <span id="footer-title">CONTENT</span>
+                <a href="gable-v1-whitepaper.pdf" target="_blank">WHITEPAPER</a>
+                <a href="airdrop" target="_blank">AIRDROP DASHBOARD</a>
+                <a href="gable-hacken-final-audit-report.pdf" target="_blank">AUDIT</a>
+                <a href="http://gablefinance.medium.com" target="_blank">BLOG</a>
+                <a href="http://docs.gable.finance" target="_blank">DOCS</a>
+                <a href="http://docs.gable.finance/faq" target="_blank">FAQ</a>
+            </div>
+
+            <div class="company">
+                <span id="footer-title">COMPANY</span>
+                <a href="privacy-notice">PRIVACY NOTICE</a>
+                <a href="terms">TERMS OF USE</a>
+                <a href="mailto:contact@gable.finance">CONTACT</a>
+            </div>
+
+            <div class="social-links">
+                <a href="https://twitter.com/Gable_Finance" target="_blank" class="social-logo-link">
+                  <img src="pictures/twitter.svg" alt="Twitter Logo" class="social-logo">
+                </a>
+                <a href="https://github.com/gable-finance" target="_blank" class="social-logo-link">
+                  <img src="pictures/github.svg" alt="GitHub Logo" class="social-logo">
+                </a>
+                <a href="https://discord.gg/9tYgP7StuJ" target="_blank" class="social-logo-link">
+                  <img src="pictures/discord.svg" alt="Discord Logo" class="social-logo">
+                </a>
+                <a href="https://t.me/gable_finance" target="_blank" class="social-logo-link">
+                  <img src="pictures/telegram.svg" alt="Telegram Logo" class="social-logo">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>
+                    © 2023 GABLE FINANCE, INC. ALL RIGHTS RESERVED
+                </p>
+                <a href="https://www.radixdlt.com/full-stack" target="_blank">
+                    <img src="pictures/Long-Black-Monochrome-outline.png" alt="runsonradix">
+                </a>
+            </div>
+        </footer>
+
+        <script src="dist/supply.bundle.js"></script>
+
+        <script src="java/accordion.js"></script>
+        <script src="java/scroll.js"></script>
+        <script src="java/scroll_phone.js"></script>
+        <script src="java/disable_scroll.js"></script>
+        <script src="java/smooth_scroll.js"></script>
+        <script src="java/tabs.js"></script>
+
+    </body>
+</html>
